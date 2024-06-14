@@ -364,7 +364,7 @@ label div select {
   margin-top: 20px;
 }
 
-.contact-container {
+.contactcontainer {
   display: flex;
   justify-content: center;
 }
@@ -385,7 +385,28 @@ label div select {
   margin-bottom: 40px;
 }
 
-.cards-container {
+.cardsintro {
+  background-color: white;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  margin-top: 12.5vh;
+  margin-bottom: 3vh;
+  width: 70%;
+  height: 300px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.cardsheading {
+  margin-top: 40px;
+}
+
+.cardstext {
+  text-align: center;
+}
+
+.cardscontainer {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 20px;

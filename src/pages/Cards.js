@@ -3,6 +3,7 @@ import React from "react";
 
 const cscsCards = [
   {
+    image: "",
     title: "Green Labourer CSCS Card",
     description:
       "Requires passing the Operatives Test and completing the QCF Level 1/SCQF Level 4 Award in Health and Safety. If not completed, apply for a Provisional CSCS Card.",
@@ -67,8 +68,15 @@ const cscsCards = [
 const Cards = () => {
   return (
     <>
-      <div className="cards-intro"></div>
-      <div className="cards-container">
+      <div className="cardsintro">
+        <h1 className="cardsheading">CSCS Cards</h1>
+        <p>
+          This is the cards page, here you will find information on all of the
+          available CSCS cards and how to obtain them, you can book for these
+          specific cards depending on your NVQ status.
+        </p>
+      </div>
+      <div className="cardscontainer">
         {cscsCards.map((card, index) => (
           <div className="card" key={index}>
             <h2>{card.title}</h2>

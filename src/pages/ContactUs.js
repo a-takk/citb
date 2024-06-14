@@ -33,7 +33,7 @@ function ContactUs() {
           </button>
         </form>
 
-        <div class="contact-container">
+        <div class="contactcontainer">
           <div class="contactdetails">
             <div class="column">
               <p>
