@@ -1,0 +1,115 @@
+/* BOOK CSS */
+
+.formbackground {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+form {
+  background-color: #ffffff;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 750px;
+  height: 100%;
+  margin-top: 12.5vh;
+  margin-bottom: 5vh;
+  border-radius: 20px;
+}
+
+h1,
+h2 {
+  color: #37474f;
+  text-align: center;
+  margin-top: 30px;
+}
+
+label {
+  display: block;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+label > div {
+  display: flex;
+  gap: 10px;
+}
+
+input[type="text"],
+input[type="email"],
+select {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+input[type="checkbox"] {
+  margin-right: 10px;
+}
+
+button {
+  background-color: #ffcc00;
+  color: black;
+  border: none;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+}
+
+button:hover {
+  background-color: #e6b800;
+}
+
+textarea {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.required::after {
+  content: "*";
+  color: red;
+  margin-left: 5px;
+}
+
+label[for="availability"] textarea {
+  height: 100px;
+}
+
+label[for="address"],
+label[for="town"],
+label[for="county"],
+label[for="postcode"] {
+  display: inline-block;
+  width: 48%;
+  box-sizing: border-box;
+}
+
+label[for="county"],
+label[for="postcode"] {
+  margin-left: 4%;
+}
+
+label div input[type="text"],
+label div input[type="email"],
+label div select {
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.date {
+  margin-top: 30px;
+  margin-bottom: 30px;
+}

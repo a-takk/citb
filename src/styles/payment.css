@@ -1,0 +1,72 @@
+/* PAYMENT PAGE CSS */
+
+.paymentFormBackground {
+  height: 100%;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #37474f;
+}
+
+.paymentForm {
+  background-color: #ffffff;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 750px;
+  margin-top: 12.5vh;
+  margin-bottom: 5vh;
+  border-radius: 20px;
+}
+
+.paymentForm h1 {
+  color: #37474f;
+  text-align: center;
+  margin-top: 30px;
+}
+
+.paymentForm label {
+  display: block;
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.paymentForm input[type="text"],
+.paymentForm input[type="email"],
+.paymentForm input[type="password"],
+.paymentForm input[type="date"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.paymentForm button {
+  background-color: #ffcc00;
+  color: black;
+  border: none;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px;
+}
+
+.paymentForm button:hover {
+  background-color: #e6b800;
+}
+
+.paymentForm input[type="text"] {
+  font-family: "Courier New", Courier, monospace;
+  letter-spacing: 1.5px;
+}
+
+.paymentForm .required::after {
+  content: "*";
+  color: red;
+  margin-left: 5px;
+}

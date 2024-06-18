@@ -1,0 +1,64 @@
+/* CONTACT US CSS*/
+
+.contactbackground {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.contactcontainer {
+  flex-direction: column;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 70%;
+  margin-top: 12.5vh;
+  margin-bottom: 5vh;
+  border-radius: 15px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.contactformheading {
+  padding-top: 40px;
+  margin-bottom: -80px;
+}
+
+.contactform {
+  box-shadow: none;
+  width: 80%;
+}
+
+.contactinput {
+  margin-bottom: 20px;
+  width: 500px;
+}
+
+.contactbutton {
+  margin-top: 20px;
+}
+
+.contactcontainer {
+  display: flex;
+  justify-content: center;
+}
+
+.contactdetails {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 75px;
+  margin-bottom: 7.5vh;
+}
+
+.contactlocation {
+  margin-bottom: 7.5vh;
+}
+
+.contactlocationheading {
+  color: #ffcc00;
+  margin-bottom: 40px;
+}
+
+.map {
+  width: 70%;
+}

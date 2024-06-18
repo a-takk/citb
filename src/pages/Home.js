@@ -1,60 +1,52 @@
-import "../styles/style.css";
-import citb from "../images/citb.jpeg";
-import marketplace from "../images/marketplace.gif";
+import "../styles/home.css";
+import booking from "../images/booking.gif";
 
 export default function Home() {
   return (
     <>
       <div className="herocontainer">
-        <div className="herodiv1">
+        <div className="herodiv">
           <h1 className="heroheading">Welcome to CITB Certify</h1>
           <p className="herotext">Where you can book for your CITB test.</p>
-          <a className="button" href="#introcontainer">
+          <a className="herobutton" href="#introcontainer">
             Scroll Down
           </a>
         </div>
-        <div className="herodiv2">
-          <img src={citb} className="heroimage" alt="citb" />
-        </div>
       </div>
-      <div id="introcontainer" className="introcontainer">
-        <div>
-          <h1 className="introheading">What do you need first?</h1>
+      <div className="introcontainer">
+        <div className="introdiv1">
+          <img src={booking} className="introimage" alt="bookingimage" />
+        </div>
+        <div className="introdiv2">
+          <h1 className="introheading">Cards</h1>
           <p className="introtext">
-            First you will need to book for a Health and Safety test, this is
-            the way you can qualify for a CSCS card, once you have completed the
-            test, then you will be able to obtain a CSCS card or when you are
-            going to renew your CSCS card, the price of a Health and Safety test
-            is £22.50.
+            You can access all the current CSCS cards that you can obtain with
+            us, if you are looking to move up and earn a new qualification then
+            please go to the booking page in order to book for a test, either
+            for a card or a test.
           </p>
-          <div className="introdiv">
-            <h1 className="introheading2">How does this work?</h1>
-            <p className="introtext">
-              Upon signing up, navigate to the profile section to change your
-              experience to whichever one suits you, only essential information
-              will be displayed on the marketplace, your username, an image if
-              you want to upload one, as well as the experience you have within
-              coding. If you don't want your account to be displayed you can
-              also change this.
-            </p>
-          </div>
+          <a className="button" href="/book">
+            Cards
+          </a>
         </div>
       </div>
-      <div className="marketcontainer">
-        <div className="marketdiv1">
-          <img src={marketplace} className="marketimage" alt="marketimage" />
-        </div>
-        <div className="marketdiv2">
-          <h1 className="marketheading">Buddies</h1>
-          <p className="markettext">
-            The Buddies page is here to find your coding buddy, you are able to
-            see all available users that are on the buddies page if they choose
-            to display their profile, and send a friend request to them, so you
-            can chat with them! Click on the button below to access buddies!
+      <div className="bookingcontainer">
+        <div className="bookingdiv1">
+          <h1 className="bookingheading">Booking</h1>
+          <p className="bookingtext">
+            Once you have figured out exactly what test or card you need, please
+            click on the link to head to the booking page, there you will be
+            able to fill out a form to pick which CSCS card you need, if it is a
+            renewal or a new card and what kind of test you need, you must fill
+            out all the details so we know exactly who you are and what you
+            want.
           </p>
-          <a className="button" href="/marketplace">
-            Buddies
+          <a className="button" href="/book">
+            Book
           </a>
+        </div>
+        <div className="bookingdiv2">
+          <img src={booking} className="bookingimage" alt="bookingimage" />
         </div>
       </div>
       <div className="locationcontainer">
@@ -64,7 +56,12 @@ export default function Home() {
             src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d77669.66003879122!2d-2.1504174299291776!3d52.53023390122326!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4870978802d5650b%3A0x5da3785b1d85460f!2sWest%20Bromwich!5e0!3m2!1sen!2suk!4v1717939137085!5m2!1sen!2suk"
             width="100%"
             height="100%"
-            style={{ border: 0[] }}
+            style={{
+              border: "0",
+              borderRadius: "10px",
+              width: "70%",
+              height: "450px",
+            }}
             allowFullScreen=""
             loading="lazy"
             referrerPolicy="no-referrer-when-downgrade"

@@ -1,12 +1,32 @@
-import "../styles/style.css";
+import "../styles/book.css";
 import React, { useState } from "react";
 import axios from "axios";
 
 const Book = () => {
+  const getCurrentDate = () => {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${day}-${month}-${year}`;
+  };
+
+  const prices = {
+    "Green Labourer CSCS Card": 30,
+    "Blue Skilled CSCS Card": 50,
+    "Gold Advanced CSCS Card": 70,
+    "Red Provisional CSCS Card": 40,
+    "Gold CSCS Card": 90,
+    "Black CSCS Card": 100,
+    "White AQP CSCS Card": 110,
+    "White PQP CSCS Card": 120,
+    "New CSCS Card": 20,
+    "Renewal of CSCS Card": 15,
+  };
+
   const [formData, setFormData] = useState({
     cscsCardType: "",
     cardAction: "",
-    testType: "",
     title: "Mr",
     firstName: "",
     surname: "",
@@ -16,7 +36,7 @@ const Book = () => {
     gender: "Male",
     test: "",
     testLanguage: "",
-    testDate: "2024-06-13",
+    testDate: getCurrentDate(),
     testTime: "Any",
     address: "",
     town: "",
@@ -37,16 +57,18 @@ const Book = () => {
     });
   };
 
+  const calculatePrice = () => {
+    const cardPrice = prices[formData.cscsCardType] || 0;
+    const actionPrice = prices[formData.cardAction] || 0;
+    return cardPrice + actionPrice;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
-    try {
-      const response = await axios.post("http://localhost:3001/booked", {
-        formData,
-      });
-      console.log(response.data);
-    } catch (error) {
-      console.error("There was an error sending the email!", error);
-    }
+    const totalPrice = calculatePrice();
+    localStorage.setItem("formData", JSON.stringify(formData));
+    localStorage.setItem("totalPrice", totalPrice);
+    window.location.href = "/payment";
   };
 
   return (

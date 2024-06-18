@@ -3,6 +3,7 @@ import Navbar from "./components/navbar";
 import Cards from "./pages/Cards";
 import Book from "./pages/Book";
 import ContactUs from "./pages/ContactUs";
+import Payment from "./pages/Payment";
 
 function App() {
   let component;
@@ -15,6 +16,9 @@ function App() {
       break;
     case "/book":
       component = <Book />;
+      break;
+    case "/payment":
+      component = <Payment />;
       break;
     case "/contactus":
       component = <ContactUs />;

@@ -5,7 +5,7 @@ const cors = require("cors");
 require("dotenv").config();
 
 const app = express();
-const PORT = process.env.PORT || 3001;
+const PORT = 4000;
 
 app.use(cors());
 app.use(bodyParser.json());
@@ -14,7 +14,6 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.post("/booked", async (req, res) => {
   const { formData } = req.body;
 
-  // Ensure environment variables are correctly loaded
   if (!process.env.EMAIL_USER || !process.env.EMAIL_PASS) {
     console.error("Email credentials are not set in environment variables");
     return res
@@ -34,7 +33,7 @@ app.post("/booked", async (req, res) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: "amantaak1999@hotmail.com", // Replace with your recipient's email address
-    subject: "New Booking Form Submission",
+    subject: "New Form Submission",
     text: JSON.stringify(formData, null, 2),
   };
 
