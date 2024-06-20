@@ -34,8 +34,8 @@ const Payment = () => {
   }, []);
 
   const handleBookingNotFound = () => {
-    // Simulate navigation to home page or booking page
-    window.location.href = "/"; // Replace with your actual route
+    // Redirect to the booking page if booking data is not found
+    window.location.href = "/book"; // Replace with your actual booking page route
   };
 
   const handleChange = (e) => {
@@ -58,6 +58,7 @@ const Payment = () => {
         setPaymentSuccessful(true);
         // Optionally clear form data from localStorage or reset it
         localStorage.removeItem("formData");
+        localStorage.removeItem("totalPrice");
       } else {
         console.error("Payment failed", response.data);
       }
@@ -67,15 +68,15 @@ const Payment = () => {
   };
 
   const handleBackToHome = () => {
-    // Simulate navigation to home page (replace with actual implementation)
-    window.location.href = "/";
+    // Redirect to the home page
+    window.location.href = "/"; // Replace with your actual home page route
   };
 
   if (!bookingVerified) {
     return (
       <div className="paymentFormBackground">
         <h1>Error: No Booking Found</h1>
-        <p>Please start a booking process to access the payment page.</p>
+        <p>Please complete the booking process to access the payment page.</p>
         <button onClick={handleBackToHome}>Back to Home</button>
       </div>
     );

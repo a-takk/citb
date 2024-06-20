@@ -1,4 +1,5 @@
 import "../styles/home.css";
+import cscs from "../images/green-labourer-cscs-card.webp";
 import booking from "../images/booking.gif";
 
 export default function Home() {
@@ -15,7 +16,7 @@ export default function Home() {
       </div>
       <div className="introcontainer">
         <div className="introdiv1">
-          <img src={booking} className="introimage" alt="bookingimage" />
+          <img src={cscs} className="introimage" alt="introimage" />
         </div>
         <div className="introdiv2">
           <h1 className="introheading">Cards</h1>
@@ -25,7 +26,7 @@ export default function Home() {
             please go to the booking page in order to book for a test, either
             for a card or a test.
           </p>
-          <a className="button" href="/book">
+          <a className="button" href="/cards">
             Cards
           </a>
         </div>

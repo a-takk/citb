@@ -1,4 +1,4 @@
-/* CONTACT US CSS*/
+/* CONTACT US CSS */
 
 .contactbackground {
   display: flex;
@@ -15,7 +15,7 @@
   width: 70%;
   margin-top: 12.5vh;
   margin-bottom: 5vh;
-  border-radius: 15px;
+  border-radius: 20px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
 }
 
@@ -31,22 +31,17 @@
 
 .contactinput {
   margin-bottom: 20px;
-  width: 500px;
+  width: 100%;
 }
 
 .contactbutton {
   margin-top: 20px;
 }
 
-.contactcontainer {
-  display: flex;
-  justify-content: center;
-}
-
 .contactdetails {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 75px;
+  gap: 150px;
   margin-bottom: 7.5vh;
 }
 
@@ -55,10 +50,17 @@
 }
 
 .contactlocationheading {
-  color: #ffcc00;
   margin-bottom: 40px;
 }
 
+.map-container {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
 .map {
-  width: 70%;
+  border: 0;
+  height: 50vh;
+  width: 800px;
 }

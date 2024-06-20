@@ -109,12 +109,10 @@ function ContactUs() {
 
         <div className="contactlocation">
           <h1 className="contactlocationheading">Where are we located?</h1>
-          <div>
+          <div className="map-container">
             <iframe
               src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d77669.66003879122!2d-2.1504174299291776!3d52.53023390122326!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x4870978802d5650b%3A0x5da3785b1d85460f!2sWest%20Bromwich!5e0!3m2!1sen!2suk!4v1717939137085!5m2!1sen!2suk"
-              width="100%"
-              height="400"
-              style={{ border: 0 }}
+              className="map"
               allowFullScreen=""
               loading="lazy"
               referrerPolicy="no-referrer-when-downgrade"

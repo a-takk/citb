@@ -11,8 +11,8 @@
 form {
   background-color: #ffffff;
   padding: 40px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  width: 750px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  width: 70%;
   height: 100%;
   margin-top: 12.5vh;
   margin-bottom: 5vh;
@@ -112,4 +112,27 @@ label div select {
 .date {
   margin-top: 30px;
   margin-bottom: 30px;
+  display: flex;
+  flex-direction: column;
+}
+
+.date label {
+  font-size: 16px;
+  font-weight: bold;
+  margin-bottom: 8px;
+}
+
+.date input[type="date"] {
+  padding: 10px;
+  font-size: 14px;
+  border: 2px solid #ccc;
+  border-radius: 5px;
+  width: 100%;
+  max-width: 300px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.date input[type="date"]:focus {
+  border-color: #007bff;
+  outline: none;
 }

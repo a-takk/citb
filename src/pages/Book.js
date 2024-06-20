@@ -1,6 +1,5 @@
 import "../styles/book.css";
 import React, { useState } from "react";
-import axios from "axios";
 
 const Book = () => {
   const getCurrentDate = () => {
@@ -8,7 +7,7 @@ const Book = () => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    return `${day}-${month}-${year}`;
+    return `${year}-${month}-${day}`; // Adjusted to `YYYY-MM-DD` format for HTML date input
   };
 
   const prices = {
@@ -82,6 +81,7 @@ const Book = () => {
             name="cscsCardType"
             value={formData.cscsCardType}
             onChange={handleChange}
+            required
           >
             <option value="">Please select...</option>
             <option value="" disabled style={{ color: "#aaa" }}>
@@ -115,6 +115,7 @@ const Book = () => {
             value="New CSCS Card"
             checked={formData.cardAction === "New CSCS Card"}
             onChange={handleChange}
+            required
           />
           New CSCS Card (I do not have a CSCS Card)
         </label>
@@ -125,6 +126,7 @@ const Book = () => {
             value="Renewal of CSCS Card"
             checked={formData.cardAction === "Renewal of CSCS Card"}
             onChange={handleChange}
+            required
           />
           Renewal of CSCS Card (My CSCS Card has expired)
         </label>
@@ -273,6 +275,7 @@ const Book = () => {
             name="testLanguage"
             value={formData.testLanguage}
             onChange={handleChange}
+            required
           >
             <option value="">Please select one..</option>
             <option value="English">English</option>
@@ -288,6 +291,7 @@ const Book = () => {
             name="testDate"
             value={formData.testDate}
             onChange={handleChange}
+            required
           />
         </label>
         <label>
@@ -296,6 +300,7 @@ const Book = () => {
             name="testTime"
             value={formData.testTime}
             onChange={handleChange}
+            required
           >
             <option value="Any">Any</option>
             <option value="09:00">09:00</option>
@@ -397,6 +402,7 @@ const Book = () => {
             name="agree"
             checked={formData.agree}
             onChange={handleChange}
+            required
           />
           I agree to the terms and conditions, with acknowledgement of this
           booking is for the citb health, safety & environment test, as a
