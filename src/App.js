@@ -4,6 +4,7 @@ import Cards from "./pages/Cards";
 import Book from "./pages/Book";
 import ContactUs from "./pages/ContactUs";
 import Payment from "./pages/Payment";
+import Admin from "./pages/Admin";
 
 function App() {
   let component;
@@ -19,6 +20,9 @@ function App() {
       break;
     case "/payment":
       component = <Payment />;
+      break;
+    case "/admin":
+      component = <Admin />;
       break;
     case "/contactus":
       component = <ContactUs />;

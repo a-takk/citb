@@ -59,7 +59,6 @@ export default function Home() {
             height="100%"
             style={{
               border: "0",
-              borderRadius: "10px",
               width: "70%",
               height: "450px",
             }}

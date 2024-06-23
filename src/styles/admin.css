@@ -1,0 +1,44 @@
+.admin-container {
+  margin: 20px;
+  padding: 20px;
+  font-family: Arial, sans-serif;
+}
+
+.admin-title {
+  text-align: center;
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 20px;
+}
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+
+.admin-table-header {
+  background-color: #f4f4f4;
+  color: #333;
+  font-weight: bold;
+  padding: 10px;
+  text-align: left;
+  border-bottom: 2px solid #ccc;
+}
+
+.admin-table-row:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+.admin-table-row:nth-child(odd) {
+  background-color: #fff;
+}
+
+.admin-table-cell {
+  padding: 10px;
+  border-bottom: 1px solid #ccc;
+}
+
+.admin-table-cell:last-child {
+  text-align: center;
+}

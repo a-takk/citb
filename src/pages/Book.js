@@ -1,4 +1,4 @@
-import "../styles/book.css";
+import "../styles/book.css"; // Import CSS for styling
 import React, { useState } from "react";
 
 const Book = () => {
@@ -7,11 +7,11 @@ const Book = () => {
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
-    return `${year}-${month}-${day}`; // Adjusted to `YYYY-MM-DD` format for HTML date input
+    return `${day}-${month}-${year}`;
   };
 
   const prices = {
-    "Green Labourer CSCS Card": 30,
+    "Green Labour er CSCS Card": 30,
     "Blue Skilled CSCS Card": 50,
     "Gold Advanced CSCS Card": 70,
     "Red Provisional CSCS Card": 40,
@@ -21,6 +21,19 @@ const Book = () => {
     "White PQP CSCS Card": 120,
     "New CSCS Card": 20,
     "Renewal of CSCS Card": 15,
+    "Managers & Professionals Test (MAP)": 50,
+    "Supervisors Test (SPEC-SUP)": 50,
+    "Plumbing or Gas Test (SPEC-PLUM)": 50,
+    "Working at Heights Test (SPEC-WAH)": 50,
+    "Highway Works Test (SPEC-HIW)": 50,
+    "Demolition Test (SPEC-DEM)": 50,
+    "Domestic Heating and Plumbing HVACR Test (SPEC-HAPS)": 50,
+    "Ductwork HVACR Test (SPEC-DUCT)": 50,
+    "Pipefitting and Welding HVACR Test (SPEC-PFW)": 50,
+    "Refrigeration and Air Conditioning HVACR Test (SPEC-RAAC)": 50,
+    "Services and Facilities HVACR Test (SPEC-SAF)": 50,
+    "Lift and Escalators Test (SPEC-LAEE)": 50,
+    "Tunnelling Test (SPEC-TUNN)": 50,
   };
 
   const [formData, setFormData] = useState({
@@ -56,18 +69,32 @@ const Book = () => {
     });
   };
 
-  const calculatePrice = () => {
-    const cardPrice = prices[formData.cscsCardType] || 0;
-    const actionPrice = prices[formData.cardAction] || 0;
-    return cardPrice + actionPrice;
-  };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const totalPrice = calculatePrice();
-    localStorage.setItem("formData", JSON.stringify(formData));
-    localStorage.setItem("totalPrice", totalPrice);
-    window.location.href = "/payment";
+
+    try {
+      const response = await fetch("http://localhost:4000/booked", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ formData }),
+      });
+
+      if (response.ok) {
+        // Store form data in local storage
+        localStorage.setItem("bookingFormData", JSON.stringify(formData));
+
+        // Redirect to payment page
+        window.location.href = "/payment";
+      } else {
+        throw new Error("Failed to submit booking.");
+      }
+    } catch (error) {
+      console.error("Error submitting booking:", error);
+      // Handle error (e.g., show user a message)
+      alert("Failed to submit booking. Please try again later.");
+    }
   };
 
   return (
@@ -81,10 +108,9 @@ const Book = () => {
             name="cscsCardType"
             value={formData.cscsCardType}
             onChange={handleChange}
-            required
           >
             <option value="">Please select...</option>
-            <option value="" disabled style={{ color: "#aaa" }}>
+            <option value="" disabled selected>
               Operatives/Specialists
             </option>
             <option value="Green Labourer CSCS Card">
@@ -99,7 +125,7 @@ const Book = () => {
             <option value="Red Provisional CSCS Card">
               Red Provisional CSCS Card
             </option>
-            <option value="" disabled style={{ color: "#aaa" }}>
+            <option value="" disabled selected>
               Managers/Supervisors
             </option>
             <option value="Gold CSCS Card">Gold CSCS Card</option>
@@ -115,7 +141,6 @@ const Book = () => {
             value="New CSCS Card"
             checked={formData.cardAction === "New CSCS Card"}
             onChange={handleChange}
-            required
           />
           New CSCS Card (I do not have a CSCS Card)
         </label>
@@ -126,7 +151,6 @@ const Book = () => {
             value="Renewal of CSCS Card"
             checked={formData.cardAction === "Renewal of CSCS Card"}
             onChange={handleChange}
-            required
           />
           Renewal of CSCS Card (My CSCS Card has expired)
         </label>
@@ -207,22 +231,22 @@ const Book = () => {
             required
           >
             <option value="">Please select...</option>
-            <option value="" disabled style={{ color: "#aaa" }}>
+            <option value="" disabled selected>
               Operatives
             </option>
             <option value="Green Labourer CSCS Card">
-              Operatives Test (Green Labourer CSCS Card)
+              Green Labourer CSCS Card
             </option>
             <option value="Blue Skilled CSCS Card">
-              Operatives Test (Blue Skilled CSCS Card)
+              Blue Skilled CSCS Card
             </option>
             <option value="Gold Advanced CSCS Card">
-              Operatives Test (Gold Advanced CSCS Card)
+              Gold Advanced CSCS Card
             </option>
             <option value="Red Provisional CSCS Card">
-              Operatives Test (Red Provisional CSCS Card)
+              Red Provisional CSCS Card
             </option>
-            <option value="" disabled style={{ color: "#aaa" }}>
+            <option value="" disabled selected>
               Managers/Supervisors
             </option>
             <option value="Managers & Professionals Test (MAP)">
@@ -231,7 +255,7 @@ const Book = () => {
             <option value="Supervisors Test (SPEC-SUP)">
               Supervisors Test (SPEC-SUP)
             </option>
-            <option value="" disabled style={{ color: "#aaa" }}>
+            <option value="" disabled selected>
               Specialists
             </option>
             <option value="Plumbing or Gas Test (SPEC-PLUM)">
@@ -275,7 +299,6 @@ const Book = () => {
             name="testLanguage"
             value={formData.testLanguage}
             onChange={handleChange}
-            required
           >
             <option value="">Please select one..</option>
             <option value="English">English</option>
@@ -283,12 +306,12 @@ const Book = () => {
             <option value="Italian">Italian</option>
           </select>
         </label>
-
-        <label className="date">
+        <label>
           Date*:
           <input
             type="date"
             name="testDate"
+            className="date"
             value={formData.testDate}
             onChange={handleChange}
             required
@@ -300,7 +323,6 @@ const Book = () => {
             name="testTime"
             value={formData.testTime}
             onChange={handleChange}
-            required
           >
             <option value="Any">Any</option>
             <option value="09:00">09:00</option>
@@ -316,7 +338,6 @@ const Book = () => {
           </select>
         </label>
         <h2>Address</h2>
-
         <label>
           Enter Postcode:
           <input
@@ -402,13 +423,12 @@ const Book = () => {
             name="agree"
             checked={formData.agree}
             onChange={handleChange}
-            required
           />
           I agree to the terms and conditions, with acknowledgement of this
           booking is for the citb health, safety & environment test, as a
           requirement for cscs card eligibility.
         </label>
-        <button type="submit">Submit</button>
+        <button type="submit">Checkout</button>
       </form>
     </div>
   );
