@@ -91,22 +91,24 @@ const cscsCards = [
 const Cards = () => {
   return (
     <>
-      <div className="cardsintro">
-        <h1 className="cardsheading">CSCS Cards</h1>
-        <p className="cardstext">
-          This is the cards page, here you will find information on all of the
-          available CSCS cards and how to obtain them, you can book for these
-          specific cards depending on your NVQ status.
-        </p>
-      </div>
-      <div className="cardscontainer">
-        {cscsCards.map((card, index) => (
-          <div className="card" key={index}>
-            <img src={card.image} alt={card.title} className="cardimage" />
-            <h2>{card.title}</h2>
-            <p>{card.description}</p>
-          </div>
-        ))}
+      <div className="cardsbackground">
+        <div className="cardsintro">
+          <h1 className="cardsheading">CSCS Cards</h1>
+          <p className="cardstext">
+            This is the cards page, here you will find information on all of the
+            available CSCS cards and how to obtain them, you can book for these
+            specific cards depending on your NVQ status.
+          </p>
+        </div>
+        <div className="cardscontainer">
+          {cscsCards.map((card, index) => (
+            <div className="card" key={index}>
+              <img src={card.image} alt={card.title} className="cardimage" />
+              <h2>{card.title}</h2>
+              <p>{card.description}</p>
+            </div>
+          ))}
+        </div>
       </div>
     </>
   );

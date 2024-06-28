@@ -1,15 +1,21 @@
 import "../styles/home.css";
 import cscs from "../images/green-labourer-cscs-card.webp";
 import booking from "../images/booking.gif";
+import { useRef } from "react";
 
 export default function Home() {
+  const targetRef = useRef(null);
+
+  const handleScroll = () => {
+    targetRef.current.scrollIntoView();
+  };
   return (
     <>
       <div className="herocontainer">
         <div className="herodiv">
           <h1 className="heroheading">Welcome to CITB Certify</h1>
           <p className="herotext">Where you can book for your CITB test.</p>
-          <a className="herobutton" href="#introcontainer">
+          <a className="herobutton" onClick={handleScroll}>
             Scroll Down
           </a>
         </div>
@@ -18,7 +24,7 @@ export default function Home() {
         <div className="introdiv1">
           <img src={cscs} className="introimage" alt="introimage" />
         </div>
-        <div className="introdiv2">
+        <div className="introdiv2" ref={targetRef}>
           <h1 className="introheading">Cards</h1>
           <p className="introtext">
             You can access all the current CSCS cards that you can obtain with
@@ -36,10 +42,9 @@ export default function Home() {
           <h1 className="bookingheading">Booking</h1>
           <p className="bookingtext">
             Once you have figured out exactly what test or card you need, please
-            click on the link to head to the booking page, there you will be
-            able to fill out a form to pick which CSCS card you need, if it is a
-            renewal or a new card and what kind of test you need, you must fill
-            out all the details so we know exactly who you are and what you
+            click on the link to head to the booking page, you will be able to
+            fill out a form to pick which CSCS card or test you need, you must
+            fill out all the details so we know exactly who you are and what you
             want.
           </p>
           <a className="button" href="/book">

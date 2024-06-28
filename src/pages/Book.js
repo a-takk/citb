@@ -1,5 +1,8 @@
 import "../styles/book.css"; // Import CSS for styling
 import React, { useState } from "react";
+import { loadStripe } from "@stripe/stripe-js";
+
+const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
   const getCurrentDate = () => {
@@ -11,14 +14,14 @@ const Book = () => {
   };
 
   const prices = {
-    "Green Labour er CSCS Card": 30,
+    "Green Labourer CSCS Card": 30,
     "Blue Skilled CSCS Card": 50,
     "Gold Advanced CSCS Card": 70,
     "Red Provisional CSCS Card": 40,
     "Gold CSCS Card": 90,
     "Black CSCS Card": 100,
     "White AQP CSCS Card": 110,
-    "White PQP CSCS Card": 120,
+    "White PQP CSCS Card": 20,
     "New CSCS Card": 20,
     "Renewal of CSCS Card": 15,
     "Managers & Professionals Test (MAP)": 50,
@@ -72,34 +75,46 @@ const Book = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+    const stripe = await stripePromise;
+
+    const selectedTest = formData.test;
+    const price = prices[selectedTest];
+
     try {
-      const response = await fetch("http://localhost:4000/booked", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ formData }),
+      const response = await fetch(
+        "http://localhost:4000/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ test: selectedTest, price, formData }),
+        }
+      );
+
+      if (!response.ok) {
+        const errorMessage = await response.text();
+        throw new Error(`Server responded with error: ${errorMessage}`);
+      }
+      const session = await response.json();
+      localStorage.setItem("bookingFormData", JSON.stringify(formData));
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: session.id,
       });
 
-      if (response.ok) {
-        // Store form data in local storage
-        localStorage.setItem("bookingFormData", JSON.stringify(formData));
-
-        // Redirect to payment page
-        window.location.href = "/payment";
-      } else {
-        throw new Error("Failed to submit booking.");
+      if (error) {
+        console.error("Stripe Checkout error:", error);
       }
     } catch (error) {
-      console.error("Error submitting booking:", error);
-      // Handle error (e.g., show user a message)
-      alert("Failed to submit booking. Please try again later.");
+      console.error("Error creating checkout session:", error.message);
+      // Handle error (e.g., display error message to user)
+      alert("Failed to start payment. Please try again later.");
     }
   };
 
   return (
     <div className="formbackground">
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="form">
         <h1>Start your booking</h1>
         <h2>Your CSCS Card</h2>
         <label>
@@ -166,7 +181,7 @@ const Book = () => {
           </select>
         </label>
         <label>
-          First Name*:
+          First Name:
           <input
             type="text"
             name="firstName"
@@ -176,7 +191,7 @@ const Book = () => {
           />
         </label>
         <label>
-          Surname*:
+          Surname:
           <input
             type="text"
             name="surname"
@@ -186,7 +201,7 @@ const Book = () => {
           />
         </label>
         <label>
-          Date of Birth *:
+          Date of Birth:
           <div>
             <input
               type="text"
@@ -215,7 +230,7 @@ const Book = () => {
           </div>
         </label>
         <label>
-          Gender*:
+          Gender:
           <select name="gender" value={formData.gender} onChange={handleChange}>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
@@ -223,7 +238,7 @@ const Book = () => {
         </label>
         <h2>Test Type, Date & Location</h2>
         <label>
-          Test*:
+          Test:
           <select
             name="test"
             value={formData.test}
@@ -294,7 +309,7 @@ const Book = () => {
           </select>
         </label>
         <label>
-          Test Language*:
+          Test Language:
           <select
             name="testLanguage"
             value={formData.testLanguage}
@@ -307,7 +322,7 @@ const Book = () => {
           </select>
         </label>
         <label>
-          Date*:
+          Date:
           <input
             type="date"
             name="testDate"
@@ -318,7 +333,7 @@ const Book = () => {
           />
         </label>
         <label>
-          Time*:
+          Time:
           <select
             name="testTime"
             value={formData.testTime}
@@ -348,7 +363,7 @@ const Book = () => {
           />
         </label>
         <label>
-          Address*:
+          Address:
           <input
             type="text"
             name="address"
@@ -358,7 +373,7 @@ const Book = () => {
           />
         </label>
         <label>
-          Town/City*:
+          Town/City:
           <input
             type="text"
             name="town"
@@ -377,7 +392,7 @@ const Book = () => {
           />
         </label>
         <label>
-          Country*:
+          Country:
           <input
             type="text"
             name="country"
@@ -388,7 +403,7 @@ const Book = () => {
         </label>
         <h2>Contact Details</h2>
         <label>
-          Mobile Number*:
+          Mobile Number:
           <input
             type="text"
             name="mobileNumber"
@@ -398,7 +413,7 @@ const Book = () => {
           />
         </label>
         <label>
-          Email*:
+          Email:
           <input
             type="email"
             name="email"
@@ -408,7 +423,7 @@ const Book = () => {
           />
         </label>
         <label>
-          Confirm Email*:
+          Confirm Email:
           <input
             type="email"
             name="confirmEmail"

@@ -1,9 +1,14 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
-const bodyParser = require("body-parser");
+const bodyParser = require("body-parser"); // Add this line
 const cors = require("cors");
 const mysql = require("mysql");
 const dotenv = require("dotenv");
+const stripe = require("stripe")(
+  "sk_test_51E9RKSAwq1wpzpcjPFkYP9l7FmCz9MxpndHEnqs134t5xYB9lj8EztQ9QGhEr0ivHNTmpjvXFxc1dBr424kqgr2M00CqsMoCQh"
+);
+const endpointSecret =
+  "whsec_5af4f39bda271aa46c03a902186e2f5b7dd388fd0df1c98a0a956a538af6d026";
 
 dotenv.config();
 
@@ -11,6 +16,49 @@ const app = express();
 const PORT = 4000;
 
 app.use(cors());
+
+// Stripe webhook endpoint to listen for events
+app.post(
+  "/webhook",
+  express.raw({ type: "application/json" }),
+  (request, response) => {
+    const sig = request.headers["stripe-signature"];
+
+    let event;
+
+    try {
+      event = stripe.webhooks.constructEvent(request.body, sig, endpointSecret);
+    } catch (err) {
+      console.log(`⚠️  Webhook signature verification failed.`, err.message);
+      return response.status(400).send(`Webhook Error: ${err.message}`);
+    }
+
+    // Handle the event
+    if (event.type === "checkout.session.completed") {
+      const session = event.data.object;
+
+      // Log session data for debugging
+      console.log("Checkout session completed:", session);
+
+      // Retrieve the customer email and booking details from the session metadata
+      const email = session.customer_details.email;
+      const formData = session.metadata;
+
+      // Log email and formData for debugging
+      console.log("Customer email:", email);
+      console.log("Form data:", formData);
+
+      // Send confirmation email
+      sendBookingEmail(email, formData)
+        .then(() => console.log(`Confirmation email sent to ${email}`))
+        .catch((error) => console.error(`Error sending email:`, error));
+    }
+
+    response.status(200).send("Event received");
+  }
+);
+
+// Apply body-parser middleware after webhook route
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -34,7 +82,7 @@ pool.getConnection((err, connection) => {
 });
 
 // Function to send confirmation email
-const sendConfirmationEmail = async (email, formData) => {
+const sendContactEmail = async (email, formData) => {
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {
@@ -46,8 +94,8 @@ const sendConfirmationEmail = async (email, formData) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: "Booking Confirmation",
-    text: `Thank you for your booking. Your booking details:\n\n${JSON.stringify(
+    subject: "CITB: Email sent from customer",
+    text: `Thank you for contacting us. Your message details:\n\n${JSON.stringify(
       formData,
       null,
       2
@@ -57,104 +105,62 @@ const sendConfirmationEmail = async (email, formData) => {
   await transporter.sendMail(mailOptions);
 };
 
-// Endpoint to handle form submission
-app.post("/booked", async (req, res) => {
-  const formData = req.body.formData;
+const sendBookingEmail = async (email, formData) => {
+  const transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+  });
 
-  if (!formData) {
-    res.status(400).send("Form data is missing");
-    return;
-  }
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "CITB Booking Confirmation",
+    text: `Customer has booked for a CITB test, their booking details are:\n\n${JSON.stringify(
+      formData,
+      null,
+      2
+    )}`,
+  };
 
-  const {
-    cscsCardType,
-    cardAction,
-    title,
-    firstName,
-    surname,
-    dateOfBirthDay,
-    dateOfBirthMonth,
-    dateOfBirthYear,
-    gender,
-    test,
-    testLanguage,
-    testDate,
-    testTime,
-    address,
-    town,
-    county,
-    country,
-    postcode,
-    mobileNumber,
-    email,
-    agree,
-  } = formData;
+  await transporter.sendMail(mailOptions);
+};
 
-  const sql = `
-    INSERT INTO booking (
-      cscsCardType, cardAction, title, firstName, surname, 
-      dateOfBirthDay, dateOfBirthMonth, dateOfBirthYear, gender, 
-      test, testLanguage, testDate, testTime, address, town, 
-      county, country, postcode, mobileNumber, email, agree
-    )
-    VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-  `;
-
-  const values = [
-    cscsCardType,
-    cardAction,
-    title,
-    firstName,
-    surname,
-    dateOfBirthDay,
-    dateOfBirthMonth,
-    dateOfBirthYear,
-    gender,
-    test,
-    testLanguage,
-    testDate,
-    testTime,
-    address,
-    town,
-    county,
-    country,
-    postcode,
-    mobileNumber,
-    email,
-    agree,
-  ];
+// Endpoint to create Stripe checkout session
+app.post("/create-checkout-session", async (req, res) => {
+  const { test, price, formData } = req.body; // Ensure formData is received in the request body
 
   try {
-    // Execute MySQL query
-    console.log("Attempting to insert into MySQL...");
-    pool.query(sql, values, async (error) => {
-      if (error) {
-        console.error("Error executing query:", error);
-        res.status(500).send("Error executing query: " + error.sqlMessage);
-        return;
-      }
-
-      console.log("Insert into MySQL successful!");
-
-      // Send confirmation email
-      try {
-        console.log("Sending confirmation email...");
-        await sendConfirmationEmail(email, formData);
-        console.log("Confirmation email sent!");
-        res
-          .status(200)
-          .send("Booking submitted successfully and confirmation email sent.");
-      } catch (emailError) {
-        console.error("Error sending email:", emailError);
-        res.status(500).send("Error sending confirmation email");
-      }
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "gbp",
+            product_data: {
+              name: test,
+            },
+            unit_amount: price * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: "http://localhost:3000/success",
+      cancel_url: "http://localhost:3000/failure",
+      metadata: formData, // Add formData as metadata
     });
+
+    res.json({ id: session.id });
   } catch (error) {
-    console.error("Error processing request:", error);
-    res.status(500).send("Error processing request");
+    console.error("Error creating checkout session:", error);
+    res.status(500).json({ error: "Failed to create checkout session" });
   }
 });
 
+// Admin endpoint to fetch bookings
 app.get("/admin", (req, res) => {
   const query = `
     SELECT 
@@ -170,9 +176,21 @@ app.get("/admin", (req, res) => {
       console.error("Error fetching bookings:", error);
       res.status(500).send("Error fetching bookings");
     } else {
-      res.json(results); // results contains the rows in MySQL
+      res.json(results);
     }
   });
+});
+
+// New endpoint to send test email
+app.post("/email-sent", async (req, res) => {
+  const { email, formData } = req.body;
+  try {
+    await sendContactEmail(email, formData);
+    res.status(200).send("Email sent successfully");
+  } catch (error) {
+    console.error("Error sending email:", error);
+    res.status(500).send("Failed to send email");
+  }
 });
 
 app.listen(PORT, () => {

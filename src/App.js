@@ -3,7 +3,8 @@ import Navbar from "./components/navbar";
 import Cards from "./pages/Cards";
 import Book from "./pages/Book";
 import ContactUs from "./pages/ContactUs";
-import Payment from "./pages/Payment";
+import Success from "./pages/Success";
+import Failed from "./pages/Failed";
 import Admin from "./pages/Admin";
 
 function App() {
@@ -18,8 +19,11 @@ function App() {
     case "/book":
       component = <Book />;
       break;
-    case "/payment":
-      component = <Payment />;
+    case "/success":
+      component = <Success />;
+      break;
+    case "/failure":
+      component = <Failed />;
       break;
     case "/admin":
       component = <Admin />;

@@ -1,22 +1,36 @@
 /* BOOK CSS */
 
 .formbackground {
-  height: 100%;
-  margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.formbackground::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("../images/constructionbackground.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px); /* Apply blur effect */
+  z-index: -1; /* Ensure the blurred background is behind the form */
 }
 
 form {
   background-color: #ffffff;
   padding: 40px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-  width: 70%;
-  height: 100%;
+  width: 100%;
+  max-width: 800px;
   margin-top: 12.5vh;
   margin-bottom: 5vh;
   border-radius: 20px;
+  position: relative; /* Ensure the form content is above the blurred background */
+  z-index: 1; /* Ensure the form is above the pseudo-element */
 }
 
 h1,
@@ -116,10 +130,41 @@ label div select {
   border: 1px solid #ccc;
   border-radius: 4px;
   font-size: 14px;
-  width: 200px;
+  width: 100%;
+  max-width: 200px;
 }
 
 .date:focus {
   outline: none;
   border-color: dodgerblue;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  form {
+    width: 90%;
+    padding: 30px;
+  }
+}
+
+@media (max-width: 768px) {
+  form {
+    width: 90%;
+    padding: 20px;
+  }
+}
+
+@media (max-width: 576px) {
+  form {
+    width: 90%;
+    padding: 15px;
+  }
+
+  label[for="address"],
+  label[for="town"],
+  label[for="county"],
+  label[for="postcode"] {
+    width: 100%;
+    margin-left: 0;
+  }
 }
