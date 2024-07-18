@@ -1,0 +1,324 @@
+/* HOME CSS */
+body {
+  background: #f7f7f7;
+  margin: 0;
+  width: 100%;
+  background-color: #37474f;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+.herocontainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  background-image: url("../images/constructionbackground.jpeg");
+  background-size: cover;
+  background-repeat: no-repeat;
+  background-position: center;
+  overflow: auto;
+}
+
+.herodiv {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.heroheading {
+  color: #263238;
+  font-size: 60px;
+  margin: 0;
+  text-align: center;
+  margin-top: 90px;
+}
+
+.herotext {
+  color: #2f2f2f;
+  text-align: center;
+  font-weight: bold;
+  font-size: 18px;
+  margin-top: 60px;
+  margin-bottom: 60px;
+}
+
+.heroimage {
+  max-width: 500px;
+  height: auto;
+  border-radius: 20px;
+}
+
+.herobutton {
+  background-color: #2f2f2f;
+  width: 110px;
+  height: 35px;
+  color: #ffcc00;
+  border-radius: 15px;
+  font-size: 13px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 200px;
+  cursor: pointer;
+}
+
+.introcontainer {
+  display: flex;
+  background-color: #37474f;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  overflow: auto;
+}
+
+.introdiv1,
+.introdiv2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  padding: 20px;
+}
+
+.introdiv2 {
+  flex-direction: column;
+}
+
+.introheading {
+  color: #ffcc00;
+  font-size: 60px;
+  margin: 0;
+  text-align: center;
+}
+
+.introtext {
+  color: #ffffff;
+  width: 90%;
+  margin-top: 50px;
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.introimage {
+  max-width: 70%;
+  height: auto;
+  border-radius: 20px;
+}
+
+.bookingcontainer {
+  background-color: #263238;
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  overflow: auto;
+}
+
+.bookingdiv2,
+.bookingdiv1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  padding: 20px;
+}
+
+.bookingdiv1 {
+  flex-direction: column;
+}
+
+.bookingheading {
+  color: #ffcc00;
+  font-size: 60px;
+  margin: 0;
+  text-align: center;
+}
+
+.bookingtext {
+  color: #ffffff;
+  width: 90%;
+  margin-top: 50px;
+  margin-bottom: 60px;
+  text-align: center;
+}
+
+.bookingimage {
+  max-width: 70%;
+  height: auto;
+  border-radius: 20px;
+}
+
+.locationcontainer {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #37474f;
+  overflow: auto;
+}
+
+.locationheading {
+  color: #ffcc00;
+  font-size: 60px;
+  text-align: center;
+  margin-top: 50px;
+  margin-bottom: 20px;
+}
+
+.location {
+  width: 100%;
+  max-width: 1200px;
+  margin-top: 20px;
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+}
+
+/* Responsive Home Sections */
+* {
+  box-sizing: border-box;
+}
+@media (max-width: 992px) {
+  .herocontainer {
+    height: auto;
+    padding-top: 100px;
+    padding-bottom: 100px;
+  }
+
+  .heroheading {
+    font-size: 50px;
+  }
+
+  .herotext {
+    font-size: 16px;
+    margin-top: 30px;
+  }
+
+  .introcontainer {
+    flex-direction: column-reverse;
+  }
+  .bookingcontainer {
+    flex-direction: column;
+  }
+
+  .introheading,
+  .bookingheading {
+    font-size: 50px;
+  }
+
+  .introtext,
+  .bookingtext {
+    width: 70%;
+    margin-top: 30px;
+    margin-bottom: 30px;
+  }
+
+  .introdiv1,
+  .introdiv2,
+  .bookingdiv1,
+  .bookingdiv2 {
+    width: 100%;
+    margin: 0;
+  }
+
+  .introimage {
+    width: 50%;
+    height: auto;
+  }
+  .bookingimage {
+    width: 50%;
+    height: auto;
+  }
+
+  .locationheading {
+    font-size: 50px;
+    margin-top: 50px;
+    margin-bottom: 50px;
+  }
+
+  .location {
+    height: auto;
+  }
+}
+
+@media (max-width: 768px) {
+  .herodiv {
+    width: 100%;
+    text-align: center;
+  }
+
+  .heroheading {
+    font-size: 40px;
+  }
+
+  .herotext {
+    font-size: 16px;
+  }
+
+  .herobutton {
+    margin-bottom: 250px;
+  }
+
+  .introheading,
+  .bookingheading,
+  .locationheading {
+    font-size: 30px;
+  }
+
+  .introtext,
+  .bookingtext {
+    width: 90%;
+  }
+
+  .location {
+    height: auto;
+  }
+}
+
+@media (max-width: 576px) {
+  .herocontainer {
+    padding-top: 80px;
+    padding-bottom: 80px;
+  }
+
+  .herodiv {
+    width: 70%;
+  }
+
+  .heroheading {
+    font-size: 40px;
+  }
+
+  .herotext {
+    font-size: 14px;
+    margin-top: 20px;
+    margin-bottom: 20px;
+  }
+
+  .introheading,
+  .bookingheading {
+    font-size: 25px;
+    margin-top: 60px;
+    margin-bottom: 10px;
+  }
+
+  .locationheading {
+    font-size: 25px;
+    margin-bottom: 10px;
+  }
+
+  .introtext,
+  .bookingtext {
+    width: 80%;
+    margin-top: 40px;
+    margin-bottom: 40px;
+  }
+}

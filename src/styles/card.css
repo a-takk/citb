@@ -1,0 +1,118 @@
+/* CARD PAGE CSS */
+
+.cardsintro {
+  background-color: white;
+  margin: auto;
+  display: flex;
+  flex-direction: column;
+  margin-top: 12.5vh;
+  margin-bottom: 5vh;
+  width: 90%;
+  max-width: 800px;
+  height: 250px;
+  border-radius: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  justify-content: center;
+  align-items: center;
+  position: relative; /* Add this to ensure it is positioned relative to the viewport */
+}
+
+.cardsintro::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("../images/constructionbackground.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px);
+  z-index: -1;
+}
+
+.cardsheading {
+  margin-top: 100px;
+}
+
+.cardstext {
+  text-align: center;
+  width: 70%;
+  margin: auto;
+  margin-bottom: 120px;
+}
+
+.cardscontainer {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  justify-items: center; /* Add this to center the cards within the grid */
+}
+
+.card {
+  background-color: #ffffff;
+  padding: 20px;
+  border-radius: 10px;
+  height: 450px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card h2 {
+  color: #263238;
+  font-size: 1.5rem;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 20px;
+}
+
+.card p {
+  color: #333;
+  font-size: 1rem;
+  text-align: center;
+  margin: 0;
+  margin-bottom: 150px;
+}
+
+.cardimage {
+  max-width: 70%;
+  border-radius: 8px;
+  margin: auto;
+  margin-top: 10px;
+  margin-bottom: 30px;
+}
+
+/* Media Queries for Responsive Design */
+@media (max-width: 1024px) {
+  .cardscontainer {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 768px) {
+  .cardsintro {
+    width: 80%;
+  }
+  .cardscontainer {
+    grid-template-columns: 1fr;
+  }
+
+  .card {
+    width: 90%;
+    height: 450px;
+  }
+
+  .card h2 {
+    margin-bottom: 50px;
+  }
+
+  .cardimage {
+    max-width: 50%;
+  }
+}

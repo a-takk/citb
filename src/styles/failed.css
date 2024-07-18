@@ -1,0 +1,65 @@
+.failedBackground {
+  height: 90vh;
+  margin: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 10vh;
+  margin-bottom: 10vh;
+}
+
+.failedBackground::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("../images/constructionbackground.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px);
+  z-index: -1;
+}
+
+.failed {
+  background-color: #ffffff;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 500px;
+  border-radius: 20px;
+}
+
+.failed h1 {
+  color: #37474f;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.failed h2 {
+  color: #333;
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 30px;
+}
+
+.failed a {
+  background-color: #ffcc00;
+  color: black;
+  border: none;
+  padding: 15px;
+  border-radius: 5px;
+  height: 50px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px;
+  display: block;
+  text-align: center;
+  text-decoration: none;
+}
+
+.failed a:hover {
+  background-color: #e6b800;
+}

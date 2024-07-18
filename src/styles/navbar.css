@@ -1,0 +1,109 @@
+/* NAVBAR CSS */
+.navbar {
+  position: fixed;
+  width: 100%;
+  padding-left: 10px;
+  background-color: #2f2f2f;
+  background-color: rgba(47, 47, 47, 0.95);
+  z-index: 1000;
+  top: 0;
+  height: 60px;
+}
+
+.navcontainer {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 100%;
+}
+
+.navlogo {
+  font-size: 1.75rem;
+  color: #f0f0f0;
+  text-decoration: none;
+  display: flex;
+  align-items: center;
+  font-weight: bold;
+  white-space: nowrap;
+}
+
+.hamburger {
+  display: none;
+  flex-direction: column;
+  cursor: pointer;
+  margin-right: 10px;
+}
+
+.bar {
+  height: 3px;
+  width: 25px;
+  background-color: #fff;
+  margin: 4px 0;
+  transition: 0.4s;
+}
+
+.formbuttons {
+  display: flex;
+  gap: 10px;
+  margin-right: 20px;
+  white-space: nowrap;
+}
+
+.formbuttons.active {
+  display: block;
+  position: absolute;
+  top: 60px;
+  right: 0;
+  background-color: #2f2f2f;
+  background-color: rgba(47, 47, 47, 0.95);
+  width: 100%;
+  text-align: center;
+}
+
+.button {
+  background-color: #ffcc00;
+  width: 110px;
+  height: 35px;
+  color: black;
+  border-radius: 15px;
+  font-size: 13px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+/* Responsive Navbar */
+@media (max-width: 768px) {
+  .formbuttons {
+    display: none;
+    flex-direction: column;
+    width: 100%;
+    padding: 0;
+    margin: 0;
+  }
+  .navlogo {
+    font-size: 1.75rem;
+    color: #f0f0f0;
+    text-decoration: none;
+    display: flex;
+    margin: auto;
+  }
+
+  .hamburger {
+    margin-left: -30px;
+    display: flex;
+  }
+  .button {
+    margin-top: 10px !important;
+    margin-bottom: 10px !important;
+    margin: auto;
+    width: 30%;
+  }
+}
+
+@media (max-width: 576px) {
+  .button {
+    width: 30%;
+  }
+}
