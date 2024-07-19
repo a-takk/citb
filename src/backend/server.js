@@ -22,9 +22,8 @@ app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Register client routes and middleware
 const CLIENT_BUILD_DIR = path.join(__dirname, "../client/build");
-// MySQL Connection Pooling
+
 const pool = mysql.createPool({
   host: host,
   user: user,

@@ -1,7 +1,6 @@
 import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import axios from "axios";
 
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
@@ -52,23 +51,36 @@ const Book = () => {
 
   const fetchAvailableSlots = async (date) => {
     try {
-      // Fetching data from the backend API
-      const response = await axios.get(
+      const response = await fetch(
         `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`
       );
 
-      // Check if the response is OK (status code 200-299)
-      if (response.status !== 200) {
+      // Log the response content type
+      console.log(
+        "Response Content-Type:",
+        response.headers.get("Content-Type")
+      );
+
+      if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      const responseData = response.data;
-      console.log("Available slots fetched:", responseData);
-      setAvailableSlots(
-        responseData.map((slot) => ({
-          time: slot.testTime.substring(0, 5), // Format time to HH:MM
-        }))
-      );
+      // Check if the response is JSON
+      if (response.headers.get("Content-Type")?.includes("application/json")) {
+        const responseData = await response.json();
+        console.log("Available slots fetched:", responseData);
+        setAvailableSlots(
+          responseData.map((slot) => ({
+            time: slot.testTime.substring(0, 5), // Format time to HH:MM
+          }))
+        );
+      } else {
+        const responseText = await response.text();
+        console.error(
+          "Unexpected response format. Response text:",
+          responseText
+        );
+      }
     } catch (error) {
       console.error("Error fetching available slots:", error);
     }
@@ -77,15 +89,22 @@ const Book = () => {
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await axios.get(
+        const response = await fetch(
           "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
         );
 
+        // Log the response content type
+        console.log(
+          "Response Content-Type:",
+          response.headers.get("Content-Type")
+        );
+
         if (
-          response.status === 200 &&
-          response.headers["content-type"]?.includes("application/json")
+          response.ok &&
+          response.headers.get("Content-Type")?.includes("application/json")
         ) {
-          const data = response.data;
+          const data = await response.json();
+          console.log("Prices fetched:", data);
           if (Array.isArray(data)) {
             const priceMap = data.reduce((acc, item) => {
               if (item && item.testName && item.price !== undefined) {
@@ -98,8 +117,10 @@ const Book = () => {
             console.error("Unexpected data format for prices:", data);
           }
         } else {
+          const responseText = await response.text();
           console.error(
-            `Expected JSON but got ${response.headers["content-type"]}. Response: ${response.data}`
+            "Unexpected response format. Response text:",
+            responseText
           );
         }
       } catch (error) {
@@ -138,21 +159,18 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await axios.post(
+      const response = await fetch(
         "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
         {
-          test: selectedTest,
-          price,
-          formData,
-        },
-        {
+          method: "POST",
           headers: {
             "Content-Type": "application/json",
           },
+          body: JSON.stringify({ test: selectedTest, price, formData }),
         }
       );
 
-      const session = response.data;
+      const session = await response.json();
 
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
@@ -200,33 +218,33 @@ const Book = () => {
             <option value="Red Provisional CSCS Card">
               Red Provisional CSCS Card
             </option>
+            <option value="Gold CSCS Card">Gold CSCS Card</option>
+            <option value="Black CSCS Card">Black CSCS Card</option>
+            <option value="White AQP CSCS Card">White AQP CSCS Card</option>
+            <option value="White PQP CSCS Card">White PQP CSCS Card</option>
           </select>
         </label>
-
         <label>
-          Action required:
-          <select
+          <input
+            type="radio"
             name="cardAction"
-            value={formData.cardAction}
+            value="New CSCS Card"
+            checked={formData.cardAction === "New CSCS Card"}
             onChange={handleChange}
-          >
-            <option value="" disabled>
-              Please select...
-            </option>
-            <option value="Applying for new CSCS Card">
-              Applying for new CSCS Card
-            </option>
-            <option value="Renewing my CSCS Card">Renewing my CSCS Card</option>
-            <option value="Reapplying for my CSCS Card">
-              Reapplying for my CSCS Card
-            </option>
-            <option value="Replacing my CSCS Card">
-              Replacing my CSCS Card
-            </option>
-          </select>
+          />
+          New CSCS Card (I do not have a CSCS Card)
         </label>
-
-        <h2>About you</h2>
+        <label>
+          <input
+            type="radio"
+            name="cardAction"
+            value="Renewal of CSCS Card"
+            checked={formData.cardAction === "Renewal of CSCS Card"}
+            onChange={handleChange}
+          />
+          Renewal of CSCS Card (My CSCS Card has expired)
+        </label>
+        <h2>Who's Taking The Test</h2>
         <label>
           Title:
           <select name="title" value={formData.title} onChange={handleChange}>
@@ -257,119 +275,115 @@ const Book = () => {
             required
           />
         </label>
-
-        <label>Date of Birth:</label>
-        <div className="date-of-birth">
-          <select
-            name="dateOfBirthDay"
-            value={formData.dateOfBirthDay}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Day</option>
-            {Array.from({ length: 31 }, (_, i) => i + 1).map((day) => (
-              <option key={day} value={String(day).padStart(2, "0")}>
-                {day}
-              </option>
-            ))}
-          </select>
-          <select
-            name="dateOfBirthMonth"
-            value={formData.dateOfBirthMonth}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Month</option>
-            {Array.from({ length: 12 }, (_, i) => i + 1).map((month) => (
-              <option key={month} value={String(month).padStart(2, "0")}>
-                {month}
-              </option>
-            ))}
-          </select>
-          <select
-            name="dateOfBirthYear"
-            value={formData.dateOfBirthYear}
-            onChange={handleChange}
-            required
-          >
-            <option value="">Year</option>
-            {Array.from(
-              { length: 100 },
-              (_, i) => new Date().getFullYear() - i
-            ).map((year) => (
-              <option key={year} value={year}>
-                {year}
-              </option>
-            ))}
-          </select>
-        </div>
-
+        <label>
+          Date of Birth:
+          <div>
+            <input
+              type="text"
+              name="dateOfBirthDay"
+              value={formData.dateOfBirthDay}
+              onChange={handleChange}
+              placeholder="DD"
+              maxLength="2"
+              required
+            />
+            <input
+              type="text"
+              name="dateOfBirthMonth"
+              value={formData.dateOfBirthMonth}
+              onChange={handleChange}
+              placeholder="MM"
+              maxLength="2"
+              required
+            />
+            <input
+              type="text"
+              name="dateOfBirthYear"
+              value={formData.dateOfBirthYear}
+              onChange={handleChange}
+              placeholder="YYYY"
+              maxLength="4"
+              required
+            />
+          </div>
+        </label>
         <label>
           Gender:
           <select name="gender" value={formData.gender} onChange={handleChange}>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
-            <option value="Other">Other</option>
+            <option value="Non-binary">Non-binary</option>
+            <option value="Prefer not to say">Prefer not to say</option>
           </select>
         </label>
-
-        <h2>Your Test</h2>
+        <h2>Select Your Test</h2>
         <label>
-          Which CSCS test do you need to book?:
+          Test:
           <select name="test" value={formData.test} onChange={handleChange}>
             <option value="" disabled>
               Please select...
             </option>
-            <option value="Operatives">Operatives</option>
-            <option value="Specialist">Specialist</option>
-            <option value="Managers and Professionals">
-              Managers and Professionals
-            </option>
+            {Object.keys(prices).map((key) => (
+              <option key={key} value={key}>
+                {`${key} (£${prices[key]})`}
+              </option>
+            ))}
           </select>
         </label>
-
         <label>
-          Select a language for your test:
+          Language:
           <select
             name="testLanguage"
             value={formData.testLanguage}
             onChange={handleChange}
           >
+            <option value="" disabled>
+              Please select...
+            </option>
             <option value="English">English</option>
-            <option value="Welsh">Welsh</option>
+            <option value="Punjabi">Punjabi</option>
+            <option value="Italian">Italian</option>
           </select>
         </label>
-
         <label>
-          Select a test date:
+          Date:
           <input
             type="date"
             name="testDate"
+            className="date"
             value={formData.testDate}
             onChange={handleDateChange}
-            required
             min={getCurrentDate()}
+            required
           />
         </label>
-
         <label>
-          Select a test time:
+          Time:
           <select
             name="testTime"
             value={formData.testTime}
             onChange={handleChange}
-            required
           >
-            <option value="">Please select...</option>
-            {availableSlots.map((slot, index) => (
-              <option key={index} value={slot.time}>
+            <option value="" disabled>
+              Please select...
+            </option>
+            {availableSlots.map((slot) => (
+              <option key={slot.time} value={slot.time}>
                 {slot.time}
               </option>
             ))}
           </select>
         </label>
-
-        <h2>Contact Information</h2>
+        <h2>Address Details</h2>
+        <label>
+          Postcode:
+          <input
+            type="text"
+            name="postcode"
+            value={formData.postcode}
+            onChange={handleChange}
+          />
+        </label>
         <label>
           Address:
           <input
@@ -381,7 +395,7 @@ const Book = () => {
           />
         </label>
         <label>
-          Town:
+          Town/City:
           <input
             type="text"
             name="town"
@@ -406,23 +420,14 @@ const Book = () => {
             name="country"
             value={formData.country}
             onChange={handleChange}
-            required
+            readOnly
           />
         </label>
-        <label>
-          Postcode:
-          <input
-            type="text"
-            name="postcode"
-            value={formData.postcode}
-            onChange={handleChange}
-            required
-          />
-        </label>
+        <h2>Contact Details</h2>
         <label>
           Mobile Number:
           <input
-            type="tel"
+            type="text"
             name="mobileNumber"
             value={formData.mobileNumber}
             onChange={handleChange}
@@ -449,19 +454,18 @@ const Book = () => {
             required
           />
         </label>
-
         <label>
           <input
             type="checkbox"
             name="agree"
             checked={formData.agree}
             onChange={handleChange}
-            required
           />
-          I agree to the terms and conditions
+          I agree to the terms and conditions, with acknowledgement of this
+          booking is for the CITB Health, Safety & Environment Test, as a
+          requirement for CSCS card eligibility.
         </label>
-
-        <button type="submit">Proceed to Payment</button>
+        <button type="submit">Checkout</button>
       </form>
     </div>
   );
