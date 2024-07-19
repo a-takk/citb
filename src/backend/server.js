@@ -11,20 +11,14 @@ const stripe = require("stripe")(
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 const host = "eu-cluster-west-01.k8s.cleardb.net";
 const user = "b7fef2f7df5b5b";
 const password = "2c46f623";
 const database = "heroku_0eb17fd860c21b4";
 
-app.use(
-  cors({
-    origin: "https://citbcertify-20840f8ccc0e.herokuapp.com",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -218,7 +212,7 @@ app.get("/api/cscs-test-prices", (req, res) => {
       console.error("Error fetching test prices:", error);
       res.status(500).json({ error: "Error fetching test prices" });
     } else {
-      res.status(200).json(results); // Send the results array as JSON
+      res.status(200).json(results); // Send the results array
     }
   });
 });
@@ -436,3 +430,31 @@ async function handleCheckoutSessionCompleted(session) {
 async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
+
+// Create a socket instance
+var socket = new WebSocket(
+  "wss://citbcertify-20840f8ccc0e.herokuapp.com:13862/ws"
+);
+
+// Open the socket
+socket.onopen = function (event) {
+  // Send an initial message
+  socket.send("I am the client and I'm listening!");
+
+  // Listen for messages
+  socket.onmessage = function (event) {
+    console.log("Client received a message", event);
+  };
+
+  // Listen for socket closes
+  socket.onclose = function (event) {
+    console.log("Client notified socket has closed", event);
+  };
+
+  // To close the socket....
+  socket.close();
+};
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
+});
