@@ -54,26 +54,17 @@ const Book = () => {
       const response = await fetch(
         `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`
       );
-      if (
-        response.ok &&
-        response.headers.get("Content-Type")?.includes("application/json")
-      ) {
-        const data = await response.json();
-        console.log("Available slots fetched:", data); // Debug log
 
-        setAvailableSlots(
-          data.map((slot) => ({
-            time: slot.testTime.substring(0, 5),
-          }))
-        );
-      } else {
-        const text = await response.text();
-        console.error(
-          `Expected JSON but got ${response.headers.get(
-            "Content-Type"
-          )}. Response: ${text}`
-        );
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
       }
+      const responseData = await response.json();
+      console.log("Available slots fetched:", responseData);
+      setAvailableSlots(
+        responseData.map((slot) => ({
+          time: slot.testTime.substring(0, 5), // Format time to HH:MM
+        }))
+      );
     } catch (error) {
       console.error("Error fetching available slots:", error);
     }
