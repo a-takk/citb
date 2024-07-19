@@ -1,6 +1,6 @@
 const express = require("express");
 const nodemailer = require("nodemailer");
-const bodyParser = require("body-parser");
+const path = require("path");
 const cors = require("cors");
 const mysql = require("mysql");
 const dotenv = require("dotenv");
@@ -19,9 +19,11 @@ const password = "2c46f623";
 const database = "heroku_0eb17fd860c21b4";
 
 app.use(cors());
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true }));
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
+// Register client routes and middleware
+const CLIENT_BUILD_DIR = path.join(__dirname, "../client/build");
 // MySQL Connection Pooling
 const pool = mysql.createPool({
   host: host,
@@ -431,29 +433,11 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
 
-// Create a socket instance
-var socket = new WebSocket(
-  "wss://citbcertify-20840f8ccc0e.herokuapp.com:13862/ws"
-);
+app.use(express.static(CLIENT_BUILD_DIR));
 
-// Open the socket
-socket.onopen = function (event) {
-  // Send an initial message
-  socket.send("I am the client and I'm listening!");
-
-  // Listen for messages
-  socket.onmessage = function (event) {
-    console.log("Client received a message", event);
-  };
-
-  // Listen for socket closes
-  socket.onclose = function (event) {
-    console.log("Client notified socket has closed", event);
-  };
-
-  // To close the socket....
-  socket.close();
-};
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(CLIENT_BUILD_DIR, "index.html"));
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
