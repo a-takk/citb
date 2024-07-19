@@ -2,6 +2,7 @@ const express = require("express");
 const nodemailer = require("nodemailer");
 const path = require("path");
 const cors = require("cors");
+const bodyparser = require("body-parser");
 const mysql = require("mysql");
 const dotenv = require("dotenv");
 const stripe = require("stripe")(
@@ -19,8 +20,8 @@ const password = "2c46f623";
 const database = "heroku_0eb17fd860c21b4";
 
 app.use(cors());
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.use(bodyparser.json());
+app.use(bodyparser.urlencoded({ extended: true }));
 
 const CLIENT_BUILD_DIR = path.join(__dirname, "../client/build");
 
