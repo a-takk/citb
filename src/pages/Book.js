@@ -44,35 +44,40 @@ const Book = () => {
   });
 
   useEffect(() => {
-    const fetchAvailableSlots = async () => {
-      if (formData.testDate) {
-        try {
-          const response = await fetch(
-            `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
-          );
-
-          const contentType = response.headers.get("content-type");
-          if (contentType && contentType.includes("application/json")) {
-            const data = await response.json();
-            setAvailableSlots(
-              data.map((slot) => ({
-                time: slot.testTime.substring(0, 5), // Format time to HH:MM
-              }))
-            );
-          } else {
-            const errorText = await response.text();
-            console.error(
-              `Expected JSON but got ${contentType}. Response: ${errorText}`
-            );
-          }
-        } catch (error) {
-          console.error("Error fetching available slots:", error);
-        }
-      }
-    };
-
-    fetchAvailableSlots();
+    if (formData.testDate) {
+      fetchAvailableSlots(formData.testDate);
+    }
   }, [formData.testDate]);
+
+  const fetchAvailableSlots = async (date) => {
+    try {
+      const response = await fetch(
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`
+      );
+      if (
+        response.ok &&
+        response.headers.get("Content-Type")?.includes("application/json")
+      ) {
+        const data = await response.json();
+        console.log("Available slots fetched:", data); // Debug log
+
+        setAvailableSlots(
+          data.map((slot) => ({
+            time: slot.testTime.substring(0, 5),
+          }))
+        );
+      } else {
+        const text = await response.text();
+        console.error(
+          `Expected JSON but got ${response.headers.get(
+            "Content-Type"
+          )}. Response: ${text}`
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching available slots:", error);
+    }
+  };
 
   useEffect(() => {
     const fetchPrices = async () => {
@@ -81,9 +86,10 @@ const Book = () => {
           "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
         );
 
-        // Check if the response is HTML or JSON
-        const contentType = response.headers.get("content-type");
-        if (contentType && contentType.includes("application/json")) {
+        if (
+          response.ok &&
+          response.headers.get("Content-Type")?.includes("application/json")
+        ) {
           const data = await response.json();
           if (Array.isArray(data)) {
             const priceMap = data.reduce((acc, item) => {
@@ -97,9 +103,11 @@ const Book = () => {
             console.error("Unexpected data format for prices:", data);
           }
         } else {
-          const errorText = await response.text();
+          const text = await response.text();
           console.error(
-            `Expected JSON but got ${contentType}. Response: ${errorText}`
+            `Expected JSON but got ${response.headers.get(
+              "Content-Type"
+            )}. Response: ${text}`
           );
         }
       } catch (error) {

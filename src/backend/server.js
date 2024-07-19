@@ -248,7 +248,7 @@ app.get("/api/available-slots", async (req, res) => {
 });
 
 // Function to fetch available slots from the database
-async function fetchAvailableSlotsFromDB(date) {
+function fetchAvailableSlotsFromDB(date) {
   return new Promise((resolve, reject) => {
     const sql =
       "SELECT testTime FROM booking_details WHERE testDate = ? AND status IS NULL";
