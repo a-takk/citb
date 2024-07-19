@@ -53,7 +53,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       // Fetching data from the backend API
-      const response = await axios.get(
+      const response = await fetch(
         `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`
       );
 
@@ -75,7 +75,7 @@ const Book = () => {
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await axios.get(
+        const response = await fetch(
           "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
         );
 
