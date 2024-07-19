@@ -52,7 +52,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
+        `http://localhost:4000/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -94,7 +94,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
+          "http://localhost:4000/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
@@ -162,7 +162,7 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
+        "http://localhost:4000/api/create-checkout-session",
         {
           method: "POST",
           headers: {
@@ -177,13 +177,10 @@ const Book = () => {
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
       }
-
       localStorage.setItem("bookingFormData", JSON.stringify(formData));
-
       const { error } = await stripe.redirectToCheckout({
         sessionId: session.sessionId,
       });
-
       if (error) {
         console.error("Stripe Checkout error:", error);
       }
