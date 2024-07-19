@@ -20,16 +20,19 @@ function ContactUs() {
     e.preventDefault();
 
     try {
-      const response = await fetch("/email-sent", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          email: contactFormData.email,
-          formData: contactFormData, // Ensure formData contains all contact form data
-        }),
-      });
+      const response = await fetch(
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/email-sent",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            email: contactFormData.email,
+            formData: contactFormData, // Ensure formData contains all contact form data
+          }),
+        }
+      );
 
       if (response.ok) {
         alert("Email sent successfully!");

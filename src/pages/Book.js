@@ -52,10 +52,15 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
 
-      // Log the response content type
       console.log(
         "Response Content-Type:",
         response.headers.get("Content-Type")
@@ -65,7 +70,6 @@ const Book = () => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      // Check if the response is JSON
       if (response.headers.get("Content-Type")?.includes("application/json")) {
         const responseData = await response.json();
         console.log("Available slots fetched:", responseData);
@@ -90,13 +94,13 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
-        );
-
-        // Log the response content type
-        console.log(
-          "Response Content-Type:",
-          response.headers.get("Content-Type")
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
 
         if (
@@ -131,7 +135,6 @@ const Book = () => {
     fetchPrices();
   }, []);
 
-  // Handle form field changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -140,7 +143,6 @@ const Book = () => {
     });
   };
 
-  // Handle date changes
   const handleDateChange = (e) => {
     const { value } = e.target;
     setFormData({
