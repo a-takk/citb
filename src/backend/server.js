@@ -11,14 +11,20 @@ const stripe = require("stripe")(
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 const host = "eu-cluster-west-01.k8s.cleardb.net";
 const user = "b7fef2f7df5b5b";
 const password = "2c46f623";
 const database = "heroku_0eb17fd860c21b4";
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://citbcertify-20840f8ccc0e.herokuapp.com",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type"],
+    credentials: true,
+  })
+);
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
@@ -430,7 +436,3 @@ async function handleCheckoutSessionCompleted(session) {
 async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
