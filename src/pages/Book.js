@@ -52,38 +52,43 @@ const Book = () => {
 
   const fetchAvailableSlots = async (date) => {
     try {
-      // Fetching data from the backend API
-      const response = await fetch(
-        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`
+      const response = await axios.get(
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots",
+        {
+          params: { date },
+        }
       );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
+      if (response.status === 200) {
+        console.log("Available slots fetched:", response.data);
+        setAvailableSlots(
+          response.data.map((slot) => ({
+            time: slot.testTime.substring(0, 5), // Format time to HH:MM
+          }))
+        );
+      } else {
+        console.error(`Failed to fetch slots: Status ${response.status}`);
       }
-      const responseData = await response.json();
-      console.log("Available slots fetched:", responseData);
-      setAvailableSlots(
-        responseData.map((slot) => ({
-          time: slot.testTime.substring(0, 5), // Format time to HH:MM
-        }))
-      );
     } catch (error) {
-      console.error("Error fetching available slots:", error);
+      console.error(
+        "Error fetching available slots:",
+        error.response ? error.response.data : error.message
+      );
     }
   };
 
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
         );
 
         if (
-          response.ok &&
-          response.headers.get("Content-Type")?.includes("application/json")
+          response.status === 200 &&
+          response.headers["content-type"].includes("application/json")
         ) {
-          const data = await response.json();
+          const data = response.data;
           if (Array.isArray(data)) {
             const priceMap = data.reduce((acc, item) => {
               if (item && item.testName && item.price !== undefined) {
@@ -96,15 +101,13 @@ const Book = () => {
             console.error("Unexpected data format for prices:", data);
           }
         } else {
-          const text = await response.text();
-          console.error(
-            `Expected JSON but got ${response.headers.get(
-              "Content-Type"
-            )}. Response: ${text}`
-          );
+          console.error(`Failed to fetch prices: Status ${response.status}`);
         }
       } catch (error) {
-        console.error("Error fetching prices:", error);
+        console.error(
+          "Error fetching prices:",
+          error.response ? error.response.data : error.message
+        );
       }
     };
 
