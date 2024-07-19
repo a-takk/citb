@@ -75,6 +75,10 @@ const Book = () => {
         );
 
         if (!response.ok) {
+          const errorText = await response.text();
+          console.error(
+            `HTTP error! Status: ${response.status}, Response: ${errorText}`
+          );
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
 
@@ -85,18 +89,21 @@ const Book = () => {
           return;
         }
 
-        const data = JSON.parse(text);
-
-        if (Array.isArray(data)) {
-          const priceMap = data.reduce((acc, item) => {
-            if (item && item.testName && item.price !== undefined) {
-              acc[item.testName] = item.price;
-            }
-            return acc;
-          }, {});
-          setPrices(priceMap);
-        } else {
-          console.error("Unexpected data format for prices:", data);
+        try {
+          const data = JSON.parse(text);
+          if (Array.isArray(data)) {
+            const priceMap = data.reduce((acc, item) => {
+              if (item && item.testName && item.price !== undefined) {
+                acc[item.testName] = item.price;
+              }
+              return acc;
+            }, {});
+            setPrices(priceMap);
+          } else {
+            console.error("Unexpected data format for prices:", data);
+          }
+        } catch (jsonError) {
+          console.error("Error parsing JSON:", jsonError);
         }
       } catch (error) {
         console.error("Error fetching prices:", error);
@@ -104,7 +111,7 @@ const Book = () => {
     };
 
     fetchPrices();
-  }, []);
+  }, []); // Empty dependency array to run on mount only
 
   // Handle form field changes
   const handleChange = (e) => {
