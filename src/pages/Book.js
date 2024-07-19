@@ -62,7 +62,7 @@ const Book = () => {
       console.log("Available slots fetched:", responseData);
       setAvailableSlots(
         responseData.map((slot) => ({
-          time: slot.testTime.substring(0, 5), // Format time to HH:MM
+          time: slot.testTime.substring(0, 5),
         }))
       );
     } catch (error) {

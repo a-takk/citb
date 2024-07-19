@@ -141,16 +141,6 @@ app.post("/api/email-sent", async (req, res) => {
   }
 });
 
-// Route to handle success page
-app.get("/success", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build/index.html"));
-});
-
-// Route to handle failure page
-app.get("/failure", (req, res) => {
-  res.sendFile(path.join(__dirname, "../client/build/index.html"));
-});
-
 // Route to create checkout session
 app.post("/api/create-checkout-session", async (req, res) => {
   const { test, price, formData } = req.body;
@@ -222,7 +212,7 @@ app.get("/api/cscs-test-prices", (req, res) => {
       console.error("Error fetching test prices:", error);
       res.status(500).json({ error: "Error fetching test prices" });
     } else {
-      res.status(200).json(results); // Send the results array
+      res.status(200).json(results); // Send the results array as JSON
     }
   });
 });
