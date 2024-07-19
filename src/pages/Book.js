@@ -1,11 +1,12 @@
 import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import axios from "axios";
 
+// Initialize Stripe with your publishable key
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
+  // Helper function to get the current date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, "0");
@@ -14,6 +15,7 @@ const Book = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // State for available slots, prices, and form data
   const [availableSlots, setAvailableSlots] = useState([]);
   const [prices, setPrices] = useState({});
   const [formData, setFormData] = useState({
@@ -41,29 +43,70 @@ const Book = () => {
     agree: false,
   });
 
+  // Fetch available slots when testDate changes
   useEffect(() => {
-    if (formData.testDate) {
-      fetchAvailableSlots(formData.testDate);
-    }
+    const fetchAvailableSlots = async () => {
+      if (formData.testDate) {
+        try {
+          const response = await fetch(
+            `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
+          );
+          const data = await response.json();
+          setAvailableSlots(
+            data.map((slot) => ({
+              time: slot.testTime.substring(0, 5), // Format time to HH:MM
+            }))
+          );
+        } catch (error) {
+          console.error("Error fetching available slots:", error);
+        }
+      }
+    };
+
+    fetchAvailableSlots();
   }, [formData.testDate]);
 
-  const fetchAvailableSlots = async (date) => {
-    try {
-      const response = await axios.get(
-        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`
-      );
-      console.log("Available slots fetched:", response.data); // Debug log
+  // Fetch prices on component mount
+  useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        const response = await fetch(
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
+        );
 
-      setAvailableSlots(
-        response.data.map((slot) => ({
-          time: slot.testTime.substring(0, 5), // Format time to HH:MM
-        }))
-      );
-    } catch (error) {
-      console.error("Error fetching available slots:", error);
-    }
-  };
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
 
+        const text = await response.text();
+
+        if (!text) {
+          console.error("Empty response body received");
+          return;
+        }
+
+        const data = JSON.parse(text);
+
+        if (Array.isArray(data)) {
+          const priceMap = data.reduce((acc, item) => {
+            if (item && item.testName && item.price !== undefined) {
+              acc[item.testName] = item.price;
+            }
+            return acc;
+          }, {});
+          setPrices(priceMap);
+        } else {
+          console.error("Unexpected data format for prices:", data);
+        }
+      } catch (error) {
+        console.error("Error fetching prices:", error);
+      }
+    };
+
+    fetchPrices();
+  }, []);
+
+  // Handle form field changes
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -72,6 +115,7 @@ const Book = () => {
     });
   };
 
+  // Handle date changes
   const handleDateChange = (e) => {
     const { value } = e.target;
     setFormData({
@@ -81,6 +125,7 @@ const Book = () => {
     });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -89,12 +134,19 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await axios.post(
+      const response = await fetch(
         "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
-        { test: selectedTest, price, formData }
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ test: selectedTest, price, formData }),
+        }
       );
 
-      const session = response.data;
+      const session = await response.json();
+
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
       }
@@ -113,25 +165,6 @@ const Book = () => {
       alert("Failed to start payment. Please try again later.");
     }
   };
-
-  useEffect(() => {
-    const fetchPrices = async () => {
-      try {
-        const response = await axios.get(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
-        );
-        const priceMap = response.data.reduce((acc, item) => {
-          acc[item.name] = item.price;
-          return acc;
-        }, {});
-        setPrices(priceMap);
-      } catch (error) {
-        console.error("Error fetching prices:", error);
-      }
-    };
-
-    fetchPrices();
-  }, []);
 
   return (
     <div className="formbackground">
@@ -295,10 +328,10 @@ const Book = () => {
             className="date"
             value={formData.testDate}
             onChange={handleDateChange}
+            min={getCurrentDate()}
             required
           />
         </label>
-
         <label>
           Time:
           <select
@@ -306,7 +339,9 @@ const Book = () => {
             value={formData.testTime}
             onChange={handleChange}
           >
-            <option value="">Please select...</option>
+            <option value="" disabled>
+              Please select...
+            </option>
             {availableSlots.map((slot) => (
               <option key={slot.time} value={slot.time}>
                 {slot.time}
@@ -314,10 +349,9 @@ const Book = () => {
             ))}
           </select>
         </label>
-
-        <h2>Address</h2>
+        <h2>Address Details</h2>
         <label>
-          Enter Postcode:
+          Postcode:
           <input
             type="text"
             name="postcode"

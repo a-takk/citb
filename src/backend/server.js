@@ -11,7 +11,7 @@ const stripe = require("stripe")(
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 const host = "eu-cluster-west-01.k8s.cleardb.net";
 const user = "b7fef2f7df5b5b";
@@ -84,26 +84,26 @@ const sendAdminEmail = async (email, formData) => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "CITB: Email sent from customer",
-    text: `Thank you for contacting us. Here are the details of your message:\n\n
-        CSCS Card Type: ${formData.cscsCardType}\n
-        Card Action: ${formData.cardAction}\n
-        Title: ${formData.title}\n
-        First Name: ${formData.firstName}\n
-        Surname: ${formData.surname}\n
-        Date of Birth: ${formData.dateOfBirthDay}/${formData.dateOfBirthMonth}/${formData.dateOfBirthYear}\n
-        Gender: ${formData.gender}\n
-        Test: ${formData.test}\n
-        Test Language: ${formData.testLanguage}\n
-        Test Date: ${formData.testDate}\n
-        Test Time: ${formData.testTime}\n
-        Address: ${formData.address}\n
-        Town: ${formData.town}\n
-        County: ${formData.county}\n
-        Country: ${formData.country}\n
-        Postcode: ${formData.postcode}\n
-        Mobile Number: ${formData.mobileNumber}\n
-        Email: ${formData.email}\n
-        Confirm Email: ${formData.confirmEmail}\n
+    text: `Thank you for contacting us. Here are the details of your message:\n
+        CSCS Card Type: ${formData.cscsCardType}
+        Card Action: ${formData.cardAction}
+        Title: ${formData.title}
+        First Name: ${formData.firstName}
+        Surname: ${formData.surname}
+        Date of Birth: ${formData.dateOfBirthDay}/${formData.dateOfBirthMonth}/${formData.dateOfBirthYear}
+        Gender: ${formData.gender}
+        Test: ${formData.test}
+        Test Language: ${formData.testLanguage}
+        Test Date: ${formData.testDate}
+        Test Time: ${formData.testTime}
+        Address: ${formData.address}
+        Town: ${formData.town}
+        County: ${formData.county}
+        Country: ${formData.country}
+        Postcode: ${formData.postcode}
+        Mobile Number: ${formData.mobileNumber}
+        Email: ${formData.email}
+        Confirm Email: ${formData.confirmEmail}
         Agree: ${formData.agree}`,
   };
 
@@ -223,13 +223,13 @@ app.post("/api/create-checkout-session", async (req, res) => {
 
 // Route to fetch CSCS test prices
 app.get("/api/cscs-test-prices", (req, res) => {
-  const query = "SELECT * FROM cscs_tests";
+  const query = "SELECT * FROM cscs_test_prices";
   pool.query(query, (error, results) => {
     if (error) {
       console.error("Error fetching test prices:", error);
-      res.status(500).send("Error fetching test prices");
+      res.status(500).json({ error: "Error fetching test prices" });
     } else {
-      res.status(200).json(results);
+      res.status(200).json(results); // Send the results array
     }
   });
 });
