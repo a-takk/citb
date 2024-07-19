@@ -43,7 +43,6 @@ const Book = () => {
     agree: false,
   });
 
-  // Fetch available slots when testDate changes
   useEffect(() => {
     const fetchAvailableSlots = async () => {
       if (formData.testDate) {
@@ -51,12 +50,21 @@ const Book = () => {
           const response = await fetch(
             `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
           );
-          const data = await response.json();
-          setAvailableSlots(
-            data.map((slot) => ({
-              time: slot.testTime.substring(0, 5), // Format time to HH:MM
-            }))
-          );
+
+          const contentType = response.headers.get("content-type");
+          if (contentType && contentType.includes("application/json")) {
+            const data = await response.json();
+            setAvailableSlots(
+              data.map((slot) => ({
+                time: slot.testTime.substring(0, 5), // Format time to HH:MM
+              }))
+            );
+          } else {
+            const errorText = await response.text();
+            console.error(
+              `Expected JSON but got ${contentType}. Response: ${errorText}`
+            );
+          }
         } catch (error) {
           console.error("Error fetching available slots:", error);
         }
@@ -66,7 +74,6 @@ const Book = () => {
     fetchAvailableSlots();
   }, [formData.testDate]);
 
-  // Fetch prices on component mount
   useEffect(() => {
     const fetchPrices = async () => {
       try {
@@ -74,23 +81,10 @@ const Book = () => {
           "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
         );
 
-        if (!response.ok) {
-          const errorText = await response.text();
-          console.error(
-            `HTTP error! Status: ${response.status}, Response: ${errorText}`
-          );
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-
-        const text = await response.text();
-
-        if (!text) {
-          console.error("Empty response body received");
-          return;
-        }
-
-        try {
-          const data = JSON.parse(text);
+        // Check if the response is HTML or JSON
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("application/json")) {
+          const data = await response.json();
           if (Array.isArray(data)) {
             const priceMap = data.reduce((acc, item) => {
               if (item && item.testName && item.price !== undefined) {
@@ -102,8 +96,11 @@ const Book = () => {
           } else {
             console.error("Unexpected data format for prices:", data);
           }
-        } catch (jsonError) {
-          console.error("Error parsing JSON:", jsonError);
+        } else {
+          const errorText = await response.text();
+          console.error(
+            `Expected JSON but got ${contentType}. Response: ${errorText}`
+          );
         }
       } catch (error) {
         console.error("Error fetching prices:", error);
@@ -111,7 +108,7 @@ const Book = () => {
     };
 
     fetchPrices();
-  }, []); // Empty dependency array to run on mount only
+  }, []);
 
   // Handle form field changes
   const handleChange = (e) => {
