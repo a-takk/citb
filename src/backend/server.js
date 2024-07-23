@@ -43,6 +43,47 @@ pool.getConnection((err, connection) => {
   connection.release(); // Release the connection back to the pool
 });
 
+const generateSlots = () => {
+  const slots = [];
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setFullYear(endDate.getFullYear() + 15);
+
+  let currentDate = startDate;
+
+  while (currentDate <= endDate) {
+    for (let hour = 9; hour < 17; hour++) {
+      const slotDate = new Date(currentDate);
+      slotDate.setHours(hour, 0, 0);
+      slots.push({
+        testDate: slotDate.toISOString().split("T")[0],
+        testTime: slotDate.toTimeString().split(" ")[0],
+      });
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return slots;
+};
+
+app.get("/insert-slots", (req, res) => {
+  const slots = generateSlots();
+
+  let sql = "INSERT INTO booking_details (testDate, testTime, status) VALUES ?";
+  const values = slots.map((slot) => [
+    slot.testDate,
+    slot.testTime,
+    "available",
+  ]);
+
+  pool.query(sql, [values], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.send(`Inserted ${result.affectedRows} slots`);
+  });
+});
+
 // Function to send confirmation email
 const sendContactEmail = async (email, formData) => {
   const transporter = nodemailer.createTransport({
@@ -78,8 +119,8 @@ const sendAdminEmail = async (email, formData) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: "CITB: Email sent from customer",
-    text: `Thank you for contacting us. Here are the details of your message:\n
+    subject: "CITB: Customer has booked for a test",
+    text: `A customer has booked for a test, here are the details:\n
         CSCS Card Type: ${formData.cscsCardType}
         Card Action: ${formData.cardAction}
         Title: ${formData.title}
@@ -236,7 +277,7 @@ app.get("/api/available-slots", async (req, res) => {
 function fetchAvailableSlotsFromDB(date) {
   return new Promise((resolve, reject) => {
     const sql =
-      "SELECT testTime FROM booking_details WHERE testDate = ? AND status IS NULL";
+      "SELECT testTime FROM booking_details WHERE testDate = ? AND status = 'available'";
     pool.query(sql, [date], (err, results) => {
       if (err) {
         reject(err);
@@ -302,38 +343,36 @@ app.post("/api/webhook", async (req, res) => {
 async function handleCheckoutSessionCompleted(session) {
   const email = session.customer_details.email;
   const formData = session.metadata || {};
-  const sessionId = session.id; // Use sessionId or paymentIntentId for idempotency
 
   try {
-    // Check if the booking already exists
-    const checkExistingQuery =
-      "SELECT * FROM booking_details WHERE test = ? AND testDate = ? AND testTime = ?";
-    const checkExistingParams = [
-      formData.test,
-      formData.testDate,
-      formData.testTime,
-    ];
+    // Check if the slot exists and is available
+    const checkExistingQuery = `
+      SELECT bookingId FROM booking_details
+      WHERE testDate = ? AND testTime = ? AND status = 'available'
+    `;
+    const checkExistingParams = [formData.testDate, formData.testTime];
 
-    const existingBookings = await new Promise((resolve, reject) => {
+    const existingBooking = await new Promise((resolve, reject) => {
       pool.query(checkExistingQuery, checkExistingParams, (error, results) => {
         if (error) {
           reject(error);
         } else {
-          resolve(results);
+          resolve(results[0]); // Get the first matching booking if any
         }
       });
     });
 
-    if (existingBookings.length > 0) {
-      console.log("Booking already exists for selected date and time:", {
-        test: formData.test,
+    if (!existingBooking) {
+      console.log("No available slot found for selected date and time:", {
         testDate: formData.testDate,
         testTime: formData.testTime,
       });
-      return; // Exit if booking already exists
+      return; // Exit if no available slot is found
     }
 
-    // Insert customer details into database
+    const bookingId = existingBooking.bookingId;
+
+    // Insert customer details into the database
     const insertCustomerQuery = `
       INSERT INTO customer_details (
         title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
@@ -345,7 +384,7 @@ async function handleCheckoutSessionCompleted(session) {
 
     const agree = formData.agree === "true" ? 1 : 0;
 
-    const customerInsertResult = await new Promise((resolve, reject) => {
+    await new Promise((resolve, reject) => {
       pool.query(
         insertCustomerQuery,
         [
@@ -375,30 +414,28 @@ async function handleCheckoutSessionCompleted(session) {
       );
     });
 
-    const bookingId = customerInsertResult.insertId;
-
-    // Insert booking details into database
-    const insertBookingQuery = `
+    // Update the booking slot with new details
+    const updateBookingQuery = `
       UPDATE booking_details
       SET
-          cscsCardType = ?,
-          cardAction = ?,
-          test = ?,
-          testLanguage = ?,
-          status = 'booked'
+        cscsCardType = ?,
+        cardAction = ?,
+        test = ?,
+        testLanguage = ?,
+        status = 'booked'
       WHERE
-          bookingId = ?;
+        bookingId = ?
     `;
 
     await new Promise((resolve, reject) => {
       pool.query(
-        insertBookingQuery,
+        updateBookingQuery,
         [
           formData.cscsCardType,
           formData.cardAction,
           formData.test,
           formData.testLanguage,
-          bookingId, // This is the bookingId from customerInsertResult
+          bookingId, // Update the specific slot
         ],
         (error, result) => {
           if (error) {

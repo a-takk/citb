@@ -61,29 +61,19 @@ const Book = () => {
         }
       );
 
-      console.log(
-        "Response Content-Type:",
-        response.headers.get("Content-Type")
-      );
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
       if (response.headers.get("Content-Type")?.includes("application/json")) {
         const responseData = await response.json();
-        console.log("Available slots fetched:", responseData);
         setAvailableSlots(
           responseData.map((slot) => ({
             time: slot.testTime.substring(0, 5), // Format time to HH:MM
           }))
         );
       } else {
-        const responseText = await response.text();
-        console.error(
-          "Unexpected response format. Response text:",
-          responseText
-        );
+        console.error("Unexpected response format.");
       }
     } catch (error) {
       console.error("Error fetching available slots:", error);
@@ -108,10 +98,9 @@ const Book = () => {
           response.headers.get("Content-Type")?.includes("application/json")
         ) {
           const data = await response.json();
-          console.log("Prices fetched:", data);
           if (Array.isArray(data)) {
             const priceMap = data.reduce((acc, item) => {
-              if (item && item.testName && item.price !== undefined) {
+              if (item?.testName && item.price !== undefined) {
                 acc[item.testName] = item.price;
               }
               return acc;
@@ -121,11 +110,7 @@ const Book = () => {
             console.error("Unexpected data format for prices:", data);
           }
         } else {
-          const responseText = await response.text();
-          console.error(
-            "Unexpected response format. Response text:",
-            responseText
-          );
+          console.error("Unexpected response format.");
         }
       } catch (error) {
         console.error("Error fetching prices:", error);
@@ -152,7 +137,6 @@ const Book = () => {
     });
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -177,10 +161,12 @@ const Book = () => {
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
       }
+
       localStorage.setItem("bookingFormData", JSON.stringify(formData));
       const { error } = await stripe.redirectToCheckout({
         sessionId: session.sessionId,
       });
+
       if (error) {
         console.error("Stripe Checkout error:", error);
       }
@@ -285,6 +271,7 @@ const Book = () => {
               placeholder="DD"
               maxLength="2"
               required
+              title="Please enter a valid day (DD)"
             />
             <input
               type="text"
@@ -294,6 +281,7 @@ const Book = () => {
               placeholder="MM"
               maxLength="2"
               required
+              title="Please enter a valid month (MM)"
             />
             <input
               type="text"
@@ -303,6 +291,7 @@ const Book = () => {
               placeholder="YYYY"
               maxLength="4"
               required
+              title="Please enter a valid year (YYYY)"
             />
           </div>
         </label>
