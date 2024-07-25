@@ -43,52 +43,44 @@ pool.getConnection((err, connection) => {
   connection.release(); // Release the connection back to the pool
 });
 
-app.get("/api/admin", (req, res) => {
-  // Fetch customer details
-  const customerQuery = `
-    SELECT
-      title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
-      dateOfBirthYear, gender, address, town, county, country, postcode, email,
-      mobileNumber, agree
-    FROM customer_details
-  `;
+const generateSlots = () => {
+  const slots = [];
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setFullYear(endDate.getFullYear() + 15);
 
-  // Fetch booking details, excluding rows with null values
-  const bookingQuery = `
-    SELECT
-      testDate, testTime, cscsCardType, cardAction, test, testLanguage, status
-    FROM booking_details
-    WHERE testDate IS NOT NULL AND testTime IS NOT NULL AND cscsCardType IS NOT NULL
-    AND cardAction IS NOT NULL AND test IS NOT NULL AND testLanguage IS NOT NULL AND status IS NOT NULL
-  `;
+  let currentDate = startDate;
 
-  // Run the first query to get customer details
-  pool.query(customerQuery, (error, customerResults) => {
-    if (error) {
-      console.error("Error fetching customer data:", error);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-
-    // Run the second query to get booking details
-    pool.query(bookingQuery, (error, bookingResults) => {
-      if (error) {
-        console.error("Error fetching booking data:", error);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-
-      // Combine data
-      const combinedResults = customerResults.map((customer, index) => {
-        // Assign bookings, if any, to each customer
-        const booking = bookingResults[index] || {}; // Assign an empty object if no booking exists
-        return {
-          ...customer,
-          ...booking,
-        };
+  while (currentDate <= endDate) {
+    for (let hour = 9; hour < 17; hour++) {
+      const slotDate = new Date(currentDate);
+      slotDate.setHours(hour, 0, 0);
+      slots.push({
+        testDate: slotDate.toISOString().split("T")[0],
+        testTime: slotDate.toTimeString().split(" ")[0],
       });
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
 
-      // Respond with the combined results
-      res.json({ data: combinedResults });
-    });
+  return slots;
+};
+
+app.get("/insert-slots", (req, res) => {
+  const slots = generateSlots();
+
+  let sql = "INSERT INTO booking_details (testDate, testTime, status) VALUES ?";
+  const values = slots.map((slot) => [
+    slot.testDate,
+    slot.testTime,
+    "available",
+  ]);
+
+  pool.query(sql, [values], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.send(`Inserted ${result.affectedRows} slots`);
   });
 });
 
@@ -380,6 +372,7 @@ async function handleCheckoutSessionCompleted(session) {
 
     const bookingId = existingBooking.bookingId;
 
+    // Insert customer details into the database
     const insertCustomerQuery = `
       INSERT INTO customer_details (
         title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
