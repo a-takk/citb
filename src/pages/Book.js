@@ -52,7 +52,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `http://localhost:4000/api/available-slots?date=${date}`,
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -84,7 +84,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "http://localhost:4000/api/cscs-test-prices",
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
@@ -146,7 +146,7 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        "http://localhost:4000/api/create-checkout-session",
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
         {
           method: "POST",
           headers: {

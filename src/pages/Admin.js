@@ -1,16 +1,18 @@
 import React, { useEffect, useState } from "react";
-import axios from "axios";
-import { format } from "date-fns"; // Import the format function from date-fns
-import "../styles/admin.css"; // Import your CSS file
+import { format } from "date-fns";
+import "../styles/admin.css";
 
 const AdminDashboard = () => {
-  const [adminData, setAdminData] = useState(null);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await axios.get("http://localhost:4000/admin"); // Adjust endpoint as per your backend setup
-        setAdminData(response.data);
+        const response = await fetch(
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/admin"
+        );
+        const result = await response.json();
+        setData(result.data);
       } catch (error) {
         console.error("Error fetching admin data:", error);
       }
@@ -19,80 +21,67 @@ const AdminDashboard = () => {
     fetchAdminData();
   }, []);
 
-  if (!adminData) {
-    return <div>Loading...</div>;
-  }
-
-  const { customers, bookings } = adminData;
-
-  // Assuming customers and bookings arrays are populated
-  const combinedDetails = customers.map((customer, index) => {
-    const booking = bookings[index]; // Assuming bookings array matches customers array
-    return { customer, booking };
-  });
-
-  const formatDate = (dateString) => {
-    // Use date-fns to format the date string
-    return format(new Date(dateString), "dd/MM/yyyy");
-  };
-
   return (
-    <div className="container">
-      <div className="table-responsive">
-        <h2>Combined Details</h2>
-        <table className="table">
-          <thead>
-            <tr>
-              <th>Title</th>
-              <th>First Name</th>
-              <th>Surname</th>
-              <th>Date of Birth</th>
-              <th>Gender</th>
-              <th>Address</th>
-              <th>Town</th>
-              <th>County</th>
-              <th>Country</th>
-              <th>Postcode</th>
-              <th>Email</th>
-              <th>Mobile Number</th>
-              <th>Agree</th>
-              <th>Test Date</th>
-              <th>Test Time</th>
-              <th>CSCS Card Type</th>
-              <th>Card Action</th>
-              <th>Test</th>
-              <th>Test Language</th>
-              <th>Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {combinedDetails.map((details, index) => (
-              <tr key={index}>
-                <td>{details.customer.title}</td>
-                <td>{details.customer.firstName}</td>
-                <td>{details.customer.surname}</td>
-                <td>{`${details.customer.dateOfBirthDay}/${details.customer.dateOfBirthMonth}/${details.customer.dateOfBirthYear}`}</td>
-                <td>{details.customer.gender}</td>
-                <td>{details.customer.address}</td>
-                <td>{details.customer.town}</td>
-                <td>{details.customer.county}</td>
-                <td>{details.customer.country}</td>
-                <td>{details.customer.postcode}</td>
-                <td>{details.customer.email}</td>
-                <td>{details.customer.mobileNumber}</td>
-                <td>{details.customer.agree ? "Yes" : "No"}</td>
-                <td>{formatDate(details.booking.testDate)}</td>{" "}
-                {/* Format the test date */}
-                <td>{details.booking.testTime}</td>
-                <td>{details.booking.cscsCardType}</td>
-                <td>{details.booking.cardAction}</td>
-                <td>{details.booking.test}</td>
-                <td>{details.booking.testLanguage}</td>
-                <td>{details.booking.status}</td>
+    <div className="adminbackground">
+      <div className="container">
+        <div className="table-responsive">
+          <table className="table">
+            <thead>
+              <tr>
+                <th>Title</th>
+                <th>First Name</th>
+                <th>Surname</th>
+                <th>Date of Birth</th>
+                <th>Gender</th>
+                <th>Address</th>
+                <th>Town</th>
+                <th>County</th>
+                <th>Country</th>
+                <th>Postcode</th>
+                <th>Email</th>
+                <th>Mobile Number</th>
+                <th>Agree</th>
+                <th>Test Date</th>
+                <th>Test Time</th>
+                <th>CSCS Card Type</th>
+                <th>Card Action</th>
+                <th>Test</th>
+                <th>Test Language</th>
+                <th>Status</th>
               </tr>
-            ))}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {data.map((item, index) => (
+                <tr key={index}>
+                  <td>{item.title}</td>
+                  <td>{item.firstName}</td>
+                  <td>{item.surname}</td>
+                  <td>{`${item.dateOfBirthDay}/${item.dateOfBirthMonth}/${item.dateOfBirthYear}`}</td>
+                  <td>{item.gender}</td>
+                  <td>{item.address}</td>
+                  <td>{item.town}</td>
+                  <td>{item.county}</td>
+                  <td>{item.country}</td>
+                  <td>{item.postcode}</td>
+                  <td>{item.email}</td>
+                  <td>{item.mobileNumber}</td>
+                  <td>{item.agree ? "Yes" : "No"}</td>
+                  <td>
+                    {item.testDate
+                      ? format(new Date(item.testDate), "dd/MM/yyyy")
+                      : ""}
+                  </td>
+                  <td>{item.testTime || ""}</td>
+                  <td>{item.cscsCardType || ""}</td>
+                  <td>{item.cardAction || ""}</td>
+                  <td>{item.test || ""}</td>
+                  <td>{item.testLanguage || ""}</td>
+                  <td>{item.status || ""}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   );

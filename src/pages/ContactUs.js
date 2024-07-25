@@ -54,7 +54,9 @@ function ContactUs() {
     <div className="contactbackground">
       <form onSubmit={handleSubmit}>
         <h1 className="contactformheading">Contact Us</h1>
-        <label htmlFor="name">Name</label>
+        <label htmlFor="name" className="label">
+          Name:
+        </label>
         <input
           className="contactinput"
           type="text"
@@ -65,7 +67,9 @@ function ContactUs() {
           required
         />
 
-        <label htmlFor="email">Email</label>
+        <label htmlFor="email" className="label">
+          Email:
+        </label>
         <input
           className="contactinput"
           type="email"
@@ -76,7 +80,9 @@ function ContactUs() {
           required
         />
 
-        <label htmlFor="message">Message</label>
+        <label htmlFor="message" className="label">
+          Message:
+        </label>
         <textarea
           id="message"
           name="message"

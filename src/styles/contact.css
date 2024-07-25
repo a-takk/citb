@@ -92,6 +92,10 @@ textarea {
   justify-content: center;
 }
 
+.label {
+  margin-bottom: -1px;
+}
+
 /* Responsive Design */
 @media (max-width: 992px) {
   .contactdetails {
