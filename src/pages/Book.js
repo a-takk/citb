@@ -1,11 +1,13 @@
-import "../styles/book.css";
+import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import axios from "axios";
 
-const stripePromise = loadStripe(process.env.REACT_APP_STRIPE_PUBLIC_KEY);
+// Initialize Stripe with your publishable key
+const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
+  // Helper function to get the current date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, "0");
@@ -14,6 +16,7 @@ const Book = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // State for available slots, prices, and form data
   const [availableSlots, setAvailableSlots] = useState([]);
   const [prices, setPrices] = useState({});
   const [formData, setFormData] = useState({
@@ -50,13 +53,29 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await axios.get(
-        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
       );
-      setAvailableSlots(
-        response.data.map((slot) => ({
-          time: slot.testTime.substring(0, 5),
-        }))
-      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      if (response.headers.get("Content-Type")?.includes("application/json")) {
+        const responseData = await response.json();
+        setAvailableSlots(
+          responseData.map((slot) => ({
+            time: slot.testTime.substring(0, 5), // Format time to HH:MM
+          }))
+        );
+      } else {
+        console.error("Unexpected response format.");
+      }
     } catch (error) {
       console.error("Error fetching available slots:", error);
     }
@@ -66,15 +85,34 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await axios.get(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
-        );
-        const priceMap = response.data.reduce((acc, item) => {
-          if (item?.testName && item.price !== undefined) {
-            acc[item.testName] = item.price;
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
           }
-          return acc;
-        }, {});
-        setPrices(priceMap);
+        );
+
+        if (
+          response.ok &&
+          response.headers.get("Content-Type")?.includes("application/json")
+        ) {
+          const data = await response.json();
+          if (Array.isArray(data)) {
+            const priceMap = data.reduce((acc, item) => {
+              if (item?.testName && item.price !== undefined) {
+                acc[item.testName] = item.price;
+              }
+              return acc;
+            }, {});
+            setPrices(priceMap);
+          } else {
+            console.error("Unexpected data format for prices:", data);
+          }
+        } else {
+          console.error("Unexpected response format.");
+        }
       } catch (error) {
         console.error("Error fetching prices:", error);
       }
@@ -85,19 +123,19 @@ const Book = () => {
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
+    setFormData({
+      ...formData,
       [name]: type === "checkbox" ? checked : value,
-    }));
+    });
   };
 
   const handleDateChange = (e) => {
     const { value } = e.target;
-    setFormData((prevState) => ({
-      ...prevState,
+    setFormData({
+      ...formData,
       testDate: value,
       testTime: "",
-    }));
+    });
   };
 
   const handleSubmit = async (e) => {
@@ -108,12 +146,18 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await axios.post(
+      const response = await axios.get(
         "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
-        { test: selectedTest, price, formData }
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ test: selectedTest, price, formData }),
+        }
       );
 
-      const session = response.data;
+      const session = await response.json();
 
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
@@ -219,57 +263,64 @@ const Book = () => {
         </label>
         <label>
           Date of Birth:
-          <input
-            type="number"
-            name="dateOfBirthDay"
-            value={formData.dateOfBirthDay}
-            onChange={handleChange}
-            placeholder="Day"
-            required
-          />
-          <input
-            type="number"
-            name="dateOfBirthMonth"
-            value={formData.dateOfBirthMonth}
-            onChange={handleChange}
-            placeholder="Month"
-            required
-          />
-          <input
-            type="number"
-            name="dateOfBirthYear"
-            value={formData.dateOfBirthYear}
-            onChange={handleChange}
-            placeholder="Year"
-            required
-          />
+          <div>
+            <input
+              type="text"
+              name="dateOfBirthDay"
+              value={formData.dateOfBirthDay}
+              onChange={handleChange}
+              placeholder="DD"
+              maxLength="2"
+              required
+              title="Please enter a valid day (DD)"
+            />
+            <input
+              type="text"
+              name="dateOfBirthMonth"
+              value={formData.dateOfBirthMonth}
+              onChange={handleChange}
+              placeholder="MM"
+              maxLength="2"
+              required
+              title="Please enter a valid month (MM)"
+            />
+            <input
+              type="text"
+              name="dateOfBirthYear"
+              value={formData.dateOfBirthYear}
+              onChange={handleChange}
+              placeholder="YYYY"
+              maxLength="4"
+              required
+              title="Please enter a valid year (YYYY)"
+            />
+          </div>
         </label>
         <label>
           Gender:
           <select name="gender" value={formData.gender} onChange={handleChange}>
             <option value="Male">Male</option>
             <option value="Female">Female</option>
+            <option value="Non-binary">Non-binary</option>
+            <option value="Prefer not to say">Prefer not to say</option>
           </select>
         </label>
+        <h2>Select Your Test</h2>
         <label>
-          Select your test:
+          Test:
           <select name="test" value={formData.test} onChange={handleChange}>
             <option value="" disabled>
               Please select...
             </option>
-            <option value="Health, Safety and Environment Test for Operatives">
-              Health, Safety and Environment Test for Operatives
-            </option>
-            <option value="Health, Safety and Environment Test for Specialists">
-              Health, Safety and Environment Test for Specialists
-            </option>
-            <option value="Health, Safety and Environment Test for Managers and Professionals">
-              Health, Safety and Environment Test for Managers and Professionals
-            </option>
+            {Object.keys(prices).map((key) => (
+              <option key={key} value={key}>
+                {`${key} (£${prices[key]})`}
+              </option>
+            ))}
           </select>
         </label>
         <label>
-          Select your preferred language:
+          Language:
           <select
             name="testLanguage"
             value={formData.testLanguage}
@@ -279,14 +330,16 @@ const Book = () => {
               Please select...
             </option>
             <option value="English">English</option>
-            <option value="Welsh">Welsh</option>
+            <option value="Punjabi">Punjabi</option>
+            <option value="Italian">Italian</option>
           </select>
         </label>
         <label>
-          Select test date:
+          Date:
           <input
             type="date"
             name="testDate"
+            className="date"
             value={formData.testDate}
             onChange={handleDateChange}
             min={getCurrentDate()}
@@ -294,12 +347,11 @@ const Book = () => {
           />
         </label>
         <label>
-          Select test time:
+          Time:
           <select
             name="testTime"
             value={formData.testTime}
             onChange={handleChange}
-            required
           >
             <option value="" disabled>
               Please select...
@@ -311,7 +363,16 @@ const Book = () => {
             ))}
           </select>
         </label>
-        <h2>Address</h2>
+        <h2>Address Details</h2>
+        <label>
+          Postcode:
+          <input
+            type="text"
+            name="postcode"
+            value={formData.postcode}
+            onChange={handleChange}
+          />
+        </label>
         <label>
           Address:
           <input
@@ -348,23 +409,14 @@ const Book = () => {
             name="country"
             value={formData.country}
             onChange={handleChange}
-            required
+            readOnly
           />
         </label>
-        <label>
-          Postcode:
-          <input
-            type="text"
-            name="postcode"
-            value={formData.postcode}
-            onChange={handleChange}
-            required
-          />
-        </label>
+        <h2>Contact Details</h2>
         <label>
           Mobile Number:
           <input
-            type="tel"
+            type="text"
             name="mobileNumber"
             value={formData.mobileNumber}
             onChange={handleChange}
@@ -397,11 +449,12 @@ const Book = () => {
             name="agree"
             checked={formData.agree}
             onChange={handleChange}
-            required
           />
-          I agree to the terms and conditions
+          I agree to the terms and conditions, with acknowledgement of this
+          booking is for the CITB Health, Safety & Environment Test, as a
+          requirement for CSCS card eligibility.
         </label>
-        <button type="submit">Submit</button>
+        <button type="submit">Checkout</button>
       </form>
     </div>
   );
