@@ -8,9 +8,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await fetch(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/admin"
-        );
+        const response = await fetch("http://localhost:4000/api/admin");
         const result = await response.json();
         setData(result.data);
       } catch (error) {
