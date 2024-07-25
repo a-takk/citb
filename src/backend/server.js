@@ -19,14 +19,7 @@ const user = "b7fef2f7df5b5b";
 const password = "2c46f623";
 const database = "heroku_0eb17fd860c21b4";
 
-app.use(
-  cors({
-    origin: "https://citbcertify-20840f8ccc0e.herokuapp.com",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
@@ -96,6 +89,47 @@ app.get("/api/admin", (req, res) => {
       // Respond with the combined results
       res.json({ data: combinedResults });
     });
+  });
+});
+
+const generateSlots = () => {
+  const slots = [];
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setFullYear(endDate.getFullYear() + 15);
+
+  let currentDate = startDate;
+
+  while (currentDate <= endDate) {
+    for (let hour = 9; hour < 17; hour++) {
+      const slotDate = new Date(currentDate);
+      slotDate.setHours(hour, 0, 0);
+      slots.push({
+        testDate: slotDate.toISOString().split("T")[0],
+        testTime: slotDate.toTimeString().split(" ")[0],
+      });
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return slots;
+};
+
+app.get("/insert-slots", (req, res) => {
+  const slots = generateSlots();
+
+  let sql = "INSERT INTO booking_details (testDate, testTime, status) VALUES ?";
+  const values = slots.map((slot) => [
+    slot.testDate,
+    slot.testTime,
+    "available",
+  ]);
+
+  pool.query(sql, [values], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.send(`Inserted ${result.affectedRows} slots`);
   });
 });
 
