@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import "../styles/admin.css";
-import axios from "axios";
 
 const AdminDashboard = () => {
   const [data, setData] = useState([]);
@@ -9,9 +8,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await axios.get(
-          "https://citb-mtnq716gf-a-takks-projects.vercel.app/api/admin"
-        );
+        const response = await fetch("https://citb.vercel.app/api/admin");
         const result = await response.json();
         setData(result.data);
       } catch (error) {

@@ -21,7 +21,7 @@ const database = "heroku_0eb17fd860c21b4";
 
 app.use(
   cors({
-    origin: "https://citb-mtnq716gf-a-takks-projects.vercel.app",
+    origin: "https://citb.vercel.app",
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type"],
     credentials: true,

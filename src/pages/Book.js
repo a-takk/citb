@@ -1,7 +1,6 @@
 import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import axios from "axios";
 
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
@@ -49,8 +48,8 @@ const Book = () => {
 
   const fetchAvailableSlots = async (date) => {
     try {
-      const response = await axios.get(
-        `https://citb-mtnq716gf-a-takks-projects.vercel.app/api/available-slots?date=${date}`,
+      const response = await fetch(
+        `https://citb.vercel.app/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -78,8 +77,8 @@ const Book = () => {
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await axios.get(
-          "https://citb-mtnq716gf-a-takks-projects.vercel.app/api/cscs-test-prices",
+        const response = await fetch(
+          "https://citb.vercel.app/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
@@ -141,8 +140,8 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await axios.get(
-        "https://citb-mtnq716gf-a-takks-projects.vercel.app/api/create-checkout-session",
+      const response = await fetch(
+        "https://citb.vercel.app/api/create-checkout-session",
         {
           method: "POST",
           headers: {
