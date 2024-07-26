@@ -23,6 +23,8 @@ app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
+const CLIENT_BUILD_DIR = path.join(__dirname, "../client/build");
+
 const pool = mysql.createPool({
   host: host,
   user: user,
@@ -233,7 +235,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
         });
 
         console.log("Stripe session created successfully:", session.id);
-        res.setHeader("Content-Type", "application/json");
         res.json({ sessionId: session.id });
       } catch (stripeError) {
         console.error("Error creating Stripe session:", stripeError);
@@ -252,7 +253,6 @@ app.get("/api/cscs-test-prices", (req, res) => {
   pool.query(query, (error, results) => {
     if (error) {
       console.error("Error fetching test prices:", error);
-      res.setHeader("Content-Type", "application/json");
       res.status(500).json({ error: "Error fetching test prices" });
     } else {
       res.status(200).json(results); // Send the results array
@@ -266,7 +266,6 @@ app.get("/api/available-slots", async (req, res) => {
   try {
     const results = await fetchAvailableSlotsFromDB(date);
     console.log("Fetched slots:", results); // Log fetched slots
-    res.setHeader("Content-Type", "application/json");
     res.json(results);
   } catch (error) {
     console.error("Error fetching available slots:", error);
@@ -471,10 +470,10 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
 
-app.use(express.static(path.join(__dirname, "build")));
+app.use(express.static(CLIENT_BUILD_DIR));
 
-app.get("/*", function (req, res) {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+app.get("*", (req, res) => {
+  res.sendFile(path.join(CLIENT_BUILD_DIR, "index.html"));
 });
 
 app.listen(PORT, () => {
