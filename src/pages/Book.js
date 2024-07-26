@@ -7,7 +7,6 @@ import axios from "axios";
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
-  // Helper function to get the current date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, "0");
@@ -16,7 +15,6 @@ const Book = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // State for available slots, prices, and form data
   const [availableSlots, setAvailableSlots] = useState([]);
   const [prices, setPrices] = useState({});
   const [formData, setFormData] = useState({
@@ -47,8 +45,14 @@ const Book = () => {
   useEffect(() => {
     const fetchTestPrices = async () => {
       try {
-        const response = await axios.get("/api/cscs-test-prices");
+        const response = await fetch(
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
+        console.log("Fetched test prices:", data);
         const pricesObj = data.reduce((acc, curr) => {
           acc[curr.testType] = curr.price;
           return acc;
@@ -65,10 +69,14 @@ const Book = () => {
   useEffect(() => {
     const fetchAvailableSlots = async () => {
       try {
-        const response = await axios.get(
-          `/api/available-slots?date=${formData.testDate}`
+        const response = await fetch(
+          `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
         );
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
+        console.log("Fetched available slots:", data);
         setAvailableSlots(data);
       } catch (error) {
         console.error("Error fetching available slots:", error);
@@ -103,15 +111,19 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await axios.get("/api/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ test: selectedTest, price, formData }),
-      });
+      const response = await fetch(
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ test: selectedTest, price, formData }),
+        }
+      );
 
       const session = await response.json();
+      console.log("Checkout session response:", session);
 
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
