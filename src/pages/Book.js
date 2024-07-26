@@ -54,6 +54,7 @@ const Book = () => {
         {
           method: "GET",
           headers: {
+            Accept: "application/json",
             "Content-Type": "application/json",
           },
         }
@@ -82,6 +83,7 @@ const Book = () => {
           {
             method: "GET",
             headers: {
+              Accept: "application/json",
               "Content-Type": "application/json",
             },
           }
@@ -144,6 +146,7 @@ const Book = () => {
         {
           method: "POST",
           headers: {
+            Accept: "application/json",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ test: selectedTest, price, formData }),
