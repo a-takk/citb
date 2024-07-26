@@ -46,9 +46,7 @@ const Book = () => {
   useEffect(() => {
     const fetchTestPrices = async () => {
       try {
-        const response = await fetch(
-          `https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices`
-        );
+        const response = await fetch(`/api/cscs-test-prices`);
         const data = await response.json();
         const pricesObj = data.reduce((acc, curr) => {
           acc[curr.testType] = curr.price;
@@ -67,7 +65,7 @@ const Book = () => {
     const fetchAvailableSlots = async () => {
       try {
         const response = await fetch(
-          `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
+          `/api/available-slots?date=${formData.testDate}`
         );
         const data = await response.json();
         setAvailableSlots(data);
