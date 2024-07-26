@@ -475,6 +475,13 @@ async function handleCheckoutSessionCompleted(session) {
 async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
+
+app.get("*", function (req, res, next) {
+  if (req.url.startsWith("/https://citbcertify-20840f8ccc0e.herokuapp.com"))
+    return next();
+  res.sendFile(path.join(__dirname, "../../../build"));
+});
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });

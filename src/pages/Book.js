@@ -94,13 +94,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
         );
 
         if (
@@ -165,9 +159,6 @@ const Book = () => {
         "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
           body: JSON.stringify({ test: selectedTest, price, formData }),
         }
       );
