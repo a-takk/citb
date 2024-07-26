@@ -43,6 +43,44 @@ const Book = () => {
     agree: false,
   });
 
+  useEffect(() => {
+    // Fetch CSCS test prices from the server
+    const fetchTestPrices = async () => {
+      try {
+        const response = await fetch(
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
+        );
+        const data = await response.json();
+        const pricesObj = data.reduce((acc, curr) => {
+          acc[curr.testType] = curr.price;
+          return acc;
+        }, {});
+        setPrices(pricesObj);
+      } catch (error) {
+        console.error("Error fetching test prices:", error);
+      }
+    };
+
+    fetchTestPrices();
+  }, []);
+
+  useEffect(() => {
+    // Fetch available slots whenever the test date changes
+    const fetchAvailableSlots = async () => {
+      try {
+        const response = await fetch(
+          `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
+        );
+        const data = await response.json();
+        setAvailableSlots(data);
+      } catch (error) {
+        console.error("Error fetching available slots:", error);
+      }
+    };
+
+    fetchAvailableSlots();
+  }, [formData.testDate]);
+
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
     setFormData({
@@ -279,8 +317,8 @@ const Book = () => {
               Please select...
             </option>
             {availableSlots.map((slot) => (
-              <option key={slot.time} value={slot.time}>
-                {slot.time}
+              <option key={slot.testTime} value={slot.testTime}>
+                {slot.testTime}
               </option>
             ))}
           </select>
