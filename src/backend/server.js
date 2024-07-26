@@ -1,496 +1,421 @@
-const express = require("express");
-const nodemailer = require("nodemailer");
-const path = require("path");
-const cors = require("cors");
-const bodyparser = require("body-parser");
-const mysql = require("mysql");
-const dotenv = require("dotenv");
-const stripe = require("stripe")(
-  "sk_test_51E9RKSAwq1wpzpcjPFkYP9l7FmCz9MxpndHEnqs134t5xYB9lj8EztQ9QGhEr0ivHNTmpjvXFxc1dBr424kqgr2M00CqsMoCQh"
-);
+import "../styles/book.css"; // Import CSS for styling
+import React, { useState, useEffect } from "react";
+import { loadStripe } from "@stripe/stripe-js";
 
-dotenv.config();
+// Initialize Stripe with your publishable key
+const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
-const app = express();
-const PORT = process.env.PORT || 4000;
-const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
-const host = "eu-cluster-west-01.k8s.cleardb.net";
-const user = "b7fef2f7df5b5b";
-const password = "2c46f623";
-const database = "heroku_0eb17fd860c21b4";
-
-app.use(
-  cors({
-    origin: "https://citbcertify-20840f8ccc0e.herokuapp.com",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-    credentials: true,
-  })
-);
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: true }));
-
-const CLIENT_BUILD_DIR = path.join(__dirname, "../client/build");
-
-const pool = mysql.createPool({
-  host: host,
-  user: user,
-  password: password,
-  database: database,
-  connectionLimit: 10,
-});
-
-// Test MySQL connection
-pool.getConnection((err, connection) => {
-  if (err) {
-    console.error("Database connection failed: ", err.stack);
-    return;
-  }
-  console.log("Connected to MySQL database as id " + connection.threadId);
-  connection.release(); // Release the connection back to the pool
-});
-
-app.get("/api/admin", (req, res) => {
-  // Fetch customer details
-  const customerQuery = `
-    SELECT
-      title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
-      dateOfBirthYear, gender, address, town, county, country, postcode, email,
-      mobileNumber, agree
-    FROM customer_details
-  `;
-
-  // Fetch booking details, excluding rows with null values
-  const bookingQuery = `
-    SELECT
-      testDate, testTime, cscsCardType, cardAction, test, testLanguage, status
-    FROM booking_details
-    WHERE testDate IS NOT NULL AND testTime IS NOT NULL AND cscsCardType IS NOT NULL
-    AND cardAction IS NOT NULL AND test IS NOT NULL AND testLanguage IS NOT NULL AND status IS NOT NULL
-  `;
-
-  // Run the first query to get customer details
-  pool.query(customerQuery, (error, customerResults) => {
-    if (error) {
-      console.error("Error fetching customer data:", error);
-      return res.status(500).json({ error: "Internal server error" });
-    }
-
-    // Run the second query to get booking details
-    pool.query(bookingQuery, (error, bookingResults) => {
-      if (error) {
-        console.error("Error fetching booking data:", error);
-        return res.status(500).json({ error: "Internal server error" });
-      }
-
-      // Combine data
-      const combinedResults = customerResults.map((customer, index) => {
-        // Assign bookings, if any, to each customer
-        const booking = bookingResults[index] || {}; // Assign an empty object if no booking exists
-        return {
-          ...customer,
-          ...booking,
-        };
-      });
-
-      // Respond with the combined results
-      res.json({ data: combinedResults });
-    });
-  });
-});
-
-// Function to send confirmation email
-const sendContactEmail = async (email, formData) => {
-  const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "CITB: Email sent from customer",
-    text: `Thank you for contacting us. Here are the details of your message:\n
-      Name: ${formData.name}
-      Email: ${formData.email}
-      Message: ${formData.message}`,
+const Book = () => {
+  // Helper function to get the current date in YYYY-MM-DD format
+  const getCurrentDate = () => {
+    const date = new Date();
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0");
+    const year = date.getFullYear();
+    return `${year}-${month}-${day}`;
   };
 
-  await transporter.sendMail(mailOptions);
-};
-
-const sendAdminEmail = async (email, formData) => {
-  const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
+  // State for available slots, prices, and form data
+  const [availableSlots, setAvailableSlots] = useState([]);
+  const [prices, setPrices] = useState({});
+  const [formData, setFormData] = useState({
+    cscsCardType: "",
+    cardAction: "",
+    title: "Mr",
+    firstName: "",
+    surname: "",
+    dateOfBirthDay: "",
+    dateOfBirthMonth: "",
+    dateOfBirthYear: "",
+    gender: "Male",
+    test: "",
+    testLanguage: "",
+    testDate: getCurrentDate(),
+    testTime: "",
+    address: "",
+    town: "",
+    county: "",
+    country: "United Kingdom",
+    postcode: "",
+    mobileNumber: "",
+    email: "",
+    confirmEmail: "",
+    agree: false,
   });
 
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "CITB: Customer has booked for a test",
-    text: `A customer has booked for a test, here are the details:\n
-        CSCS Card Type: ${formData.cscsCardType}
-        Card Action: ${formData.cardAction}
-        Title: ${formData.title}
-        First Name: ${formData.firstName}
-        Surname: ${formData.surname}
-        Date of Birth: ${formData.dateOfBirthDay}/${formData.dateOfBirthMonth}/${formData.dateOfBirthYear}
-        Gender: ${formData.gender}
-        Test: ${formData.test}
-        Test Language: ${formData.testLanguage}
-        Test Date: ${formData.testDate}
-        Test Time: ${formData.testTime}
-        Address: ${formData.address}
-        Town: ${formData.town}
-        County: ${formData.county}
-        Country: ${formData.country}
-        Postcode: ${formData.postcode}
-        Mobile Number: ${formData.mobileNumber}
-        Email: ${formData.email}
-        Confirm Email: ${formData.confirmEmail}
-        Agree: ${formData.agree}`,
-  };
-
-  await transporter.sendMail(mailOptions);
-};
-
-const sendBookingEmail = async (email, formData) => {
-  const transporter = nodemailer.createTransport({
-    service: "Gmail",
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
-
-  const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
-    subject: "CITB: Thank You For Booking",
-    text: `Thank you for booking your CITB test, your booking details are:\n
-    Card Type: ${formData.cscsCardType}
-    Test Type: ${formData.test}
-    Test Date:  ${formData.testDate}
-    Test Time:  ${formData.testTime}`,
-  };
-
-  await transporter.sendMail(mailOptions);
-};
-
-// Route to handle contact email sending
-app.post("/api/email-sent", async (req, res) => {
-  const { email, formData } = req.body;
-
-  try {
-    console.log("Received email request:", { email, formData });
-    await sendContactEmail(email, formData);
-    console.log("Contact email sent successfully to:", email);
-    res.status(200).send("Email sent successfully");
-  } catch (error) {
-    console.error("Error sending email:", error);
-    res.status(500).send("Error sending email");
-  }
-});
-
-// Route to create checkout session
-app.post("/api/create-checkout-session", async (req, res) => {
-  const { test, price, formData } = req.body;
-  const { testDate, testTime } = formData;
-
-  try {
-    console.log("Received create checkout session request:", {
-      test,
-      price,
-      formData,
-    });
-
-    const query =
-      "SELECT * FROM booking_details WHERE test = ? AND testDate = ? AND testTime = ?";
-    pool.query(query, [test, testDate, testTime], async (error, results) => {
-      if (error) {
-        console.error("Error checking availability:", error);
-        return res.status(500).send("Error checking availability");
-      }
-
-      if (results.length > 0) {
-        console.log("Selected date and time are already booked:", {
-          test,
-          testDate,
-          testTime,
-        });
-        return res
-          .status(400)
-          .send("Selected date and time are already booked");
-      }
-
+  useEffect(() => {
+    // Fetch CSCS test prices from the server
+    const fetchTestPrices = async () => {
       try {
-        const session = await stripe.checkout.sessions.create({
-          payment_method_types: ["card"],
-          line_items: [
-            {
-              price_data: {
-                currency: "gbp",
-                product_data: { name: test },
-                unit_amount: price * 100,
-              },
-              quantity: 1,
-            },
-          ],
-          mode: "payment",
-          success_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/success",
-          cancel_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/failure",
-          metadata: formData,
-        });
-
-        console.log("Stripe session created successfully:", session.id);
-        res.json({ sessionId: session.id });
-      } catch (stripeError) {
-        console.error("Error creating Stripe session:", stripeError);
-        res.status(500).json({ error: "Failed to create Stripe session" });
+        const response = await fetch("/api/cscs-test-prices");
+        const data = await response.json();
+        const pricesObj = data.reduce((acc, curr) => {
+          acc[curr.testType] = curr.price;
+          return acc;
+        }, {});
+        setPrices(pricesObj);
+      } catch (error) {
+        console.error("Error fetching test prices:", error);
       }
-    });
-  } catch (error) {
-    console.error("Error in create-checkout-session:", error);
-    res.status(500).json({ error: "Failed to create checkout session" });
-  }
-});
+    };
 
-// Route to fetch CSCS test prices
-app.get("/api/cscs-test-prices", (req, res) => {
-  const query = "SELECT * FROM cscs_test_prices";
-  pool.query(query, (error, results) => {
-    if (error) {
-      console.error("Error fetching test prices:", error);
-      res.status(500).json({ error: "Error fetching test prices" });
-    } else {
-      res.status(200).json(results); // Send the results array
-    }
-  });
-});
+    fetchTestPrices();
+  }, []);
 
-app.get("/api/available-slots", async (req, res) => {
-  const { date } = req.query;
-
-  try {
-    const results = await fetchAvailableSlotsFromDB(date);
-    console.log("Fetched slots:", results); // Log fetched slots
-    res.json(results);
-  } catch (error) {
-    console.error("Error fetching available slots:", error);
-    res.status(500).json({ error: "Internal Server Error" });
-  }
-});
-
-// Function to fetch available slots from the database
-function fetchAvailableSlotsFromDB(date) {
-  return new Promise((resolve, reject) => {
-    const sql =
-      "SELECT testTime FROM booking_details WHERE testDate = ? AND status = 'available'";
-    pool.query(sql, [date], (err, results) => {
-      if (err) {
-        reject(err);
-      } else {
-        resolve(results);
+  useEffect(() => {
+    // Fetch available slots whenever the test date changes
+    const fetchAvailableSlots = async () => {
+      try {
+        const response = await fetch(
+          `/api/available-slots?date=${formData.testDate}`
+        );
+        const data = await response.json();
+        setAvailableSlots(data);
+      } catch (error) {
+        console.error("Error fetching available slots:", error);
       }
+    };
+
+    fetchAvailableSlots();
+  }, [formData.testDate]);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData({
+      ...formData,
+      [name]: type === "checkbox" ? checked : value,
     });
-  });
-}
+  };
 
-// Webhook endpoint to handle Stripe events
-app.post("/api/webhook", async (req, res) => {
-  const payload = req.body;
-  const payloadString = JSON.stringify(payload, null, 2);
-  const header = stripe.webhooks.generateTestHeaderString({
-    payload: payloadString,
-    secret: ENDPOINT_SECRET,
-  });
-
-  let event;
-  try {
-    event = stripe.webhooks.constructEvent(
-      payloadString,
-      header,
-      ENDPOINT_SECRET
-    );
-    console.log("Webhook Verified:", event);
-  } catch (err) {
-    console.log("Webhook Error:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  try {
-    switch (event.type) {
-      case "checkout.session.completed":
-        await handleCheckoutSessionCompleted(event.data.object);
-        break;
-
-      case "payment_intent.succeeded":
-        await handlePaymentIntentSucceeded(event.data.object);
-        break;
-
-      case "payment_method.attached":
-        console.log("PaymentMethod was attached to a Customer!");
-        break;
-
-      case "charge.updated":
-        console.log("Charge updated:", event.data.object);
-        break;
-
-      default:
-        console.log(`Unhandled event type ${event.type}`);
-        break;
-    }
-
-    res.status(200).json({ received: true });
-  } catch (error) {
-    console.error("Error processing webhook event:", error);
-    res.status(500).send("Error processing webhook event");
-  }
-});
-
-async function handleCheckoutSessionCompleted(session) {
-  const email = session.customer_details.email;
-  const formData = session.metadata || {};
-
-  try {
-    // Check if the slot exists and is available
-    const checkExistingQuery = `
-      SELECT bookingId FROM booking_details
-      WHERE testDate = ? AND testTime = ? AND status = 'available'
-    `;
-    const checkExistingParams = [formData.testDate, formData.testTime];
-
-    const existingBooking = await new Promise((resolve, reject) => {
-      pool.query(checkExistingQuery, checkExistingParams, (error, results) => {
-        if (error) {
-          reject(error);
-        } else {
-          resolve(results[0]); // Get the first matching booking if any
-        }
-      });
+  const handleDateChange = (e) => {
+    const { value } = e.target;
+    setFormData({
+      ...formData,
+      testDate: value,
+      testTime: "",
     });
+  };
 
-    if (!existingBooking) {
-      console.log("No available slot found for selected date and time:", {
-        testDate: formData.testDate,
-        testTime: formData.testTime,
-      });
-      return; // Exit if no available slot is found
-    }
+  const handleSubmit = async (e) => {
+    e.preventDefault();
 
-    const bookingId = existingBooking.bookingId;
+    const stripe = await stripePromise;
+    const selectedTest = formData.test;
+    const price = prices[selectedTest];
 
-    // Insert customer details into the database
-    const insertCustomerQuery = `
-      INSERT INTO customer_details (
-        title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
-        dateOfBirthYear, gender, address, town, county, country,
-        postcode, email, mobileNumber, agree
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
-
-    const agree = formData.agree === "true" ? 1 : 0;
-
-    await new Promise((resolve, reject) => {
-      pool.query(
-        insertCustomerQuery,
-        [
-          formData.title,
-          formData.firstName,
-          formData.surname,
-          formData.dateOfBirthDay,
-          formData.dateOfBirthMonth,
-          formData.dateOfBirthYear,
-          formData.gender,
-          formData.address,
-          formData.town,
-          formData.county,
-          formData.country,
-          formData.postcode,
-          email,
-          formData.mobileNumber,
-          agree,
-        ],
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
-        }
-      );
-    });
-
-    // Update the booking slot with new details
-    const updateBookingQuery = `
-      UPDATE booking_details
-      SET
-        cscsCardType = ?,
-        cardAction = ?,
-        test = ?,
-        testLanguage = ?,
-        status = 'booked'
-      WHERE
-        bookingId = ?
-    `;
-
-    await new Promise((resolve, reject) => {
-      pool.query(
-        updateBookingQuery,
-        [
-          formData.cscsCardType,
-          formData.cardAction,
-          formData.test,
-          formData.testLanguage,
-          bookingId, // Update the specific slot
-        ],
-        (error, result) => {
-          if (error) {
-            reject(error);
-          } else {
-            resolve(result);
-          }
-        }
-      );
-    });
-
-    console.log("Booking details updated successfully");
-
-    // Send confirmation emails
     try {
-      await Promise.all([
-        sendBookingEmail(email, formData),
-        sendAdminEmail(email, formData),
-      ]);
-      console.log("Confirmation emails sent successfully");
-    } catch (emailError) {
-      console.error("Error sending confirmation emails:", emailError);
+      const response = await fetch(
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ test: selectedTest, price, formData }),
+        }
+      );
+
+      const session = await response.json();
+
+      if (!session.sessionId) {
+        throw new Error("Session ID is not returned from server");
+      }
+
+      localStorage.setItem("bookingFormData", JSON.stringify(formData));
+      const { error } = await stripe.redirectToCheckout({
+        sessionId: session.sessionId,
+      });
+
+      if (error) {
+        console.error("Stripe Checkout error:", error);
+      }
+    } catch (error) {
+      console.error("Error creating checkout session:", error.message);
+      alert("Failed to start payment. Please try again later.");
     }
-  } catch (error) {
-    console.error("Error handling checkout session:", error);
-    throw error; // Throw the error to be handled at a higher level
-  }
-}
+  };
 
-// Function to handle actions after successful payment intent
-async function handlePaymentIntentSucceeded(paymentIntent) {
-  console.log("Payment Intent succeeded:", paymentIntent.id);
-}
+  return (
+    <div className="formbackground">
+      <form onSubmit={handleSubmit} className="form">
+        <h1>Start your booking</h1>
+        <h2>Your CSCS Card</h2>
+        <label>
+          What CSCS Card do you need?:
+          <select
+            name="cscsCardType"
+            value={formData.cscsCardType}
+            onChange={handleChange}
+          >
+            <option value="" disabled>
+              Please select...
+            </option>
+            <option value="Green Labourer CSCS Card">
+              Green Labourer CSCS Card
+            </option>
+            <option value="Blue Skilled CSCS Card">
+              Blue Skilled CSCS Card
+            </option>
+            <option value="Gold Advanced CSCS Card">
+              Gold Advanced CSCS Card
+            </option>
+            <option value="Red Provisional CSCS Card">
+              Red Provisional CSCS Card
+            </option>
+            <option value="Gold CSCS Card">Gold CSCS Card</option>
+            <option value="Black CSCS Card">Black CSCS Card</option>
+            <option value="White AQP CSCS Card">White AQP CSCS Card</option>
+            <option value="White PQP CSCS Card">White PQP CSCS Card</option>
+          </select>
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="cardAction"
+            value="New CSCS Card"
+            checked={formData.cardAction === "New CSCS Card"}
+            onChange={handleChange}
+          />
+          New CSCS Card (I do not have a CSCS Card)
+        </label>
+        <label>
+          <input
+            type="radio"
+            name="cardAction"
+            value="Renewal of CSCS Card"
+            checked={formData.cardAction === "Renewal of CSCS Card"}
+            onChange={handleChange}
+          />
+          Renewal of CSCS Card (My CSCS Card has expired)
+        </label>
+        <h2>Who's Taking The Test</h2>
+        <label>
+          Title:
+          <select name="title" value={formData.title} onChange={handleChange}>
+            <option value="Mr">Mr</option>
+            <option value="Mrs">Mrs</option>
+            <option value="Ms">Ms</option>
+            <option value="Miss">Miss</option>
+            <option value="Dr">Dr</option>
+          </select>
+        </label>
+        <label>
+          First Name:
+          <input
+            type="text"
+            name="firstName"
+            value={formData.firstName}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Surname:
+          <input
+            type="text"
+            name="surname"
+            value={formData.surname}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Date of Birth:
+          <div>
+            <input
+              type="text"
+              name="dateOfBirthDay"
+              value={formData.dateOfBirthDay}
+              onChange={handleChange}
+              placeholder="DD"
+              maxLength="2"
+              required
+              title="Please enter a valid day (DD)"
+            />
+            <input
+              type="text"
+              name="dateOfBirthMonth"
+              value={formData.dateOfBirthMonth}
+              onChange={handleChange}
+              placeholder="MM"
+              maxLength="2"
+              required
+              title="Please enter a valid month (MM)"
+            />
+            <input
+              type="text"
+              name="dateOfBirthYear"
+              value={formData.dateOfBirthYear}
+              onChange={handleChange}
+              placeholder="YYYY"
+              maxLength="4"
+              required
+              title="Please enter a valid year (YYYY)"
+            />
+          </div>
+        </label>
+        <label>
+          Gender:
+          <select name="gender" value={formData.gender} onChange={handleChange}>
+            <option value="Male">Male</option>
+            <option value="Female">Female</option>
+            <option value="Non-binary">Non-binary</option>
+            <option value="Prefer not to say">Prefer not to say</option>
+          </select>
+        </label>
+        <h2>Select Your Test</h2>
+        <label>
+          Test:
+          <select name="test" value={formData.test} onChange={handleChange}>
+            <option value="" disabled>
+              Please select...
+            </option>
+            {Object.keys(prices).map((key) => (
+              <option key={key} value={key}>
+                {`${key} (£${prices[key]})`}
+              </option>
+            ))}
+          </select>
+        </label>
+        <label>
+          Language:
+          <select
+            name="testLanguage"
+            value={formData.testLanguage}
+            onChange={handleChange}
+          >
+            <option value="" disabled>
+              Please select...
+            </option>
+            <option value="English">English</option>
+            <option value="Punjabi">Punjabi</option>
+            <option value="Italian">Italian</option>
+          </select>
+        </label>
+        <label>
+          Date:
+          <input
+            type="date"
+            name="testDate"
+            className="date"
+            value={formData.testDate}
+            onChange={handleDateChange}
+            min={getCurrentDate()}
+            required
+          />
+        </label>
+        <label>
+          Time:
+          <select
+            name="testTime"
+            value={formData.testTime}
+            onChange={handleChange}
+          >
+            <option value="" disabled>
+              Please select...
+            </option>
+            {availableSlots.map((slot) => (
+              <option key={slot.testTime} value={slot.testTime}>
+                {slot.testTime}
+              </option>
+            ))}
+          </select>
+        </label>
+        <h2>Address Details</h2>
+        <label>
+          Postcode:
+          <input
+            type="text"
+            name="postcode"
+            value={formData.postcode}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Address:
+          <input
+            type="text"
+            name="address"
+            value={formData.address}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Town/City:
+          <input
+            type="text"
+            name="town"
+            value={formData.town}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          County:
+          <input
+            type="text"
+            name="county"
+            value={formData.county}
+            onChange={handleChange}
+          />
+        </label>
+        <label>
+          Country:
+          <input
+            type="text"
+            name="country"
+            value={formData.country}
+            onChange={handleChange}
+            readOnly
+          />
+        </label>
+        <h2>Contact Details</h2>
+        <label>
+          Mobile Number:
+          <input
+            type="text"
+            name="mobileNumber"
+            value={formData.mobileNumber}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Email:
+          <input
+            type="email"
+            name="email"
+            value={formData.email}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          Confirm Email:
+          <input
+            type="email"
+            name="confirmEmail"
+            value={formData.confirmEmail}
+            onChange={handleChange}
+            required
+          />
+        </label>
+        <label>
+          <input
+            type="checkbox"
+            name="agree"
+            checked={formData.agree}
+            onChange={handleChange}
+          />
+          I agree to the terms and conditions, with acknowledgement of this
+          booking is for the CITB Health, Safety & Environment Test, as a
+          requirement for CSCS card eligibility.
+        </label>
+        <button type="submit">Checkout</button>
+      </form>
+    </div>
+  );
+};
 
-app.use(express.static(CLIENT_BUILD_DIR));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(CLIENT_BUILD_DIR, "index.html"));
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
-});
+export default Book;
