@@ -1,12 +1,12 @@
 import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import axios from "axios";
 
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
+  // Helper function to get the current date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, "0");
@@ -15,6 +15,7 @@ const Book = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // State for available slots, prices, and form data
   const [availableSlots, setAvailableSlots] = useState([]);
   const [prices, setPrices] = useState({});
   const [formData, setFormData] = useState({
@@ -43,48 +44,96 @@ const Book = () => {
   });
 
   useEffect(() => {
-    const fetchTestPrices = async () => {
-      try {
-        const response = await fetch(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const data = await response.json();
-        console.log("Fetched test prices:", data);
-        const pricesObj = data.reduce((acc, curr) => {
-          acc[curr.testType] = curr.price;
-          return acc;
-        }, {});
-        setPrices(pricesObj);
-      } catch (error) {
-        console.error("Error fetching test prices:", error);
-      }
-    };
+    if (formData.testDate) {
+      fetchAvailableSlots(formData.testDate);
+    }
+  }, [formData.testDate]);
 
-    fetchTestPrices();
-  }, []);
+  const fetchAvailableSlots = async (date) => {
+    try {
+      const response = await fetch(
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log(
+        "Response Content-Type:",
+        response.headers.get("Content-Type")
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      if (response.headers.get("Content-Type")?.includes("application/json")) {
+        const responseData = await response.json();
+        console.log("Available slots fetched:", responseData);
+        setAvailableSlots(
+          responseData.map((slot) => ({
+            time: slot.testTime.substring(0, 5), // Format time to HH:MM
+          }))
+        );
+      } else {
+        const responseText = await response.text();
+        console.error(
+          "Unexpected response format. Response text:",
+          responseText
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching available slots:", error);
+    }
+  };
 
   useEffect(() => {
-    const fetchAvailableSlots = async () => {
+    const fetchPrices = async () => {
       try {
         const response = await fetch(
-          `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
         );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
+
+        if (
+          response.ok &&
+          response.headers.get("Content-Type")?.includes("application/json")
+        ) {
+          const data = await response.json();
+          console.log("Prices fetched:", data);
+          if (Array.isArray(data)) {
+            const priceMap = data.reduce((acc, item) => {
+              if (item && item.testName && item.price !== undefined) {
+                acc[item.testName] = item.price;
+              }
+              return acc;
+            }, {});
+            setPrices(priceMap);
+          } else {
+            console.error("Unexpected data format for prices:", data);
+          }
+        } else {
+          const responseText = await response.text();
+          console.error(
+            "Unexpected response format. Response text:",
+            responseText
+          );
         }
-        const data = await response.json();
-        console.log("Fetched available slots:", data);
-        setAvailableSlots(data);
       } catch (error) {
-        console.error("Error fetching available slots:", error);
+        console.error("Error fetching prices:", error);
       }
     };
 
-    fetchAvailableSlots();
-  }, [formData.testDate]);
+    fetchPrices();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -103,6 +152,7 @@ const Book = () => {
     });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -123,17 +173,14 @@ const Book = () => {
       );
 
       const session = await response.json();
-      console.log("Checkout session response:", session);
 
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
       }
-
       localStorage.setItem("bookingFormData", JSON.stringify(formData));
       const { error } = await stripe.redirectToCheckout({
         sessionId: session.sessionId,
       });
-
       if (error) {
         console.error("Stripe Checkout error:", error);
       }
@@ -238,7 +285,6 @@ const Book = () => {
               placeholder="DD"
               maxLength="2"
               required
-              title="Please enter a valid day (DD)"
             />
             <input
               type="text"
@@ -248,7 +294,6 @@ const Book = () => {
               placeholder="MM"
               maxLength="2"
               required
-              title="Please enter a valid month (MM)"
             />
             <input
               type="text"
@@ -258,7 +303,6 @@ const Book = () => {
               placeholder="YYYY"
               maxLength="4"
               required
-              title="Please enter a valid year (YYYY)"
             />
           </div>
         </label>
@@ -323,8 +367,8 @@ const Book = () => {
               Please select...
             </option>
             {availableSlots.map((slot) => (
-              <option key={slot.testTime} value={slot.testTime}>
-                {slot.testTime}
+              <option key={slot.time} value={slot.time}>
+                {slot.time}
               </option>
             ))}
           </select>
