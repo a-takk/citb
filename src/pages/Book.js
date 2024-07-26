@@ -1,6 +1,7 @@
 import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import axios from "axios";
 
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
@@ -46,7 +47,7 @@ const Book = () => {
   useEffect(() => {
     const fetchTestPrices = async () => {
       try {
-        const response = await fetch(`/api/cscs-test-prices`);
+        const response = await axios.get("/api/cscs-test-prices");
         const data = await response.json();
         const pricesObj = data.reduce((acc, curr) => {
           acc[curr.testType] = curr.price;
@@ -64,7 +65,7 @@ const Book = () => {
   useEffect(() => {
     const fetchAvailableSlots = async () => {
       try {
-        const response = await fetch(
+        const response = await axios.get(
           `/api/available-slots?date=${formData.testDate}`
         );
         const data = await response.json();
@@ -102,16 +103,13 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await fetch(
-        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ test: selectedTest, price, formData }),
-        }
-      );
+      const response = await axios.get("/api/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ test: selectedTest, price, formData }),
+      });
 
       const session = await response.json();
 
