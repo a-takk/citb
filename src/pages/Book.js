@@ -44,11 +44,10 @@ const Book = () => {
   });
 
   useEffect(() => {
-    // Fetch CSCS test prices from the server
     const fetchTestPrices = async () => {
       try {
         const response = await fetch(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
+          `https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices`
         );
         const data = await response.json();
         const pricesObj = data.reduce((acc, curr) => {
@@ -65,7 +64,6 @@ const Book = () => {
   }, []);
 
   useEffect(() => {
-    // Fetch available slots whenever the test date changes
     const fetchAvailableSlots = async () => {
       try {
         const response = await fetch(
