@@ -50,7 +50,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await axios.get(
-        `https://citb.vercel.app/api/available-slots?date=${date}`,
+        `https://citb-mtnq716gf-a-takks-projects.vercel.app/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -79,7 +79,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await axios.get(
-          "https://citb.vercel.app/api/cscs-test-prices",
+          "https://citb-mtnq716gf-a-takks-projects.vercel.app/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
@@ -142,7 +142,7 @@ const Book = () => {
 
     try {
       const response = await axios.get(
-        "https://citb.vercel.app/api/create-checkout-session",
+        "https://citb-mtnq716gf-a-takks-projects.vercel.app/api/create-checkout-session",
         {
           method: "POST",
           headers: {
