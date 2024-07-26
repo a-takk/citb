@@ -58,9 +58,13 @@ const Book = () => {
           },
         }
       );
+      console.log("Response status:", response.status); // Log status
+      console.log("Response headers:", response.headers);
 
       if (response.headers.get("Content-Type")?.includes("application/json")) {
         const responseData = await response.json();
+        console.log("Response data:", responseData); // Log data
+
         setAvailableSlots(
           responseData.map((slot) => ({
             time: slot.testTime.substring(0, 5), // Format time to HH:MM
@@ -88,11 +92,15 @@ const Book = () => {
           }
         );
 
+        console.log("Response status:", response.status); // Log status
+        console.log("Response headers:", response.headers);
+
         if (
           response.ok &&
           response.headers.get("Content-Type")?.includes("application/json")
         ) {
           const data = await response.json();
+          console.log("Response data:", responseData); // Log data
           if (Array.isArray(data)) {
             const priceMap = data.reduce((acc, item) => {
               if (item?.testName && item.price !== undefined) {
