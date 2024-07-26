@@ -12,7 +12,6 @@ const stripe = require("stripe")(
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 const host = "eu-cluster-west-01.k8s.cleardb.net";
 const user = "b7fef2f7df5b5b";
@@ -488,8 +487,4 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(CLIENT_BUILD_DIR, "index.html"));
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
