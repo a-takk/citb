@@ -19,14 +19,7 @@ const user = "b7fef2f7df5b5b";
 const password = "2c46f623";
 const database = "heroku_0eb17fd860c21b4";
 
-app.use(
-  cors({
-    origin: "https://citb.vercel.app",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
