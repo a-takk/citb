@@ -2,9 +2,11 @@ import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 
+// Initialize Stripe with your publishable key
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
+  // Helper function to get the current date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, "0");
@@ -13,6 +15,7 @@ const Book = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // State for available slots, prices, and form data
   const [availableSlots, setAvailableSlots] = useState([]);
   const [prices, setPrices] = useState({});
   const [formData, setFormData] = useState({
@@ -49,22 +52,21 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `https://citb.vercel.app/api/available-slots?date=${date}`,
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
-            Accept: "application/json",
             "Content-Type": "application/json",
           },
         }
       );
-      console.log("Response status:", response.status); // Log status
-      console.log("Response headers:", response.headers);
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
 
       if (response.headers.get("Content-Type")?.includes("application/json")) {
         const responseData = await response.json();
-        console.log("Response data:", responseData); // Log data
-
         setAvailableSlots(
           responseData.map((slot) => ({
             time: slot.testTime.substring(0, 5), // Format time to HH:MM
@@ -82,25 +84,20 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://citb.vercel.app/api/cscs-test-prices",
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
-              Accept: "application/json",
               "Content-Type": "application/json",
             },
           }
         );
-
-        console.log("Response status:", response.status); // Log status
-        console.log("Response headers:", response.headers);
 
         if (
           response.ok &&
           response.headers.get("Content-Type")?.includes("application/json")
         ) {
           const data = await response.json();
-          console.log("Response data:", responseData); // Log data
           if (Array.isArray(data)) {
             const priceMap = data.reduce((acc, item) => {
               if (item?.testName && item.price !== undefined) {
@@ -149,11 +146,10 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        "https://citb.vercel.app/api/create-checkout-session",
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
         {
           method: "POST",
           headers: {
-            Accept: "application/json",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ test: selectedTest, price, formData }),
