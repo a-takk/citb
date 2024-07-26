@@ -19,18 +19,9 @@ const user = "b7fef2f7df5b5b";
 const password = "2c46f623";
 const database = "heroku_0eb17fd860c21b4";
 
-app.use(
-  cors({
-    origin: "https://citbcertify-20840f8ccc0e.herokuapp.com",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type"],
-    credentials: true,
-  })
-);
+app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-
-const CLIENT_BUILD_DIR = path.join(__dirname, "../client/build");
 
 const pool = mysql.createPool({
   host: host,
@@ -242,6 +233,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
         });
 
         console.log("Stripe session created successfully:", session.id);
+        res.setHeader("Content-Type", "application/json");
         res.json({ sessionId: session.id });
       } catch (stripeError) {
         console.error("Error creating Stripe session:", stripeError);
@@ -260,6 +252,7 @@ app.get("/api/cscs-test-prices", (req, res) => {
   pool.query(query, (error, results) => {
     if (error) {
       console.error("Error fetching test prices:", error);
+      res.setHeader("Content-Type", "application/json");
       res.status(500).json({ error: "Error fetching test prices" });
     } else {
       res.status(200).json(results); // Send the results array
@@ -273,6 +266,7 @@ app.get("/api/available-slots", async (req, res) => {
   try {
     const results = await fetchAvailableSlotsFromDB(date);
     console.log("Fetched slots:", results); // Log fetched slots
+    res.setHeader("Content-Type", "application/json");
     res.json(results);
   } catch (error) {
     console.error("Error fetching available slots:", error);
