@@ -45,7 +45,7 @@ const Book = () => {
     const fetchTestPrices = async () => {
       try {
         const response = await fetch(
-          "https://citbcertify.co.uk/api/cscs-test-prices"
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -69,7 +69,7 @@ const Book = () => {
     const fetchAvailableSlots = async () => {
       try {
         const response = await fetch(
-          `https://citbcertify.co.uk/api/available-slots?date=${formData.testDate}`
+          `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);

@@ -229,8 +229,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
             },
           ],
           mode: "payment",
-          success_url: "https://www.citbcertify.co.uk/success",
-          cancel_url: "https://www.citbcertify.co.uk/failure",
+          success_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/success",
+          cancel_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/failure",
           metadata: formData,
         });
 
