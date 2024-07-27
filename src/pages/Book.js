@@ -52,7 +52,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `${PRODUCTION_URL}/api/available-slots?date=${date}`,
+        `${process.env.PRODUCTION_URL}/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -93,7 +93,9 @@ const Book = () => {
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await fetch(`${PRODUCTION_URL}/api/cscs-test-prices`);
+        const response = await fetch(
+          `${process.env.PRODUCTION_URL}/api/cscs-test-prices`
+        );
 
         if (
           response.ok &&
@@ -154,7 +156,7 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        `${PRODUCTION_URL}/api/create-checkout-session`,
+        `${process.env.PRODUCTION_URL}/api/create-checkout-session`,
         {
           method: "POST",
           body: JSON.stringify({ test: selectedTest, price, formData }),

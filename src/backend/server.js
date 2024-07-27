@@ -229,8 +229,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
             },
           ],
           mode: "payment",
-          success_url: `${PRODUCTION_URL}/success`,
-          cancel_url: `${PRODUCTION_URL}/failure`,
+          success_url: `${process.env.PRODUCTION_URL}/success`,
+          cancel_url: `${process.env.PRODUCTION_URL}/failure`,
           metadata: formData,
         });
 
