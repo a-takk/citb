@@ -42,54 +42,62 @@ const Book = () => {
   });
 
   useEffect(() => {
-    const fetchTestPrices = async () => {
-      try {
-        const response = await fetch("/api/cscs-test-prices");
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new TypeError(
-            "Expected JSON response, but got: " + contentType
-          );
-        }
-        const data = await response.json();
-        console.log("Fetched test prices:", data);
-        const pricesObj = data.reduce((acc, curr) => {
-          acc[curr.testType] = curr.price;
-          return acc;
-        }, {});
-        setPrices(pricesObj);
-      } catch (error) {
-        console.error("Error fetching test prices:", error.message);
-      }
+    const fetchTestPrices = () => {
+      fetch(
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new TypeError(
+              `Expected JSON response, but got: ${contentType}`
+            );
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Fetched test prices:", data);
+          const pricesObj = data.reduce((acc, curr) => {
+            acc[curr.testType] = curr.price;
+            return acc;
+          }, {});
+          setPrices(pricesObj);
+        })
+        .catch((error) => {
+          console.error("Error fetching test prices:", error.message);
+        });
     };
 
     fetchTestPrices();
   }, []);
 
   useEffect(() => {
-    const fetchAvailableSlots = async () => {
-      try {
-        const response = await fetch(
-          `/api/available-slots?date=${formData.testDate}`
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const contentType = response.headers.get("content-type");
-        if (!contentType || !contentType.includes("application/json")) {
-          throw new TypeError(
-            "Expected JSON response, but got: " + contentType
-          );
-        }
-        const data = await response.json();
-        console.log("Fetched available slots:", data);
-        setAvailableSlots(data);
-      } catch (error) {
-        console.error("Error fetching available slots:", error.message);
-      }
+    const fetchAvailableSlots = () => {
+      fetch(
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
+      )
+        .then((response) => {
+          if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+          }
+          const contentType = response.headers.get("content-type");
+          if (!contentType || !contentType.includes("application/json")) {
+            throw new TypeError(
+              `Expected JSON response, but got: ${contentType}`
+            );
+          }
+          return response.json();
+        })
+        .then((data) => {
+          console.log("Fetched available slots:", data);
+          setAvailableSlots(data);
+        })
+        .catch((error) => {
+          console.error("Error fetching available slots:", error.message);
+        });
     };
 
     fetchAvailableSlots();
@@ -120,13 +128,16 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ test: selectedTest, price, formData }),
-      });
+      const response = await fetch(
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ test: selectedTest, price, formData }),
+        }
+      );
 
       const session = await response.json();
       console.log("Checkout session response:", session);
