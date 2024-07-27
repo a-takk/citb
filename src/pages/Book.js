@@ -52,7 +52,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `${process.env.PRODUCTION_URL}/api/available-slots?date=${date}`,
+        "https://www.citbcertify.co.uk/api/available-slots?date=${date}",
         {
           method: "GET",
           headers: {
@@ -94,7 +94,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          `${process.env.PRODUCTION_URL}/api/cscs-test-prices`
+          "https://www.citbcertify.co.uk/api/cscs-test-prices"
         );
 
         if (
@@ -156,7 +156,7 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        `${process.env.PRODUCTION_URL}/api/create-checkout-session`,
+        "https://www.citbcertify.co.uk/api/create-checkout-session",
         {
           method: "POST",
           body: JSON.stringify({ test: selectedTest, price, formData }),

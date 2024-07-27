@@ -229,8 +229,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
             },
           ],
           mode: "payment",
-          success_url: `${process.env.PRODUCTION_URL}/success`,
-          cancel_url: `${process.env.PRODUCTION_URL}/failure`,
+          success_url: "https://www.citbcertify.co.uk/success",
+          cancel_url: "https://www.citbcertify.co.uk/failure",
           metadata: formData,
         });
 
