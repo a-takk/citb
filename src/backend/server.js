@@ -229,8 +229,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
             },
           ],
           mode: "payment",
-          success_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/success",
-          cancel_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/failure",
+          success_url: "https://www.citbcertify.co.uk/success",
+          cancel_url: "https://www.citbcertify.co.uk/failure",
           metadata: formData,
         });
 
@@ -472,7 +472,7 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
 
-app.get("/*", function (req, res) {
+app.get("*", function (req, res) {
   res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 

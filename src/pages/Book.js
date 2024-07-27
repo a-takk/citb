@@ -6,6 +6,7 @@ import { loadStripe } from "@stripe/stripe-js";
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
+  // Helper function to get the current date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, "0");
@@ -14,6 +15,7 @@ const Book = () => {
     return `${year}-${month}-${day}`;
   };
 
+  // State for available slots, prices, and form data
   const [availableSlots, setAvailableSlots] = useState([]);
   const [prices, setPrices] = useState({});
   const [formData, setFormData] = useState({
@@ -42,32 +44,96 @@ const Book = () => {
   });
 
   useEffect(() => {
-    fetch("/api/cscs-test-prices")
-      .then((response) => response.json())
-      .then((data) => {
-        const pricesObj = data.reduce((acc, item) => {
-          acc[item.test] = item.price;
-          return acc;
-        }, {});
-        setPrices(pricesObj);
-      })
-      .catch((error) => {
-        console.error("Error fetching test prices:", error);
-      });
-  }, []);
-
-  useEffect(() => {
     if (formData.testDate) {
-      fetch(`/api/available-slots?date=${formData.testDate}`)
-        .then((response) => response.json())
-        .then((data) => {
-          setAvailableSlots(data);
-        })
-        .catch((error) => {
-          console.error("Error fetching available slots:", error);
-        });
+      fetchAvailableSlots(formData.testDate);
     }
   }, [formData.testDate]);
+
+  const fetchAvailableSlots = async (date) => {
+    try {
+      const response = await fetch(
+        `https://www.citbcertify.co.uk/api/available-slots?date=${date}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      console.log(
+        "Response Content-Type:",
+        response.headers.get("Content-Type")
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      if (response.headers.get("Content-Type")?.includes("application/json")) {
+        const responseData = await response.json();
+        console.log("Available slots fetched:", responseData);
+        setAvailableSlots(
+          responseData.map((slot) => ({
+            time: slot.testTime.substring(0, 5), // Format time to HH:MM
+          }))
+        );
+      } else {
+        const responseText = await response.text();
+        console.error(
+          "Unexpected response format. Response text:",
+          responseText
+        );
+      }
+    } catch (error) {
+      console.error("Error fetching available slots:", error);
+    }
+  };
+
+  useEffect(() => {
+    const fetchPrices = async () => {
+      try {
+        const response = await fetch(
+          "https://www.citbcertify.co.uk/api/cscs-test-prices",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (
+          response.ok &&
+          response.headers.get("Content-Type")?.includes("application/json")
+        ) {
+          const data = await response.json();
+          console.log("Prices fetched:", data);
+          if (Array.isArray(data)) {
+            const priceMap = data.reduce((acc, item) => {
+              if (item && item.testName && item.price !== undefined) {
+                acc[item.testName] = item.price;
+              }
+              return acc;
+            }, {});
+            setPrices(priceMap);
+          } else {
+            console.error("Unexpected data format for prices:", data);
+          }
+        } else {
+          const responseText = await response.text();
+          console.error(
+            "Unexpected response format. Response text:",
+            responseText
+          );
+        }
+      } catch (error) {
+        console.error("Error fetching prices:", error);
+      }
+    };
+
+    fetchPrices();
+  }, []);
 
   const handleChange = (e) => {
     const { name, value, type, checked } = e.target;
@@ -86,6 +152,7 @@ const Book = () => {
     });
   };
 
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -95,7 +162,7 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
+        "https://www.citbcertify.co.uk/api/create-checkout-session",
         {
           method: "POST",
           headers: {
@@ -106,17 +173,14 @@ const Book = () => {
       );
 
       const session = await response.json();
-      console.log("Checkout session response:", session);
 
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
       }
-
       localStorage.setItem("bookingFormData", JSON.stringify(formData));
       const { error } = await stripe.redirectToCheckout({
         sessionId: session.sessionId,
       });
-
       if (error) {
         console.error("Stripe Checkout error:", error);
       }
@@ -221,7 +285,6 @@ const Book = () => {
               placeholder="DD"
               maxLength="2"
               required
-              title="Please enter a valid day (DD)"
             />
             <input
               type="text"
@@ -231,7 +294,6 @@ const Book = () => {
               placeholder="MM"
               maxLength="2"
               required
-              title="Please enter a valid month (MM)"
             />
             <input
               type="text"
@@ -241,7 +303,6 @@ const Book = () => {
               placeholder="YYYY"
               maxLength="4"
               required
-              title="Please enter a valid year (YYYY)"
             />
           </div>
         </label>
@@ -306,8 +367,8 @@ const Book = () => {
               Please select...
             </option>
             {availableSlots.map((slot) => (
-              <option key={slot.testTime} value={slot.testTime}>
-                {slot.testTime}
+              <option key={slot.time} value={slot.time}>
+                {slot.time}
               </option>
             ))}
           </select>
