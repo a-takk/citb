@@ -50,6 +50,12 @@ const Book = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new TypeError(
+            "Expected JSON response, but got: " + contentType
+          );
+        }
         const data = await response.json();
         console.log("Fetched test prices:", data);
         const pricesObj = data.reduce((acc, curr) => {
@@ -58,7 +64,7 @@ const Book = () => {
         }, {});
         setPrices(pricesObj);
       } catch (error) {
-        console.error("Error fetching test prices:", error);
+        console.error("Error fetching test prices:", error.message);
       }
     };
 
@@ -74,11 +80,17 @@ const Book = () => {
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
+        const contentType = response.headers.get("content-type");
+        if (!contentType || !contentType.includes("application/json")) {
+          throw new TypeError(
+            "Expected JSON response, but got: " + contentType
+          );
+        }
         const data = await response.json();
         console.log("Fetched available slots:", data);
         setAvailableSlots(data);
       } catch (error) {
-        console.error("Error fetching available slots:", error);
+        console.error("Error fetching available slots:", error.message);
       }
     };
 
