@@ -56,6 +56,7 @@ const Book = () => {
         {
           method: "GET",
           headers: {
+            Accept: "application/json",
             "Content-Type": "application/json",
           },
         }
@@ -70,7 +71,8 @@ const Book = () => {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      if (response.headers.get("Content-Type")?.includes("application/json")) {
+      const contentType = response.headers.get("Content-Type");
+      if (contentType && contentType.includes("application/json")) {
         const responseData = await response.json();
         console.log("Available slots fetched:", responseData);
         setAvailableSlots(
@@ -94,7 +96,14 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://www.citbcertify.co.uk/api/cscs-test-prices"
+          "https://www.citbcertify.co.uk/api/cscs-test-prices",
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json",
+              "Content-Type": "application/json",
+            },
+          }
         );
 
         if (
