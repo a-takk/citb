@@ -41,10 +41,6 @@ pool.getConnection((err, connection) => {
   connection.release(); // Release the connection back to the pool
 });
 
-app.get("/*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/../", "build", "index.html"));
-});
-
 app.get("/api/admin", (req, res) => {
   // Fetch customer details
   const customerQuery = `
@@ -479,6 +475,10 @@ async function handleCheckoutSessionCompleted(session) {
 async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
+
+app.get("/*", (req, res) => {
+  res.sendFile(path.join(__dirname, "/../", "build", "index.html"));
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
