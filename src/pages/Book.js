@@ -42,65 +42,31 @@ const Book = () => {
   });
 
   useEffect(() => {
-    const fetchTestPrices = () => {
-      fetch(
-        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
-      )
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const contentType = response.headers.get("content-type");
-          if (!contentType || !contentType.includes("application/json")) {
-            throw new TypeError(
-              `Expected JSON response, but got: ${contentType}`
-            );
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Fetched test prices:", data);
-          const pricesObj = data.reduce((acc, curr) => {
-            acc[curr.testType] = curr.price;
-            return acc;
-          }, {});
-          setPrices(pricesObj);
-        })
-        .catch((error) => {
-          console.error("Error fetching test prices:", error.message);
-        });
-    };
-
-    fetchTestPrices();
+    fetch("/api/cscs-test-prices")
+      .then((response) => response.json())
+      .then((data) => {
+        const pricesObj = data.reduce((acc, item) => {
+          acc[item.test] = item.price;
+          return acc;
+        }, {});
+        setPrices(pricesObj);
+      })
+      .catch((error) => {
+        console.error("Error fetching test prices:", error);
+      });
   }, []);
 
   useEffect(() => {
-    const fetchAvailableSlots = () => {
-      fetch(
-        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
-      )
-        .then((response) => {
-          if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-          }
-          const contentType = response.headers.get("content-type");
-          if (!contentType || !contentType.includes("application/json")) {
-            throw new TypeError(
-              `Expected JSON response, but got: ${contentType}`
-            );
-          }
-          return response.json();
-        })
+    if (formData.testDate) {
+      fetch(`/api/available-slots?date=${formData.testDate}`)
+        .then((response) => response.json())
         .then((data) => {
-          console.log("Fetched available slots:", data);
           setAvailableSlots(data);
         })
         .catch((error) => {
-          console.error("Error fetching available slots:", error.message);
+          console.error("Error fetching available slots:", error);
         });
-    };
-
-    fetchAvailableSlots();
+    }
   }, [formData.testDate]);
 
   const handleChange = (e) => {
