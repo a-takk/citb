@@ -12,11 +12,8 @@ const stripe = require("stripe")(
 dotenv.config();
 
 const app = express();
+const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
-const host = "eu-cluster-west-01.k8s.cleardb.net";
-const user = "b7fef2f7df5b5b";
-const password = "2c46f623";
-const database = "heroku_0eb17fd860c21b4";
 
 app.use(cors());
 app.use(bodyparser.json());
@@ -24,10 +21,10 @@ app.use(bodyparser.urlencoded({ extended: true }));
 app.use(express.static(path.join(__dirname, "build")));
 
 const pool = mysql.createPool({
-  host: host,
-  user: user,
-  password: password,
-  database: database,
+  host: process.env.DB_HOST,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
   connectionLimit: 10,
 });
 
@@ -38,11 +35,10 @@ pool.getConnection((err, connection) => {
     return;
   }
   console.log("Connected to MySQL database as id " + connection.threadId);
-  connection.release(); // Release the connection back to the pool
+  connection.release();
 });
 
 app.get("/api/admin", (req, res) => {
-  // Fetch customer details
   const customerQuery = `
     SELECT
       title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
@@ -74,17 +70,13 @@ app.get("/api/admin", (req, res) => {
         return res.status(500).json({ error: "Internal server error" });
       }
 
-      // Combine data
       const combinedResults = customerResults.map((customer, index) => {
-        // Assign bookings, if any, to each customer
-        const booking = bookingResults[index] || {}; // Assign an empty object if no booking exists
+        const booking = bookingResults[index] || {};
         return {
           ...customer,
           ...booking,
         };
       });
-
-      // Respond with the combined results
       res.json({ data: combinedResults });
     });
   });
