@@ -55,12 +55,10 @@ const Book = () => {
         `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
         {
           method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
         }
       );
 
+      response.headers["Content-Type"] = "application/json; charset=utf-8";
       console.log(
         "Response Content-Type:",
         response.headers.get("Content-Type")
@@ -96,6 +94,7 @@ const Book = () => {
         const response = await fetch(
           "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
         );
+        response.headers["Content-Type"] = "application/json; charset=utf-8";
 
         if (
           response.ok &&
@@ -162,7 +161,7 @@ const Book = () => {
           body: JSON.stringify({ test: selectedTest, price, formData }),
         }
       );
-
+      response.headers["Content-Type"] = "application/json; charset=utf-8";
       const session = await response.json();
 
       if (!session.sessionId) {
