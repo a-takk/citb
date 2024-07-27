@@ -59,11 +59,6 @@ const Book = () => {
         },
       });
 
-      console.log(
-        "Response Content-Type:",
-        response.headers.get("Content-Type")
-      );
-
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
@@ -71,7 +66,6 @@ const Book = () => {
       const contentType = response.headers.get("Content-Type");
       if (contentType && contentType.includes("application/json")) {
         const responseData = await response.json();
-        console.log("Available slots fetched:", responseData);
         setAvailableSlots(
           responseData.map((slot) => ({
             time: slot.testTime.substring(0, 5), // Format time to HH:MM
@@ -105,7 +99,6 @@ const Book = () => {
           response.headers.get("Content-Type")?.includes("application/json")
         ) {
           const data = await response.json();
-          console.log("Prices fetched:", data);
           if (Array.isArray(data)) {
             const priceMap = data.reduce((acc, item) => {
               if (item && item.testName && item.price !== undefined) {
@@ -160,18 +153,26 @@ const Book = () => {
     try {
       const response = await fetch("/api/create-checkout-session", {
         method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
         body: JSON.stringify({ test: selectedTest, price, formData }),
       });
 
-      const session = await response.json();
+      if (!response.ok) {
+        throw new Error("Failed to create checkout session");
+      }
 
+      const session = await response.json();
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
       }
+
       localStorage.setItem("bookingFormData", JSON.stringify(formData));
       const { error } = await stripe.redirectToCheckout({
         sessionId: session.sessionId,
       });
+
       if (error) {
         console.error("Stripe Checkout error:", error);
       }
