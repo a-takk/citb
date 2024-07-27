@@ -53,7 +53,7 @@ const Book = () => {
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
           throw new TypeError(
-            "Expected JSON response, but got: " + contentType
+            `Expected JSON response, but got: ${contentType}`
           );
         }
         const data = await response.json();
@@ -65,6 +65,8 @@ const Book = () => {
         setPrices(pricesObj);
       } catch (error) {
         console.error("Error fetching test prices:", error.message);
+        const responseText = await response.text();
+        console.error("Response text:", responseText);
       }
     };
 
@@ -83,14 +85,16 @@ const Book = () => {
         const contentType = response.headers.get("content-type");
         if (!contentType || !contentType.includes("application/json")) {
           throw new TypeError(
-            "Expected JSON response, but got: " + contentType
+            `Expected JSON response, but got: ${contentType}`
           );
         }
-        const data = await JSON.parse(response.body, contentType);
+        const data = await response.json();
         console.log("Fetched available slots:", data);
         setAvailableSlots(data);
       } catch (error) {
         console.error("Error fetching available slots:", error.message);
+        const responseText = await response.text();
+        console.error("Response text:", responseText);
       }
     };
 
