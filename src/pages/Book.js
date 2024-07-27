@@ -44,9 +44,7 @@ const Book = () => {
   useEffect(() => {
     const fetchTestPrices = async () => {
       try {
-        const response = await fetch(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices"
-        );
+        const response = await fetch("/api/cscs-test-prices");
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
@@ -75,7 +73,7 @@ const Book = () => {
     const fetchAvailableSlots = async () => {
       try {
         const response = await fetch(
-          `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${formData.testDate}`
+          `/api/available-slots?date=${formData.testDate}`
         );
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -122,16 +120,13 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await fetch(
-        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ test: selectedTest, price, formData }),
-        }
-      );
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ test: selectedTest, price, formData }),
+      });
 
       const session = await response.json();
       console.log("Checkout session response:", session);
