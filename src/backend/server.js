@@ -229,8 +229,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
             },
           ],
           mode: "payment",
-          success_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/success",
-          cancel_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/failure",
+          success_url: `${PRODUCTION_URL}/success`,
+          cancel_url: `${PRODUCTION_URL}/failure`,
           metadata: formData,
         });
 
