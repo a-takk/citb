@@ -86,7 +86,7 @@ const Book = () => {
             "Expected JSON response, but got: " + contentType
           );
         }
-        const data = await response.json();
+        const data = await JSON.parse(response.body, contentType);
         console.log("Fetched available slots:", data);
         setAvailableSlots(data);
       } catch (error) {
