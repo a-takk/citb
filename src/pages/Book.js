@@ -1,7 +1,6 @@
 import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import axios from "axios";
 
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
@@ -52,16 +51,13 @@ const Book = () => {
 
   const fetchAvailableSlots = async (date) => {
     try {
-      const response = await axios.get(
-        `https://www.citbcertify.co.uk/api/available-slots?date=${date}`,
-        {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-        }
-      );
+      const response = await fetch(`/api/available-slots?date=${date}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+      });
 
       console.log(
         "Response Content-Type:",
@@ -96,16 +92,13 @@ const Book = () => {
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await axios.get(
-          "https://www.citbcertify.co.uk/api/cscs-test-prices",
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json",
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await fetch("/api/cscs-test-prices", {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+        });
 
         if (
           response.ok &&
@@ -165,13 +158,10 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await axios.post(
-        "https://www.citbcertify.co.uk/api/create-checkout-session",
-        {
-          method: "POST",
-          body: JSON.stringify({ test: selectedTest, price, formData }),
-        }
-      );
+      const response = await fetch("/api/create-checkout-session", {
+        method: "POST",
+        body: JSON.stringify({ test: selectedTest, price, formData }),
+      });
 
       const session = await response.json();
 
