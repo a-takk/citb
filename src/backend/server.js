@@ -18,11 +18,6 @@ const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(express.static(__dirname, "build"));
-app.use((req, res, next) => {
-  res.set("Cache-Control", "no-store");
-  next();
-});
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -254,7 +249,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
 // Route to fetch CSCS test prices
 app.get("/api/cscs-test-prices", (req, res) => {
   res.setHeader("Content-Type", "application/json");
-  res.json();
   const query = "SELECT * FROM cscs_test_prices";
   pool.query(query, (error, results) => {
     if (error) {
@@ -268,7 +262,6 @@ app.get("/api/cscs-test-prices", (req, res) => {
 
 app.get("/api/available-slots", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
-  res.json();
   const { date } = req.query;
 
   try {
@@ -477,10 +470,6 @@ async function handleCheckoutSessionCompleted(session) {
 async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
-
-app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
