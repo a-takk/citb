@@ -254,6 +254,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
 // Route to fetch CSCS test prices
 app.get("/api/cscs-test-prices", (req, res) => {
   res.setHeader("Content-Type", "application/json");
+  res.json();
   const query = "SELECT * FROM cscs_test_prices";
   pool.query(query, (error, results) => {
     if (error) {
@@ -267,6 +268,7 @@ app.get("/api/cscs-test-prices", (req, res) => {
 
 app.get("/api/available-slots", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
+  res.json();
   const { date } = req.query;
 
   try {
