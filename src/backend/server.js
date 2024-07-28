@@ -5,6 +5,7 @@ const cors = require("cors");
 const bodyparser = require("body-parser");
 const mysql = require("mysql");
 const dotenv = require("dotenv");
+const static = require("serve-static");
 const stripe = require("stripe")(
   "sk_test_51E9RKSAwq1wpzpcjPFkYP9l7FmCz9MxpndHEnqs134t5xYB9lj8EztQ9QGhEr0ivHNTmpjvXFxc1dBr424kqgr2M00CqsMoCQh"
 );
@@ -18,7 +19,6 @@ const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(express.static(path.join(__dirname, "build")));
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -471,10 +471,6 @@ async function handleCheckoutSessionCompleted(session) {
 async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
-
-app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
-});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
