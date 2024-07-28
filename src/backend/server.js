@@ -15,7 +15,11 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://www.citbcertify.co.uk", // Replace with your client URL
+  })
+);
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 
