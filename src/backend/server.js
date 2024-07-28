@@ -5,7 +5,6 @@ const cors = require("cors");
 const bodyparser = require("body-parser");
 const mysql = require("mysql");
 const dotenv = require("dotenv");
-const static = require("serve-static");
 const stripe = require("stripe")(
   "sk_test_51E9RKSAwq1wpzpcjPFkYP9l7FmCz9MxpndHEnqs134t5xYB9lj8EztQ9QGhEr0ivHNTmpjvXFxc1dBr424kqgr2M00CqsMoCQh"
 );
@@ -20,6 +19,10 @@ app.use(cors());
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(express.static(__dirname, "build"));
+app.use((req, res, next) => {
+  res.set("Cache-Control", "no-store");
+  next();
+});
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
