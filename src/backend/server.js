@@ -168,7 +168,7 @@ const sendBookingEmail = async (email, formData) => {
 };
 
 // Route to handle contact email sending
-app.post("/email-sent", async (req, res) => {
+app.post("/api/email-sent", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const { email, formData } = req.body;
 
@@ -184,7 +184,7 @@ app.post("/email-sent", async (req, res) => {
 });
 
 // Route to create checkout session
-app.post("/create-checkout-session", async (req, res) => {
+app.post("/api/create-checkout-session", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const { test, price, formData } = req.body;
   const { testDate, testTime } = formData;
@@ -248,7 +248,7 @@ app.post("/create-checkout-session", async (req, res) => {
 });
 
 // Route to fetch CSCS test prices
-app.get("/cscs-test-prices", (req, res) => {
+app.get("/api/cscs-test-prices", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const query = "SELECT * FROM cscs_test_prices";
   pool.query(query, (error, results) => {
@@ -261,7 +261,7 @@ app.get("/cscs-test-prices", (req, res) => {
   });
 });
 
-app.get("/available-slots", async (req, res) => {
+app.get("/api/available-slots", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const { date } = req.query;
 
