@@ -15,6 +15,10 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
+app.use((req, res, next) => {
+  res.setHeader("Content-Type", "application/json");
+  next();
+});
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(
