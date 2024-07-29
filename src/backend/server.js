@@ -478,10 +478,10 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
 
-app.use(express.static(CLIENT_BUILD_DIR));
+app.use(express.static(path.join(__dirname, "index.html")));
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(CLIENT_BUILD_DIR, "index.html"));
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.listen(PORT, () => {
