@@ -15,6 +15,8 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
+app.use(express.json());
+app.use(bodyparser.urlencoded({ extended: true }));
 app.use(
   cors({
     origin: "https://citbcertify.co.uk",
@@ -23,8 +25,6 @@ app.use(
     credentials: true,
   })
 );
-app.use(bodyparser.json());
-app.use(bodyparser.urlencoded({ extended: true }));
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
