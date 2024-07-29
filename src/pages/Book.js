@@ -51,12 +51,15 @@ const Book = () => {
 
   const fetchAvailableSlots = async (date) => {
     try {
-      const response = await fetch(`/api/available-slots?date=${date}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        `https://www.citbcertify.co.uk/api/available-slots?date=${date}`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       console.log(
         "Response Content-Type:",
@@ -90,12 +93,15 @@ const Book = () => {
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await fetch("/api/cscs-test-prices", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          "https://www.citbcertify.co.uk/api/cscs-test-prices",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
 
         if (
           response.ok &&
@@ -155,13 +161,16 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await fetch("/api/create-checkout-session", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ test: selectedTest, price, formData }),
-      });
+      const response = await fetch(
+        "https://www.citbcertify.co.uk/api/create-checkout-session",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ test: selectedTest, price, formData }),
+        }
+      );
 
       const session = await response.json();
 

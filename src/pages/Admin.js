@@ -8,7 +8,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await fetch("http://localhost:4000/admin");
+        const response = await fetch("https://www.citbcertify.co.uk/admin");
         const result = await response.json();
         setData(result.data);
       } catch (error) {
