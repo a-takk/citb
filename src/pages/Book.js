@@ -52,7 +52,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `https://www.citbcertify.co.uk/available-slots?date=${date}`,
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -94,7 +94,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://www.citbcertify.co.uk/cscs-test-prices",
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/cscs-test-prices",
           {
             method: "GET",
             headers: {
@@ -162,7 +162,7 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        "https://www.citbcertify.co.uk/create-checkout-session",
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/create-checkout-session",
         {
           method: "POST",
           headers: {
