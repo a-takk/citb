@@ -5,7 +5,6 @@ const cors = require("cors");
 const bodyparser = require("body-parser");
 const mysql = require("mysql");
 const dotenv = require("dotenv");
-const WebSocket = require("ws");
 const stripe = require("stripe")(
   "sk_test_51E9RKSAwq1wpzpcjPFkYP9l7FmCz9MxpndHEnqs134t5xYB9lj8EztQ9QGhEr0ivHNTmpjvXFxc1dBr424kqgr2M00CqsMoCQh"
 );
@@ -15,13 +14,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
-const CLIENT_BUILD_DIR = path.join(__dirname, "..", "client", "build");
-const server = new WebSocket.Server({ port: 53579 });
 
-app.use((req, res, next) => {
-  res.setHeader("Content-Type", "application/json");
-  next();
-});
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(
@@ -49,14 +42,6 @@ pool.getConnection((err, connection) => {
   }
   console.log("Connected to MySQL database as id " + connection.threadId);
   connection.release();
-});
-
-server.on("connection", (socket) => {
-  socket.on("message", (message) => {
-    console.log(`Received message => ${message}`);
-  });
-
-  socket.send("Hello! Message from the server...");
 });
 
 app.get("/api/admin", (req, res) => {
@@ -489,10 +474,8 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
 
-app.use(express.static(CLIENT_BUILD_DIR));
-
-app.get("*", (req, res) => {
-  res.sendFile(path.join(CLIENT_BUILD_DIR, "index.html"));
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "index.html"));
 });
 
 app.listen(PORT, () => {
