@@ -1,0 +1,28 @@
+{
+  "files": {
+    "main.css": "/static/css/main.f6905c8d.css",
+    "main.js": "/static/js/main.2e80d05d.js",
+    "static/media/booking.gif": "/static/media/booking.8ead88ac10710aef4eaa.gif",
+    "static/media/constructionbackground.jpeg": "/static/media/constructionbackground.e9b9c13df5ec00a0caca.jpeg",
+    "static/media/constructionbackground.jpg": "/static/media/constructionbackground.a0b82a08956c2088480b.jpg",
+    "static/media/white-pqp-cscs-card.webp": "/static/media/white-pqp-cscs-card.3140fa64c12d93edef6a.webp",
+    "static/media/white-aqp-cscs-card.webp": "/static/media/white-aqp-cscs-card.8ad2b82d52a66fa70182.webp",
+    "static/media/red-experienced-technical-cscs-card.webp": "/static/media/red-experienced-technical-cscs-card.e9908017575306329d1d.webp",
+    "static/media/gold-advanced-craft-cscs-card.webp": "/static/media/gold-advanced-craft-cscs-card.4e3d6d6e1cd484011550.webp",
+    "static/media/blue-skilled-worker-cscs-card.webp": "/static/media/blue-skilled-worker-cscs-card.6997d9f91c1f5ec29f60.webp",
+    "static/media/gold-supervisor-cscs-card.webp": "/static/media/gold-supervisor-cscs-card.ad1ddfd09fc8ff1ed3f2.webp",
+    "static/media/red-experienced-worker-cscs-card.webp": "/static/media/red-experienced-worker-cscs-card.544f51c49c16bf147e16.webp",
+    "static/media/green-labourer-cscs-card.webp": "/static/media/green-labourer-cscs-card.734b09ca972759b0984f.webp",
+    "static/media/red-provisional-cscs-card.webp": "/static/media/red-provisional-cscs-card.1b850e0a82ed1e086e3c.webp",
+    "static/media/red-apprentice-cscs-card.webp": "/static/media/red-apprentice-cscs-card.33dff2000eb82172841f.webp",
+    "static/media/red-trainee-cscs-card.webp": "/static/media/red-trainee-cscs-card.256ffbe239fd4b7be2ba.webp",
+    "static/media/black-manager-cscs-card.webp": "/static/media/black-manager-cscs-card.f2356e095bd1f4b84de3.webp",
+    "index.html": "/index.html",
+    "main.f6905c8d.css.map": "/static/css/main.f6905c8d.css.map",
+    "main.2e80d05d.js.map": "/static/js/main.2e80d05d.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f6905c8d.css",
+    "static/js/main.2e80d05d.js"
+  ]
+}
