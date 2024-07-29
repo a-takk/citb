@@ -179,7 +179,6 @@ const sendBookingEmail = async (email, formData) => {
 
 // Route to handle contact email sending
 app.post("/api/email-sent", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
   const { email, formData } = req.body;
 
   try {
@@ -195,7 +194,6 @@ app.post("/api/email-sent", async (req, res) => {
 
 // Route to create checkout session
 app.post("/api/create-checkout-session", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
   const { test, price, formData } = req.body;
   const { testDate, testTime } = formData;
 
@@ -239,8 +237,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
             },
           ],
           mode: "payment",
-          success_url: "https://www.citbcertify.co.uk/success",
-          cancel_url: "https://www.citbcertify.co.uk/failure",
+          success_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/success",
+          cancel_url: "https://citbcertify-20840f8ccc0e.herokuapp.com/failure",
           metadata: formData,
         });
 
@@ -259,7 +257,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
 
 // Route to fetch CSCS test prices
 app.get("/api/cscs-test-prices", (req, res) => {
-  res.setHeader("Content-Type", "application/json");
   const query = "SELECT * FROM cscs_test_prices";
   pool.query(query, (error, results) => {
     if (error) {
@@ -272,7 +269,6 @@ app.get("/api/cscs-test-prices", (req, res) => {
 });
 
 app.get("/api/available-slots", async (req, res) => {
-  res.setHeader("Content-Type", "application/json");
   const { date } = req.query;
 
   try {
@@ -482,8 +478,10 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
 
-app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "build", "index.html"));
+app.use(express.static(CLIENT_BUILD_DIR));
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(CLIENT_BUILD_DIR, "index.html"));
 });
 
 app.listen(PORT, () => {
