@@ -9,7 +9,16 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await axios.get("https://www.citbcertify.co.uk/admin");
+        const response = await axios.get(
+          "https://www.citbcertify.co.uk/admin",
+          {
+            method: "GET",
+            headers: {
+              "Cache-Control": "no-cache",
+              "Content-Type": "application/json",
+            },
+          }
+        );
         const result = await response.json();
         setData(result.data);
       } catch (error) {
