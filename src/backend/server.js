@@ -23,7 +23,7 @@ app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(
   cors({
-    origin: "http://citbcertify.co.uk",
+    origin: "https://citbcertify-20840f8ccc0e.herokuapp.com",
     methods: ["GET", "POST"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,

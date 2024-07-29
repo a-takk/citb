@@ -52,7 +52,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `http://citbcertify.co.uk/api/available-slots?date=${date}`,
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
