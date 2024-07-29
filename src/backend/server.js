@@ -21,7 +21,14 @@ app.use((req, res, next) => {
 });
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://citbcertify.co.uk",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
