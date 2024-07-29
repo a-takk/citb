@@ -53,7 +53,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await axios.get(
-        `https://www.citbcertify.co.uk/api/available-slots?date=${date}`,
+        `${process.env.PRODUCTION_URL}/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -95,7 +95,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await axios.get(
-          "https://www.citbcertify.co.uk/api/cscs-test-prices",
+          `${process.env.PRODUCTION_URL}/api/cscs-test-prices`,
           {
             method: "GET",
             headers: {
