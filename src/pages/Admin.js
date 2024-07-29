@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import "../styles/admin.css";
+import axios from "axios";
 
 const AdminDashboard = () => {
   const [data, setData] = useState([]);
@@ -8,7 +9,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await fetch("https://www.citbcertify.co.uk/admin");
+        const response = await axios.get("https://www.citbcertify.co.uk/admin");
         const result = await response.json();
         setData(result.data);
       } catch (error) {
