@@ -41,7 +41,7 @@ pool.getConnection((err, connection) => {
   connection.release();
 });
 
-app.get("/api/admin", (req, res) => {
+app.get("/admin", (req, res) => {
   const customerQuery = `
     SELECT
       title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
@@ -171,7 +171,7 @@ const sendBookingEmail = async (email, formData) => {
 };
 
 // Route to handle contact email sending
-app.post("/api/email-sent", async (req, res) => {
+app.post("/email-sent", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const { email, formData } = req.body;
 
@@ -187,7 +187,7 @@ app.post("/api/email-sent", async (req, res) => {
 });
 
 // Route to create checkout session
-app.post("/api/create-checkout-session", async (req, res) => {
+app.post("/create-checkout-session", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const { test, price, formData } = req.body;
   const { testDate, testTime } = formData;
@@ -251,7 +251,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
 });
 
 // Route to fetch CSCS test prices
-app.get("/api/cscs-test-prices", (req, res) => {
+app.get("/cscs-test-prices", (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const query = "SELECT * FROM cscs_test_prices";
   pool.query(query, (error, results) => {
@@ -264,7 +264,7 @@ app.get("/api/cscs-test-prices", (req, res) => {
   });
 });
 
-app.get("/api/available-slots", async (req, res) => {
+app.get("/available-slots", async (req, res) => {
   res.setHeader("Content-Type", "application/json");
   const { date } = req.query;
 
@@ -294,7 +294,7 @@ function fetchAvailableSlotsFromDB(date) {
 }
 
 // Webhook endpoint to handle Stripe events
-app.post("/api/webhook", async (req, res) => {
+app.post("/webhook", async (req, res) => {
   const payload = req.body;
   const payloadString = JSON.stringify(payload, null, 2);
   const header = stripe.webhooks.generateTestHeaderString({
