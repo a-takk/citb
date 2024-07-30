@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { format } from "date-fns";
 import "../styles/admin.css";
-import axios from "axios";
 
 const AdminDashboard = () => {
   const [data, setData] = useState([]);
@@ -9,15 +8,8 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await axios.get(
-          "https://www.citbcertify.co.uk/admin",
-          {
-            method: "GET",
-            headers: {
-              "Cache-Control": "no-cache",
-              "Content-Type": "application/json",
-            },
-          }
+        const response = await fetch(
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/admin"
         );
         const result = await response.json();
         setData(result.data);

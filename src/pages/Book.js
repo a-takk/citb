@@ -52,8 +52,8 @@ const Book = () => {
 
   const fetchAvailableSlots = async (date) => {
     try {
-      const response = await axios.get(
-        `https://www.citbcertify.co.uk/api/available-slots?date=${date}`,
+      const response = await fetch(
+        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -84,8 +84,8 @@ const Book = () => {
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await axios.get(
-          "https://www.citbcertify.co.uk/api/cscs-test-prices",
+        const response = await fetch(
+          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
@@ -146,8 +146,8 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await axios.post(
-        "https://www.citbcertify.co.uk/api/create-checkout-session",
+      const response = await fetch(
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
         {
           method: "POST",
           headers: {
