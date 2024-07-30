@@ -56,7 +56,6 @@ const Book = () => {
         {
           method: "GET",
           headers: {
-            "Cache-Control": "no-cache",
             "Content-Type": "application/json",
           },
         }
@@ -89,7 +88,6 @@ const Book = () => {
           {
             method: "GET",
             headers: {
-              "Cache-Control": "no-cache",
               "Content-Type": "application/json",
             },
           }
@@ -152,7 +150,6 @@ const Book = () => {
         {
           method: "POST",
           headers: {
-            "Cache-Control": "no-cache",
             "Content-Type": "application/json",
           },
           body: JSON.stringify({ test: selectedTest, price, formData }),
