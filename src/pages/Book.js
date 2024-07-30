@@ -1,7 +1,6 @@
 import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import axios from "axios";
 
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
@@ -53,7 +52,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
+        `http://citbcertify.co.uk/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -85,7 +84,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
+          "http://citbcertify.co.uk/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
@@ -147,7 +146,7 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/create-checkout-session",
+        "http://citbcertify.co.uk/api/create-checkout-session",
         {
           method: "POST",
           headers: {
