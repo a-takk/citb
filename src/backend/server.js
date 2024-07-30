@@ -12,12 +12,19 @@ const stripe = require("stripe")(
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 8000;
+const PORT = Number(process.env["PORT"]) || 8000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: "http://citbcertify.co.uk",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -469,8 +476,4 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
-});
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
 });
