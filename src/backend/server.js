@@ -15,16 +15,10 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
+app.use(express.static(path.join(__dirname, "build")));
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: "https://citbcertify.co.uk",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use(cors());
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -42,6 +36,44 @@ pool.getConnection((err, connection) => {
   }
   console.log("Connected to MySQL database as id " + connection.threadId);
   connection.release();
+});
+
+const generateSlots = () => {
+  const slots = [];
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setFullYear(endDate.getFullYear() + 10);
+
+  let currentDate = startDate;
+
+  while (currentDate <= endDate) {
+    for (let hour = 9; hour < 17; hour++) {
+      // 9 AM to 5 PM
+      const slotDate = new Date(currentDate);
+      slotDate.setHours(hour, 0, 0);
+      slots.push({
+        testDate: slotDate.toISOString().split("T")[0],
+        testTime: slotDate.toTimeString().split(" ")[0],
+      });
+    }
+    currentDate.setDate(currentDate.getDate() + 1);
+  }
+
+  return slots;
+};
+
+app.get("/insert-slots", (req, res) => {
+  const slots = generateSlots();
+
+  let sql = "INSERT INTO booking_details (testDate, testTime) VALUES ?";
+  const values = slots.map((slot) => [slot.testDate, slot.testTime]);
+
+  pool.query(sql, [values], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+    res.send(`Inserted ${result.affectedRows} slots`);
+  });
 });
 
 app.get("/api/admin", (req, res) => {
@@ -475,7 +507,7 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
 }
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "/build/index.html"));
+  res.sendFile(path.join(__dirname, "build", "index.html"));
 });
 
 app.listen(PORT, () => {
