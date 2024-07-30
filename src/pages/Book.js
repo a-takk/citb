@@ -6,7 +6,6 @@ import { loadStripe } from "@stripe/stripe-js";
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
-  // Helper function to get the current date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const date = new Date();
     const day = String(date.getDate()).padStart(2, "0");
@@ -52,7 +51,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `https://citbcertify.co.uk/api/available-slots?date=${date}`,
+        `https://citb.vercel.app//api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -84,7 +83,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://citbcertify.co.uk/api/cscs-test-prices",
+          "https://citb.vercel.app/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
@@ -146,7 +145,7 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        "https://citbcertify.co.uk/api/create-checkout-session",
+        "https://citb.vercel.app/api/create-checkout-session",
         {
           method: "POST",
           headers: {
