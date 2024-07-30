@@ -12,7 +12,7 @@ const stripe = require("stripe")(
 dotenv.config();
 
 const app = express();
-const PORT = Number(process.env["PORT"]) || 8000;
+const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
 app.use(express.json());
@@ -476,4 +476,8 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
 
 app.get("*", (req, res) => {
   res.sendFile(path.join(__dirname, "index.html"));
+});
+
+app.listen(PORT, () => {
+  console.log(`Server is running on port ${PORT}`);
 });
