@@ -8,7 +8,7 @@ const AdminDashboard = () => {
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await fetch("http://citb.vercel.app/api/admin");
+        const response = await fetch("https://citbcertify.co.uk/api/admin");
         const result = await response.json();
         setData(result.data);
       } catch (error) {
