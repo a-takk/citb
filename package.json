@@ -2,7 +2,6 @@
   "name": "citb",
   "version": "0.1.0",
   "private": true,
-  "proxy": "https://citbcertify.co.uk",
   "dependencies": {
     "@react-google-maps/api": "^2.19.3",
     "@stripe/stripe-js": "^4.1.0",
