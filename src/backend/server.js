@@ -17,7 +17,14 @@ const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(cors());
+app.use(
+  cors({
+    origin: "https://www.citbcertify.co.uk",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
