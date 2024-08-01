@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, "build")));
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 const corsOptions = {
-  origin: "https://www.citbcertify.co.uk",
+  origin: "https://citb-6sfqgqapg-a-takks-projects.vercel.app",
   methods: ["GET", "POST"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
