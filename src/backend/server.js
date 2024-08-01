@@ -18,14 +18,14 @@ const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 app.use(express.static(path.join(__dirname, "build")));
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: "https://www.citbcertify.co.uk",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+const corsOptions = {
+  origin: "https://www.citbcertify.co.uk",
+  methods: ["GET", "POST"],
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true,
+};
+
+app.use(cors(corsOptions));
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
