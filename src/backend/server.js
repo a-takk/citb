@@ -15,16 +15,9 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
-app.use(express.json());
+app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: "https://www.citbcertify.co.uk",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use(cors());
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
@@ -259,7 +252,7 @@ app.get("/api/cscs-test-prices", (req, res) => {
       console.error("Error fetching test prices:", error);
       res.status(500).json({ error: "Error fetching test prices" });
     } else {
-      res.status(200).json(results); // Send the results array
+      res.status(200).json(results);
     }
   });
 });
@@ -371,12 +364,10 @@ async function handleCheckoutSessionCompleted(session) {
         testDate: formData.testDate,
         testTime: formData.testTime,
       });
-      return; // Exit if no available slot is found
+      return;
     }
 
     const bookingId = existingBooking.bookingId;
-
-    // Insert customer details into the database
     const insertCustomerQuery = `
       INSERT INTO customer_details (
         title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
@@ -387,7 +378,6 @@ async function handleCheckoutSessionCompleted(session) {
     `;
 
     const agree = formData.agree === "true" ? 1 : 0;
-
     await new Promise((resolve, reject) => {
       pool.query(
         insertCustomerQuery,

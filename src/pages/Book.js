@@ -1,7 +1,6 @@
 import "../styles/book.css"; // Import CSS for styling
 import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
-import axios from "axios";
 
 // Initialize Stripe with your publishable key
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
@@ -52,24 +51,39 @@ const Book = () => {
 
   const fetchAvailableSlots = async (date) => {
     try {
-      const response = await axios.get(
-        `https://www.citbcertify.co.uk/api/available-slots?date=${date}`,
+      const response = await fetch(
+        `https://www.citbcertify.co.uk/book/api/available-slots?date=${date}`,
         {
+          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
 
-      if (response.status === 200) {
-        const responseData = response.data;
+      console.log(
+        "Response Content-Type:",
+        response.headers.get("Content-Type")
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+
+      if (response.headers.get("Content-Type")?.includes("application/json")) {
+        const responseData = await response.json();
+        console.log("Available slots fetched:", responseData);
         setAvailableSlots(
           responseData.map((slot) => ({
             time: slot.testTime.substring(0, 5), // Format time to HH:MM
           }))
         );
       } else {
-        console.error("Unexpected response format or status.");
+        const responseText = await response.text();
+        console.error(
+          "Unexpected response format. Response text:",
+          responseText
+        );
       }
     } catch (error) {
       console.error("Error fetching available slots:", error);
@@ -79,26 +93,39 @@ const Book = () => {
   useEffect(() => {
     const fetchPrices = async () => {
       try {
-        const response = await axios.get(
-          "https://www.citbcertify.co.uk/api/cscs-test-prices",
+        const response = await fetch(
+          "https://www.citbcertify.co.uk/book/api/cscs-test-prices",
           {
+            method: "GET",
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
 
-        if (response.status === 200) {
-          const data = response.data;
-          const priceMap = data.reduce((acc, item) => {
-            if (item?.testName && item.price !== undefined) {
-              acc[item.testName] = item.price;
-            }
-            return acc;
-          }, {});
-          setPrices(priceMap);
+        if (
+          response.ok &&
+          response.headers.get("Content-Type")?.includes("application/json")
+        ) {
+          const data = await response.json();
+          console.log("Prices fetched:", data);
+          if (Array.isArray(data)) {
+            const priceMap = data.reduce((acc, item) => {
+              if (item && item.testName && item.price !== undefined) {
+                acc[item.testName] = item.price;
+              }
+              return acc;
+            }, {});
+            setPrices(priceMap);
+          } else {
+            console.error("Unexpected data format for prices:", data);
+          }
         } else {
-          console.error("Unexpected response format or status.");
+          const responseText = await response.text();
+          console.error(
+            "Unexpected response format. Response text:",
+            responseText
+          );
         }
       } catch (error) {
         console.error("Error fetching prices:", error);
@@ -124,6 +151,8 @@ const Book = () => {
       testTime: "",
     });
   };
+
+  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -132,8 +161,8 @@ const Book = () => {
     const price = prices[selectedTest];
 
     try {
-      const response = await axios.post(
-        "https://www.citbcertify.co.uk/api/create-checkout-session",
+      const response = await fetch(
+        "https://www.citbcertify.co.uk/book/api/create-checkout-session",
         {
           method: "POST",
           headers: {
@@ -148,12 +177,10 @@ const Book = () => {
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
       }
-
       localStorage.setItem("bookingFormData", JSON.stringify(formData));
       const { error } = await stripe.redirectToCheckout({
         sessionId: session.sessionId,
       });
-
       if (error) {
         console.error("Stripe Checkout error:", error);
       }
@@ -258,7 +285,6 @@ const Book = () => {
               placeholder="DD"
               maxLength="2"
               required
-              title="Please enter a valid day (DD)"
             />
             <input
               type="text"
@@ -268,7 +294,6 @@ const Book = () => {
               placeholder="MM"
               maxLength="2"
               required
-              title="Please enter a valid month (MM)"
             />
             <input
               type="text"
@@ -278,7 +303,6 @@ const Book = () => {
               placeholder="YYYY"
               maxLength="4"
               required
-              title="Please enter a valid year (YYYY)"
             />
           </div>
         </label>
