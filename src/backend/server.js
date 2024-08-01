@@ -15,6 +15,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
+app.use(express.static(path.join(__dirname, "build")));
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(
@@ -473,6 +474,10 @@ async function handleCheckoutSessionCompleted(session) {
 async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
+
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "build", "index.html"));
+});
 
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
