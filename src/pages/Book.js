@@ -52,7 +52,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `https://www.citbcertify.co.uk/api/available-slots?date=${date}`,
+        `http://localhost:4000/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -94,7 +94,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://www.citbcertify.co.uk/api/cscs-test-prices",
+          "http://localhost:4000/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
