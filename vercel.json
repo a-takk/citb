@@ -1,12 +1,1 @@
-{
-  "routes": [
-    {
-      "src": "/",
-      "dest": "/api/server.js"
-    },
-    {
-      "src": "/server.js",
-      "methods": ["GET", "POST"]
-    }
-  ]
-}
+{ "version": 2, "rewrites": [{ "source": "/(.*)", "destination": "/api" }] }
