@@ -36,6 +36,83 @@ pool.getConnection((err, connection) => {
   connection.release();
 });
 
+useEffect(() => {
+  if (formData.testDate) {
+    fetchAvailableSlots(formData.testDate);
+  }
+}, [formData.testDate]);
+
+const fetchAvailableSlots = async (date) => {
+  try {
+    const response = await fetch(
+      `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
+      {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! Status: ${response.status}`);
+    }
+
+    if (response.headers.get("Content-Type")?.includes("application/json")) {
+      const responseData = await response.json();
+      setAvailableSlots(
+        responseData.map((slot) => ({
+          time: slot.testTime.substring(0, 5), // Format time to HH:MM
+        }))
+      );
+    } else {
+      console.error("Unexpected response format.");
+    }
+  } catch (error) {
+    console.error("Error fetching available slots:", error);
+  }
+};
+
+useEffect(() => {
+  const fetchPrices = async () => {
+    try {
+      const response = await fetch(
+        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      if (
+        response.ok &&
+        response.headers.get("Content-Type")?.includes("application/json")
+      ) {
+        const data = await response.json();
+        if (Array.isArray(data)) {
+          const priceMap = data.reduce((acc, item) => {
+            if (item?.testName && item.price !== undefined) {
+              acc[item.testName] = item.price;
+            }
+            return acc;
+          }, {});
+          setPrices(priceMap);
+        } else {
+          console.error("Unexpected data format for prices:", data);
+        }
+      } else {
+        console.error("Unexpected response format.");
+      }
+    } catch (error) {
+      console.error("Error fetching prices:", error);
+    }
+  };
+
+  fetchPrices();
+}, []);
+
 app.get("/api/admin", (req, res) => {
   const customerQuery = `
     SELECT
