@@ -124,7 +124,6 @@ const Book = () => {
       testTime: "",
     });
   };
-  s;
   const handleSubmit = async (e) => {
     e.preventDefault();
 
