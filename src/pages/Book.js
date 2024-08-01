@@ -52,7 +52,7 @@ const Book = () => {
   const fetchAvailableSlots = async (date) => {
     try {
       const response = await fetch(
-        `https://citb-git-master-a-takks-projects.vercel.app/api/available-slots?date=${date}`,
+        `https://www.citbcertify.co.uk/api/available-slots?date=${date}`,
         {
           method: "GET",
           headers: {
@@ -90,7 +90,7 @@ const Book = () => {
     const fetchPrices = async () => {
       try {
         const response = await fetch(
-          "https://citb-git-master-a-takks-projects.vercel.app/api/cscs-test-prices",
+          "https://www.citbcertify.co.uk/api/cscs-test-prices",
           {
             method: "GET",
             headers: {
@@ -152,7 +152,7 @@ const Book = () => {
 
     try {
       const response = await fetch(
-        "https://citb-git-master-a-takks-projects.vercel.app/api/create-checkout-session",
+        "https://www.citbcertify.co.uk/api/create-checkout-session",
         {
           method: "POST",
           headers: {

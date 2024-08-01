@@ -18,14 +18,14 @@ const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 app.use(express.static(path.join(__dirname, "build")));
 app.use(express.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-const corsOptions = {
-  origin: "https://citb-git-master-a-takks-projects.vercel.app",
-  methods: ["GET", "POST"],
-  allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: true,
-};
-
-app.use(cors(corsOptions));
+app.use(
+  cors({
+    origin: "https://www.citbcertify.co.uk",
+    methods: ["GET", "POST"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
