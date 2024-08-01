@@ -61,12 +61,17 @@ const Book = () => {
         }
       );
 
+      console.log("Response Headers:", response.headers);
+      console.log("Response Status:", response.status);
+
       if (!response.ok) {
         throw new Error(`HTTP error! Status: ${response.status}`);
       }
 
-      if (response.headers.get("Content-Type")?.includes("application/json")) {
+      const contentType = response.headers.get("Content-Type");
+      if (contentType?.includes("application/json")) {
         const responseData = await response.json();
+        console.log("Response Data:", responseData);
         setAvailableSlots(
           responseData.map((slot) => ({
             time: slot.testTime.substring(0, 5), // Format time to HH:MM
@@ -74,6 +79,7 @@ const Book = () => {
         );
       } else {
         console.error("Unexpected response format.");
+        console.log("Response Text:", await response.text()); // Log the raw response for debugging
       }
     } catch (error) {
       console.error("Error fetching available slots:", error);
