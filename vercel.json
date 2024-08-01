@@ -8,6 +8,5 @@
       "src": "/server.js",
       "methods": ["GET", "POST"]
     }
-  ],
-  "dest": "/api/server.js"
+  ]
 }
