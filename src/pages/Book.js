@@ -55,32 +55,21 @@ const Book = () => {
       const response = await axios.get(
         `https://www.citbcertify.co.uk/api/available-slots?date=${date}`,
         {
-          method: "GET",
           headers: {
             "Content-Type": "application/json",
           },
         }
       );
 
-      console.log("Response Headers:", response.headers);
-      console.log("Response Status:", response.status);
-
-      if (!response.ok) {
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-
-      const contentType = response.headers.get("Content-Type");
-      if (contentType?.includes("application/json")) {
-        const responseData = await response.json();
-        console.log("Response Data:", responseData);
+      if (response.status === 200) {
+        const responseData = response.data;
         setAvailableSlots(
           responseData.map((slot) => ({
             time: slot.testTime.substring(0, 5), // Format time to HH:MM
           }))
         );
       } else {
-        console.error("Unexpected response format.");
-        console.log("Response Text:", await response.text()); // Log the raw response for debugging
+        console.error("Unexpected response format or status.");
       }
     } catch (error) {
       console.error("Error fetching available slots:", error);
@@ -93,31 +82,23 @@ const Book = () => {
         const response = await axios.get(
           "https://www.citbcertify.co.uk/api/cscs-test-prices",
           {
-            method: "GET",
             headers: {
               "Content-Type": "application/json",
             },
           }
         );
 
-        if (
-          response.ok &&
-          response.headers.get("Content-Type")?.includes("application/json")
-        ) {
-          const data = await response.json();
-          if (Array.isArray(data)) {
-            const priceMap = data.reduce((acc, item) => {
-              if (item?.testName && item.price !== undefined) {
-                acc[item.testName] = item.price;
-              }
-              return acc;
-            }, {});
-            setPrices(priceMap);
-          } else {
-            console.error("Unexpected data format for prices:", data);
-          }
+        if (response.status === 200) {
+          const data = response.data;
+          const priceMap = data.reduce((acc, item) => {
+            if (item?.testName && item.price !== undefined) {
+              acc[item.testName] = item.price;
+            }
+            return acc;
+          }, {});
+          setPrices(priceMap);
         } else {
-          console.error("Unexpected response format.");
+          console.error("Unexpected response format or status.");
         }
       } catch (error) {
         console.error("Error fetching prices:", error);
@@ -143,7 +124,7 @@ const Book = () => {
       testTime: "",
     });
   };
-
+  s;
   const handleSubmit = async (e) => {
     e.preventDefault();
 
