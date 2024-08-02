@@ -263,8 +263,8 @@ app.post("/api/create-checkout-session", async (req, res) => {
             },
           ],
           mode: "payment",
-          success_url: "http://localhost:4000/success",
-          cancel_url: "http://localhost:4000/failure",
+          success_url: "https://www.citbcertify.co.uk/success",
+          cancel_url: "https://www.citbcertify.co.uk/failure",
           metadata: formData,
         });
 
