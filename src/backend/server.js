@@ -36,82 +36,43 @@ pool.getConnection((err, connection) => {
   connection.release();
 });
 
-useEffect(() => {
-  if (formData.testDate) {
-    fetchAvailableSlots(formData.testDate);
-  }
-}, [formData.testDate]);
+const generateSlots = () => {
+  const slots = [];
+  const startDate = new Date();
+  const endDate = new Date();
+  endDate.setFullYear(endDate.getFullYear() + 15);
 
-const fetchAvailableSlots = async (date) => {
-  try {
-    const response = await fetch(
-      `https://citbcertify-20840f8ccc0e.herokuapp.com/api/available-slots?date=${date}`,
-      {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      }
-    );
+  let currentDate = startDate;
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! Status: ${response.status}`);
+  while (currentDate <= endDate) {
+    for (let hour = 9; hour < 17; hour++) {
+      // 9 AM to 5 PM
+      const slotDate = new Date(currentDate);
+      slotDate.setHours(hour, 0, 0);
+      slots.push({
+        testDate: slotDate.toISOString().split("T")[0],
+        testTime: slotDate.toTimeString().split(" ")[0],
+      });
     }
-
-    if (response.headers.get("Content-Type")?.includes("application/json")) {
-      const responseData = await response.json();
-      setAvailableSlots(
-        responseData.map((slot) => ({
-          time: slot.testTime.substring(0, 5), // Format time to HH:MM
-        }))
-      );
-    } else {
-      console.error("Unexpected response format.");
-    }
-  } catch (error) {
-    console.error("Error fetching available slots:", error);
+    currentDate.setDate(currentDate.getDate() + 1);
   }
+
+  return slots;
 };
 
-useEffect(() => {
-  const fetchPrices = async () => {
-    try {
-      const response = await fetch(
-        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/cscs-test-prices",
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        }
-      );
+app.get("/insert-slots", (req, res) => {
+  const slots = generateSlots();
 
-      if (
-        response.ok &&
-        response.headers.get("Content-Type")?.includes("application/json")
-      ) {
-        const data = await response.json();
-        if (Array.isArray(data)) {
-          const priceMap = data.reduce((acc, item) => {
-            if (item?.testName && item.price !== undefined) {
-              acc[item.testName] = item.price;
-            }
-            return acc;
-          }, {});
-          setPrices(priceMap);
-        } else {
-          console.error("Unexpected data format for prices:", data);
-        }
-      } else {
-        console.error("Unexpected response format.");
-      }
-    } catch (error) {
-      console.error("Error fetching prices:", error);
+  let sql = "INSERT INTO booking_details (testDate, testTime) VALUES ?";
+  const values = slots.map((slot) => [slot.testDate, slot.testTime]);
+
+  pool.query(sql, [values], (err, result) => {
+    if (err) {
+      return res.status(500).send(err);
     }
-  };
-
-  fetchPrices();
-}, []);
+    res.send(`Inserted ${result.affectedRows} slots`);
+  });
+});
 
 app.get("/api/admin", (req, res) => {
   const customerQuery = `
