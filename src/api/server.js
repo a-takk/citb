@@ -3,6 +3,7 @@ const nodemailer = require("nodemailer");
 const cors = require("cors");
 const bodyparser = require("body-parser");
 const mysql = require("mysql");
+const path = require("path");
 const dotenv = require("dotenv");
 const stripe = require("stripe")(
   "sk_test_51E9RKSAwq1wpzpcjPFkYP9l7FmCz9MxpndHEnqs134t5xYB9lj8EztQ9QGhEr0ivHNTmpjvXFxc1dBr424kqgr2M00CqsMoCQh"
@@ -14,6 +15,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
+app.use(express.static(path.join(__dirname, "../../client/build")));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(cors());
@@ -501,8 +503,8 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
 
-app.route("/").get(function (req, res) {
-  res.redirect("/public/index.html");
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname + "../../client/build/index.html"));
 });
 
 app.listen(PORT, () => {
