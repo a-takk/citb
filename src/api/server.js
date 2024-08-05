@@ -15,7 +15,7 @@ const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
-app.use(express.static(path.join(__dirname, "../../client/build")));
+app.use(express.static(path.join(__dirname, "../build")));
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
 app.use(cors());
@@ -504,7 +504,7 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
 }
 
 app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname + "../../client/build/index.html"));
+  res.sendFile(path.join(__dirname + "../build/index.html"));
 });
 
 app.listen(PORT, () => {
