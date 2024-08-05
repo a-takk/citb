@@ -26,6 +26,7 @@
     "react-scripts": "5.0.1",
     "serve-static": "^1.15.0",
     "stripe": "^16.2.0",
+    "vercel": "^35.2.3",
     "web-vitals": "^2.1.4",
     "websocket": "^1.0.35",
     "ws": "^8.18.0"
