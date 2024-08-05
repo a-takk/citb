@@ -16,14 +16,7 @@ const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
-app.use(
-  cors({
-    origin: "https://citbcertify-792b2842c4ae.herokuapp.com",
-    methods: ["GET", "POST"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use(cors());
 
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
