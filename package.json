@@ -37,8 +37,7 @@
     "test": "react-scripts test",
     "eject": "react-scripts eject",
     "test-coverage": "cd src && npm test -- --coverage",
-    "dev": "concurrently --kill-others \"npm run src\" \"npm run server\"",
-    "heroku-postbuild": "cd src && npm install && npm run build"
+    "dev": "concurrently --kill-others \"npm run src\" \"npm run server\""
   },
   "eslintConfig": {
     "extends": [
