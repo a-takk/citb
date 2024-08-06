@@ -12,7 +12,7 @@ const stripe = require("stripe")(
 dotenv.config();
 
 const app = express();
-const PORT = process.env.PORT || 4000;
+const PORT = process.env.PORT || 5000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
 
 app.use(bodyparser.json());
@@ -500,6 +500,13 @@ async function handleCheckoutSessionCompleted(session) {
 // Function to handle actions after successful payment intent
 async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
+}
+
+if (process.env.NODE_ENV === "production") {
+  app.use(express.static("client/build"));
+  app.get("*", (req, res) => {
+    res.sendFile(path.resolve(__dirname, "client", "build", "index.html"));
+  });
 }
 
 app.listen(PORT, () => {
