@@ -502,11 +502,14 @@ async function handlePaymentIntentSucceeded(paymentIntent) {
   console.log("Payment Intent succeeded:", paymentIntent.id);
 }
 
-if (process.env.NODE_ENV === "production") {
-  app.use(express.static("client/build"));
-}
+app.use("/static", express.static(path.join(__dirname, "client/build")));
+
 app.get("*", function (req, res) {
-  res.sendFile(path.join(__dirname, "./client/build/index.html"));
+  res.sendFile("/client/build/index.html", { root: __dirname }, function (err) {
+    if (err) {
+      res.status(500).send(err);
+    }
+  });
 });
 
 app.listen(PORT, () => {
