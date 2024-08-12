@@ -152,6 +152,32 @@ const Book = () => {
     });
   };
 
+  const handleDateOfBirthChange = (e) => {
+    const { name, value } = e.target;
+    const currentYear = new Date().getFullYear();
+    let newValue = value.replace(/\D/g, ""); // Remove non-numeric characters
+
+    // Validate day, month, and year
+    if (name === "dateOfBirthDay") {
+      if (parseInt(newValue) > 31) {
+        newValue = "31";
+      }
+    } else if (name === "dateOfBirthMonth") {
+      if (parseInt(newValue) > 12) {
+        newValue = "12";
+      }
+    } else if (name === "dateOfBirthYear") {
+      if (parseInt(newValue) > currentYear) {
+        newValue = String(currentYear);
+      }
+    }
+
+    setFormData({
+      ...formData,
+      [name]: newValue,
+    });
+  };
+
   // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -172,7 +198,10 @@ const Book = () => {
         }
       );
 
-      const session = await response.json();
+      const textResponse = await response.text(); // Get the raw text response
+      console.log("Server Response:", textResponse);
+
+      const session = JSON.parse(textResponse); // Try parsing it as JSON
 
       if (!session.sessionId) {
         throw new Error("Session ID is not returned from server");
@@ -280,29 +309,29 @@ const Book = () => {
             <input
               type="text"
               name="dateOfBirthDay"
-              value={formData.dateOfBirthDay}
-              onChange={handleChange}
               placeholder="DD"
-              maxLength="2"
+              value={formData.dateOfBirthDay}
+              onChange={handleDateOfBirthChange}
               required
+              maxLength={2}
             />
             <input
               type="text"
               name="dateOfBirthMonth"
-              value={formData.dateOfBirthMonth}
-              onChange={handleChange}
               placeholder="MM"
-              maxLength="2"
+              value={formData.dateOfBirthMonth}
+              onChange={handleDateOfBirthChange}
               required
+              maxLength={2}
             />
             <input
               type="text"
               name="dateOfBirthYear"
-              value={formData.dateOfBirthYear}
-              onChange={handleChange}
               placeholder="YYYY"
-              maxLength="4"
+              value={formData.dateOfBirthYear}
+              onChange={handleDateOfBirthChange}
               required
+              maxLength={4}
             />
           </div>
         </label>
