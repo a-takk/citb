@@ -127,6 +127,7 @@ const sendContactEmail = async (email, formData) => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    from: process.env.EMAIL_USER,
   });
 
   const mailOptions = {
@@ -149,6 +150,7 @@ const sendAdminEmail = async (email, formData) => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    from: process.env.EMAIL_USER,
   });
 
   const mailOptions = {
@@ -177,7 +179,6 @@ const sendAdminEmail = async (email, formData) => {
         Confirm Email: ${formData.confirmEmail}
         Agree: ${formData.agree}`,
   };
-
   await transporter.sendMail(mailOptions);
 };
 
@@ -188,6 +189,7 @@ const sendBookingEmail = async (email, formData) => {
       user: process.env.EMAIL_USER,
       pass: process.env.EMAIL_PASS,
     },
+    from: process.env.EMAIL_USER,
   });
 
   const mailOptions = {

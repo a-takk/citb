@@ -73,7 +73,7 @@
   align-items: center;
 }
 
-.button a:hover {
+.button:hover {
   background-color: #e6b800;
 }
 

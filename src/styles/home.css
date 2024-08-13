@@ -68,6 +68,10 @@ html {
   cursor: pointer;
 }
 
+.herobutton:hover {
+  background-color: #292929; /* Slightly darker background color */
+}
+
 .introcontainer {
   display: flex;
   background-color: #37474f;
