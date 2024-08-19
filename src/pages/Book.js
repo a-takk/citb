@@ -6,9 +6,10 @@ import { loadStripe } from "@stripe/stripe-js";
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
-  // Helper function to get the current date in YYYY-MM-DD format
+  // Helper function to get tomorrow's date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const date = new Date();
+    date.setDate(date.getDate() + 1); // Set the date to tomorrow
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();

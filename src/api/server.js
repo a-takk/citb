@@ -155,7 +155,7 @@ const sendAdminEmail = async (email, formData) => {
 
   const mailOptions = {
     from: process.env.EMAIL_USER,
-    to: email,
+    to: process.env.EMAIL_USER,
     subject: "CITB: Customer has booked for a test",
     text: `A customer has booked for a test, here are the details:\n
         CSCS Card Type: ${formData.cscsCardType}

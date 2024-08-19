@@ -1,7 +1,7 @@
 {
   "files": {
     "main.css": "/static/css/main.5f6a872b.css",
-    "main.js": "/static/js/main.9d1e6c18.js",
+    "main.js": "/static/js/main.b43c2571.js",
     "static/media/booking.gif": "/static/media/booking.8ead88ac10710aef4eaa.gif",
     "static/media/constructionbackground.jpeg": "/static/media/constructionbackground.e9b9c13df5ec00a0caca.jpeg",
     "static/media/constructionbackground.jpg": "/static/media/constructionbackground.a0b82a08956c2088480b.jpg",
@@ -19,10 +19,10 @@
     "static/media/black-manager-cscs-card.webp": "/static/media/black-manager-cscs-card.f2356e095bd1f4b84de3.webp",
     "index.html": "/index.html",
     "main.5f6a872b.css.map": "/static/css/main.5f6a872b.css.map",
-    "main.9d1e6c18.js.map": "/static/js/main.9d1e6c18.js.map"
+    "main.b43c2571.js.map": "/static/js/main.b43c2571.js.map"
   },
   "entrypoints": [
     "static/css/main.5f6a872b.css",
-    "static/js/main.9d1e6c18.js"
+    "static/js/main.b43c2571.js"
   ]
 }
