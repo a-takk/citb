@@ -21,7 +21,7 @@ function ContactUs() {
 
     try {
       const response = await fetch(
-        "https://citbcertify-20840f8ccc0e.herokuapp.com/api/email-sent",
+        "https://www.citbcertify.co.uk/api/email-sent",
         {
           method: "POST",
           headers: {
