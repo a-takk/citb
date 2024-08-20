@@ -131,10 +131,10 @@ const sendContactEmail = async (email, formData) => {
   });
 
   const mailOptions = {
-    from: process.env.EMAIL_USER,
-    to: email,
+    from: email,
+    to: process.env.EMAIL_USER,
     subject: "CITB: Email sent from customer",
-    text: `Thank you for contacting us. Here are the details of your message:\n
+    text: `An email has been sent from the customer, here is their details:\n
       Name: ${formData.name}
       Email: ${formData.email}
       Message: ${formData.message}`,
