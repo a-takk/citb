@@ -135,9 +135,9 @@ const sendContactEmail = async (email, formData) => {
     to: process.env.EMAIL_USER,
     subject: "CITB: Email sent from customer",
     text: `An email has been sent from the customer, here is their details:\n
-  Name: ${formData.name}
-  Email: ${formData.email}
-  Message: ${formData.message}`,
+Name: ${formData.name}
+Email: ${formData.email}
+Message: ${formData.message}`,
   };
 
   await transporter.sendMail(mailOptions);
@@ -158,26 +158,26 @@ const sendAdminEmail = async (email, formData) => {
     to: process.env.EMAIL_USER,
     subject: "CITB: Customer has booked for a test",
     text: `A customer has booked for a test, here are the details:\n
-  CSCS Card Type: ${formData.cscsCardType}
-  Card Action: ${formData.cardAction}
-  Title: ${formData.title}
-  First Name: ${formData.firstName}
-  Surname: ${formData.surname}
-  Date of Birth: ${formData.dateOfBirthDay}/${formData.dateOfBirthMonth}/${formData.dateOfBirthYear}
-  Gender: ${formData.gender}
-  Test: ${formData.test}
-  Test Language: ${formData.testLanguage}
-  Test Date: ${formData.testDate}
-  Test Time: ${formData.testTime}
-  Address: ${formData.address}
-  Town: ${formData.town}
-  County: ${formData.county}
-  Country: ${formData.country}
-  Postcode: ${formData.postcode}
-  Mobile Number: ${formData.mobileNumber}
-  Email: ${formData.email}
-  Confirm Email: ${formData.confirmEmail}
-  Agree: ${formData.agree}`,
+CSCS Card Type: ${formData.cscsCardType}
+Card Action: ${formData.cardAction}
+Title: ${formData.title}
+First Name: ${formData.firstName}
+Surname: ${formData.surname}
+Date of Birth: ${formData.dateOfBirthDay}/${formData.dateOfBirthMonth}/${formData.dateOfBirthYear}
+Gender: ${formData.gender}
+Test: ${formData.test}
+Test Language: ${formData.testLanguage}
+Test Date: ${formData.testDate}
+Test Time: ${formData.testTime}
+Address: ${formData.address}
+Town: ${formData.town}
+County: ${formData.county}
+Country: ${formData.country}
+Postcode: ${formData.postcode}
+Mobile Number: ${formData.mobileNumber}
+Email: ${formData.email}
+Confirm Email: ${formData.confirmEmail}
+Agree: ${formData.agree}`,
   };
   await transporter.sendMail(mailOptions);
 };
@@ -197,10 +197,10 @@ const sendBookingEmail = async (email, formData) => {
     to: email,
     subject: "CITB: Thank You For Booking",
     text: `Thank you for booking your CITB test, your booking details are:\n
-  Card Type: ${formData.cscsCardType}
-  Test Type: ${formData.test}
-  Test Date:  ${formData.testDate}
-  Test Time:  ${formData.testTime}`,
+Card Type: ${formData.cscsCardType}
+Test Type: ${formData.test}
+Test Date:  ${formData.testDate}
+Test Time:  ${formData.testTime}`,
   };
 
   await transporter.sendMail(mailOptions);
