@@ -43,6 +43,10 @@ textarea {
   margin-top: 20px;
 }
 
+.alert-message {
+  text-align: center;
+}
+
 .contactdetails {
   display: grid;
   grid-template-columns: 1fr 1fr 1fr; /* Three columns */

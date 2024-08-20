@@ -20,6 +20,10 @@
   z-index: -1; /* Ensure the blurred background is behind the form */
 }
 
+.alert-message {
+  text-align: center;
+}
+
 form {
   background-color: #ffffff;
   padding: 40px;

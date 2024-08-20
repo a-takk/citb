@@ -16,7 +16,7 @@ const Book = () => {
     return `${year}-${month}-${day}`;
   };
 
-  // State for available slots, prices, and form data
+  // State for available slots, prices, form data, and alert message
   const [availableSlots, setAvailableSlots] = useState([]);
   const [prices, setPrices] = useState({});
   const [formData, setFormData] = useState({
@@ -43,6 +43,9 @@ const Book = () => {
     confirmEmail: "",
     agree: false,
   });
+
+  const [alertMessage, setAlertMessage] = useState(""); // State to store alert message
+  const [showAlert, setShowAlert] = useState(false); // State to control visibility of alert
 
   useEffect(() => {
     if (formData.testDate) {
@@ -216,14 +219,20 @@ const Book = () => {
       }
     } catch (error) {
       console.error("Error creating checkout session:", error.message);
-      alert("Failed to start payment. Please try again later.");
+      setAlertMessage("Failed to start payment. Please try again later.");
+      setShowAlert(true);
     }
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 10000);
   };
 
   return (
     <div className="formbackground">
       <form onSubmit={handleSubmit} className="form">
         <h1>Start your booking</h1>
+        {showAlert && <p className="alert-message">{alertMessage}</p>}
         <h2>Your CSCS Card</h2>
         <label>
           What CSCS Card do you need?:
@@ -458,9 +467,11 @@ const Book = () => {
           <input
             type="text"
             name="mobileNumber"
+            placeholder="07(XXX)XXX-XXX"
             value={formData.mobileNumber}
-            onChange={handleChange}
+            onChange={(handleChange, handleDateOfBirthChange)}
             required
+            maxLength={11}
           />
         </label>
         <label>

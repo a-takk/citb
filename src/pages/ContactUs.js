@@ -8,6 +8,9 @@ function ContactUs() {
     message: "",
   });
 
+  const [alertMessage, setAlertMessage] = useState(""); // State to store alert message
+  const [showAlert, setShowAlert] = useState(false); // State to control visibility of alert
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setContactFormData((prevFormData) => ({
@@ -29,31 +32,39 @@ function ContactUs() {
           },
           body: JSON.stringify({
             email: contactFormData.email,
-            formData: contactFormData, // Ensure formData contains all contact form data
+            formData: contactFormData,
           }),
         }
       );
 
       if (response.ok) {
-        alert("Email sent successfully!");
+        setAlertMessage("Email sent successfully!");
+        setShowAlert(true);
         setContactFormData({
           name: "",
           email: "",
           message: "",
         });
       } else {
-        alert("Error sending email.");
+        setAlertMessage("Error sending email. Please try again later.");
+        setShowAlert(true);
       }
     } catch (error) {
       console.error("Error:", error);
-      alert("Error sending email.");
+      setAlertMessage("Error sending email. Please try again later. ");
+      setShowAlert(true);
     }
+
+    setTimeout(() => {
+      setShowAlert(false);
+    }, 10000);
   };
 
   return (
     <div className="contactbackground">
       <form onSubmit={handleSubmit}>
         <h1 className="contactformheading">Contact Us</h1>
+        {showAlert && <p className="alert-message">{alertMessage}</p>}
         <label htmlFor="name" className="label">
           Name:
         </label>
