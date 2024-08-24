@@ -143,7 +143,7 @@ Message: ${formData.message}`,
   await transporter.sendMail(mailOptions);
 };
 
-const sendAdminEmail = async (email, formData) => {
+const sendAdminEmail = async (formData) => {
   const transporter = nodemailer.createTransport({
     service: "Gmail",
     auth: {

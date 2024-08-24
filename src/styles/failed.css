@@ -1,11 +1,14 @@
+/* FAILED PAGE CSS */
+
 .failedBackground {
-  height: 90vh;
+  height: 90vh; /* Consistent height across all views */
   margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 10vh;
   margin-bottom: 10vh;
+  padding: 10px; /* Add some padding for smaller screens */
 }
 
 .failedBackground::before {
@@ -62,4 +65,54 @@
 
 .failed a:hover {
   background-color: #e6b800;
+}
+
+/* Media Queries for Mobile Views */
+@media (max-width: 768px) {
+  .failed {
+    width: 90%; /* Adjust the width for smaller screens */
+    padding: 20px; /* Reduce padding */
+  }
+
+  .failedBackground {
+    margin-top: 5vh; /* Reduce top margin for mobile */
+    margin-bottom: 5vh; /* Reduce bottom margin for mobile */
+    height: 90vh; /* Keep height consistent */
+  }
+
+  .failed h1,
+  .failed h2 {
+    font-size: 24px; /* Adjust font size for headers */
+    margin-top: 10px; /* Reduce margin for smaller screens */
+    margin-bottom: 20px; /* Reduce margin for smaller screens */
+  }
+
+  .failed a {
+    padding: 12px; /* Adjust padding for buttons */
+    font-size: 14px; /* Adjust font size for buttons */
+    height: auto; /* Remove fixed height for flexibility */
+  }
+}
+
+@media (max-width: 480px) {
+  .failed {
+    width: 95%; /* Further reduce the width for very small screens */
+    padding: 15px; /* Reduce padding more */
+  }
+
+  .failedBackground {
+    margin-top: 5vh; /* Reduce top margin for smaller screens */
+    margin-bottom: 5vh; /* Reduce bottom margin for smaller screens */
+    height: 90vh; /* Keep height consistent */
+  }
+
+  .failed h1,
+  .failed h2 {
+    font-size: 20px; /* Adjust font size for headers */
+  }
+
+  .failed a {
+    padding: 10px; /* Further reduce padding for buttons */
+    font-size: 12px; /* Adjust font size for buttons */
+  }
 }

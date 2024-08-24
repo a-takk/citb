@@ -1,0 +1,90 @@
+/* Login Page CSS */
+
+/* Reusing .formbackground for centering and background */
+.formbackground {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 90vh; /* Similar height settings to the success page */
+  position: relative;
+  margin-top: 10vh; /* Align vertical centering */
+  margin-bottom: 10vh; /* Align vertical centering */
+}
+
+.formbackground::before {
+  content: "";
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: url("../images/constructionbackground.jpg");
+  background-size: cover;
+  background-position: center;
+  filter: blur(5px);
+  z-index: -1;
+}
+
+/* Login form style */
+.login-container form {
+  background-color: #ffffff;
+  padding: 40px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 500px; /* Matching the width of the success form */
+  border-radius: 20px;
+  position: relative;
+  z-index: 1;
+  margin: 0 auto; /* Centering */
+}
+
+.login-container label {
+  display: block;
+  margin-top: 20px;
+  color: #333;
+}
+
+.login-container input[type="text"],
+.login-container input[type="password"] {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  font-size: 16px;
+  box-sizing: border-box;
+}
+
+.login-container button {
+  background-color: #ffcc00;
+  color: black;
+  border: none;
+  padding: 15px;
+  border-radius: 5px;
+  font-size: 16px;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 20px; /* Space between inputs and button */
+}
+
+.login-container button:hover {
+  background-color: #e6b800;
+}
+
+/* Responsive Design */
+@media (max-width: 992px) {
+  .login-container form {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 768px) {
+  .login-container form {
+    max-width: 90%;
+  }
+}
+
+@media (max-width: 576px) {
+  .login-container form {
+    max-width: 90%;
+  }
+}

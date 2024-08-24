@@ -1,13 +1,14 @@
 /* SUCCESS PAGE CSS */
 
 .successFormBackground {
-  height: 90vh; /* Ensure it takes the full viewport height */
+  height: 90vh; /* Consistent height across all views */
   margin: 0;
   display: flex;
   justify-content: center;
   align-items: center;
   margin-top: 10vh;
   margin-bottom: 10vh;
+  padding: 10px; /* Add some padding for smaller screens */
 }
 
 .successFormBackground::before {
@@ -64,4 +65,42 @@
 
 .successForm a:hover {
   background-color: #e6b800;
+}
+
+/* Media Queries for Mobile Views */
+@media (max-width: 768px) {
+  .successForm {
+    width: 90%; /* Adjust the width for smaller screens */
+    padding: 20px; /* Reduce padding */
+  }
+
+  .successForm h1,
+  .successForm h2 {
+    font-size: 24px; /* Adjust font size for headers */
+    margin-top: 10px; /* Reduce margin for smaller screens */
+    margin-bottom: 20px; /* Reduce margin for smaller screens */
+  }
+
+  .successForm a {
+    padding: 12px; /* Adjust padding for buttons */
+    font-size: 14px; /* Adjust font size for buttons */
+    height: auto; /* Remove fixed height for flexibility */
+  }
+}
+
+@media (max-width: 480px) {
+  .successForm {
+    width: 95%; /* Further reduce the width for very small screens */
+    padding: 15px; /* Reduce padding more */
+  }
+
+  .successForm h1,
+  .successForm h2 {
+    font-size: 20px; /* Adjust font size for headers */
+  }
+
+  .successForm a {
+    padding: 10px; /* Further reduce padding for buttons */
+    font-size: 12px; /* Adjust font size for buttons */
+  }
 }
