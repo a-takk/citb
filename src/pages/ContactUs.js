@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import "../styles/contact.css";
+import { Helmet } from "react-helmet-async";
 
 function ContactUs() {
   const [contactFormData, setContactFormData] = useState({

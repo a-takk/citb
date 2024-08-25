@@ -1,5 +1,6 @@
 import "../styles/card.css";
 import React from "react";
+import { Helmet } from "react-helmet-async";
 import greenLabourerCSCSCard from "../images/green-labourer-cscs-card.webp";
 import blueSkilledCSCSCard from "../images/blue-skilled-worker-cscs-card.webp";
 import goldAdvancedCraftCSCSCard from "../images/gold-advanced-craft-cscs-card.webp";

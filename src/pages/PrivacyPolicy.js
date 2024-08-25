@@ -1,4 +1,5 @@
 import "../styles/privacypolicy.css";
+import { Helmet } from "react-helmet-async";
 
 export default function PrivacyPolicy() {
   return (

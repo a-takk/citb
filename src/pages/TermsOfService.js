@@ -1,4 +1,5 @@
 import "../styles/termsofservice.css";
+import { Helmet } from "react-helmet-async";
 
 export default function TermsOfService() {
   return (
