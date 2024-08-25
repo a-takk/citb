@@ -2,6 +2,7 @@ import "../styles/home.css";
 import cscs from "../images/green-labourer-cscs-card.webp";
 import booking from "../images/booking.gif";
 import { useRef } from "react";
+import { Helmet } from "react-helmet-async";
 
 export default function Home() {
   const targetRef = useRef(null);
