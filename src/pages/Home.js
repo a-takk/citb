@@ -13,6 +13,13 @@ export default function Home() {
   return (
     <>
       <div className="herocontainer">
+        <Helmet>
+          <title>Home | CITB Certify</title>
+          <meta
+            name="description"
+            content="Welcome to CITB Certify, your go-to platform for booking CITB tests and obtaining CSCS cards. Explore our easy-to-use service to schedule your test, find the right CSCS card, and learn more about our location."
+          />
+        </Helmet>
         <div className="herodiv">
           <h1 className="heroheading">Welcome to CITB Certify</h1>
           <p className="herotext">
