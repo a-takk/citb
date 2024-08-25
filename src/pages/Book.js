@@ -230,6 +230,13 @@ const Book = () => {
 
   return (
     <div className="formbackground">
+      <Helmet>
+        <title>Book | CITB Certify</title>
+        <meta
+          name="description"
+          content="Book your CITB Health, Safety & Environment test to become eligible for a CSCS card. Choose a test date, select your language, and prepare for your career in construction."
+        />
+      </Helmet>
       <form onSubmit={handleSubmit} className="form">
         <h1>Start your booking</h1>
         {showAlert && <p className="alert-message">{alertMessage}</p>}

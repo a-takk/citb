@@ -62,6 +62,13 @@ function ContactUs() {
 
   return (
     <div className="contactbackground">
+      <Helmet>
+        <title>Contact Us | CITB Certify</title>
+        <meta
+          name="description"
+          content="Have any questions? Fill out this form and ask us any questions you have! Relevant information regarding our business is also listed on the page."
+        />
+      </Helmet>
       <form onSubmit={handleSubmit}>
         <h1 className="contactformheading">Contact Us</h1>
         {showAlert && <p className="alert-message">{alertMessage}</p>}
