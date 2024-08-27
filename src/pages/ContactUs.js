@@ -70,7 +70,7 @@ function ContactUs() {
           content="Have any questions? Fill out this form and ask us any questions you have! Relevant information regarding our business is also listed on the page."
         />
       </Helmet>
-      <form onSubmit={handleSubmit}>
+      <form onSubmit={handleSubmit} className="form">
         <h1 className="contactformheading">Contact Us</h1>
         {showAlert && <p className="alert-message">{alertMessage}</p>}
         <label htmlFor="name" className="label">

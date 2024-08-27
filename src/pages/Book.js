@@ -238,7 +238,7 @@ const Book = () => {
           content="Book your CITB Health, Safety & Environment test to become eligible for a CSCS card. Choose a test date, select your language, and prepare for your career in construction."
         />
       </Helmet>
-      <form onSubmit={handleSubmit} className="form">
+      <form onSubmit={handleSubmit}>
         <h1>Start your booking</h1>
         {showAlert && <p className="alert-message">{alertMessage}</p>}
         <h2>Your CSCS Card</h2>
