@@ -235,8 +235,14 @@ const Book = () => {
         <title>Book | CITB Certify</title>
         <meta
           name="description"
-          content="Book your CITB Health, Safety & Environment test to become eligible for a CSCS card. Choose a test date, select your language, and prepare for your career in construction."
+          content="Book your CITB Health, Safety & Environment test online and become eligible for a CSCS card. Easily select your test date and language preference to kickstart your career in construction. Secure your CSCS card by scheduling your CITB test today."
         />
+        <meta
+          name="keywords"
+          content="CITB test, CSCS card booking, CITB Health and Safety test, construction test booking, book CSCS card, CITB exam, construction safety test, online CSCS test booking"
+        />
+        <meta name="robots" content="index, follow" />
+        <link rel="canonical" href="https://www.citbcertify.co.uk/book" />
       </Helmet>
       <form onSubmit={handleSubmit}>
         <h1>Start your booking</h1>
