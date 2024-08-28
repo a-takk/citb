@@ -487,7 +487,7 @@ async function handleCheckoutSessionCompleted(session) {
     try {
       await Promise.all([
         sendBookingEmail(email, formData),
-        sendAdminEmail(email, formData),
+        sendAdminEmail(formData),
       ]);
       console.log("Confirmation emails sent successfully");
     } catch (emailError) {
