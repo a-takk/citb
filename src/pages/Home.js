@@ -31,13 +31,27 @@ export default function Home() {
           </button>
         </div>
       </div>
-      <div className="introcontainer">
-        <div className="introdiv1">
+      <div className="introcontainer" ref={targetRef}>
+        <h1 className="introheading">Intro</h1>
+        <p className="introtext">
+          Welcome to CITB Certify, your go-to platform for booking CITB tests
+          and obtaining CSCS cards, here you can book specific tests depending
+          on the qualifications you have and we can carry out your tests at our
+          site, check out the rest of the website for more information regarding
+          CSCS cards and if you want to book for your tests, please click on the
+          booking link either in the navigation bar or in the booking section
+          below. If you have any questions regarding any queries, please use the
+          contact us page to send us an email and we will get back to you as
+          soon as possible.
+        </p>
+      </div>
+      <div className="cardcontainer">
+        <div className="carddiv1">
           <img src={cscs} className="introimage" alt="introimage" />
         </div>
-        <div className="introdiv2" ref={targetRef}>
-          <h1 className="introheading">Cards</h1>
-          <p className="introtext">
+        <div className="carddiv2">
+          <h1 className="cardheading">Cards</h1>
+          <p className="cardtext">
             You can access all the current CSCS cards that you can obtain with
             us, if you are looking to move up and earn a new qualification then
             please go to the booking page in order to book for a test, either
