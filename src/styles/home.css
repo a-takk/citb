@@ -35,6 +35,7 @@ html {
   font-size: 50px; /* Default font size */
   margin: 0;
   text-align: center;
+  margin-top: 50px; /* Add consistent margin-top for all views */
 }
 
 .introheading,
@@ -201,6 +202,7 @@ html {
   .bookingheading,
   .locationheading {
     font-size: 40px; /* Smaller heading size for medium screens */
+    margin-top: 50px; /* Apply consistent top margin */
   }
 
   .herocontainer {
@@ -264,6 +266,7 @@ html {
   .bookingheading,
   .locationheading {
     font-size: 30px; /* Smaller heading size for small screens */
+    margin-top: 50px; /* Apply consistent top margin */
   }
 
   .herodiv {
@@ -290,12 +293,21 @@ html {
 }
 
 @media (max-width: 576px) {
-  .heroheading,
+  .herobutton {
+    margin-top: 30px;
+  }
+
+  .heroheading {
+    font-size: 30px;
+    margin-top: 50px; /* Ensure top margin is consistent for small screens */
+  }
+
   .introheading,
   .cardheading,
   .bookingheading,
   .locationheading {
     font-size: 20px; /* Smaller heading size for extra small screens */
+    margin-top: 50px; /* Apply consistent top margin */
   }
 
   .herocontainer {
