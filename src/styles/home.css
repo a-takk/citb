@@ -78,6 +78,10 @@ html {
   cursor: pointer;
 }
 
+.herobutton:hover {
+  background-color: #262626; /* Slightly darker shade on hover */
+}
+
 .introcontainer {
   display: flex;
   flex-direction: column;
