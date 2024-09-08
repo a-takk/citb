@@ -119,6 +119,19 @@ app.get("/api/admin", (req, res) => {
   });
 });
 
+app.post("/api/admin-login", (req, res) => {
+  const { username, password } = req.body;
+
+  const adminUsername = process.env.ADMIN_USERNAME;
+  const adminPassword = process.env.ADMIN_PASSWORD;
+
+  if (username === adminUsername && password === adminPassword) {
+    res.status(200).json({ success: true, message: "Login successful" });
+  } else {
+    res.status(401).json({ success: false, message: "Invalid credentials" });
+  }
+});
+
 // Function to send confirmation email
 const sendContactEmail = async (email, formData) => {
   const transporter = nodemailer.createTransport({

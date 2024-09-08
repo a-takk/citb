@@ -1,4 +1,3 @@
-// src/pages/Login.js
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { useAuth } from "../components/authcontext";
@@ -7,22 +6,43 @@ import "../styles/login.css";
 const Login = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
+  const [error, setError] = useState("");
   const navigate = useNavigate();
   const location = useLocation();
   const { login } = useAuth();
 
   const from = location.state?.from?.pathname || "/admin";
 
-  const handleLogin = (e) => {
+  const handleLogin = async (e) => {
     e.preventDefault();
-    const validUsername = "amansinghtaak";
-    const validPassword = "Taakaman24";
+    setError("");
 
-    if (username === validUsername && password === validPassword) {
-      login();
-      navigate(from, { replace: true });
-    } else {
-      alert("Invalid credentials. Please try again.");
+    try {
+      const response = await fetch(
+        "https://www.citbcertify.co.uk/api/admin-login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            username,
+            password,
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.success) {
+        login(); // Perform login from useAuth
+        navigate(from, { replace: true });
+      } else {
+        setError(data.message || "Invalid credentials. Please try again.");
+      }
+    } catch (error) {
+      console.error("Error during login:", error);
+      setError("An error occurred during login. Please try again.");
     }
   };
 
