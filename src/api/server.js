@@ -64,8 +64,16 @@ const generateSlots = () => {
 app.get("/insert-slots", (req, res) => {
   const slots = generateSlots();
 
-  let sql = "INSERT INTO booking_details (testDate, testTime) VALUES ?";
-  const values = slots.map((slot) => [slot.testDate, slot.testTime]);
+  // Modify the SQL to insert originalTestDate and originalTestTime
+  let sql = `INSERT INTO booking_details (testDate, testTime, originalTestDate, originalTestTime) VALUES ?`;
+
+  // Map the values to insert testDate, testTime, originalTestDate, originalTestTime
+  const values = slots.map((slot) => [
+    slot.testDate, // testDate
+    slot.testTime, // testTime
+    slot.testDate, // originalTestDate (same as testDate)
+    slot.testTime, // originalTestTime (same as testTime)
+  ]);
 
   pool.query(sql, [values], (err, result) => {
     if (err) {
@@ -75,25 +83,46 @@ app.get("/insert-slots", (req, res) => {
   });
 });
 
+app.get("/alter-table", (req, res) => {
+  const sql1 = "ALTER TABLE booking_details ADD COLUMN originalTestDate DATE";
+  const sql2 = "ALTER TABLE booking_details ADD COLUMN originalTestTime TIME";
+
+  // Run the first query to add originalTestDate
+  pool.query(sql1, (err, result) => {
+    if (err) {
+      return res.status(500).send("Error adding originalTestDate: " + err);
+    }
+
+    // Run the second query to add originalTestTime
+    pool.query(sql2, (err, result) => {
+      if (err) {
+        return res.status(500).send("Error adding originalTestTime: " + err);
+      }
+
+      res.send(
+        "Columns originalTestDate and originalTestTime added successfully"
+      );
+    });
+  });
+});
+
 app.get("/api/admin", (req, res) => {
   const customerQuery = `
     SELECT
-      title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
+      customerId, title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
       dateOfBirthYear, gender, address, town, county, country, postcode, email,
       mobileNumber, agree
     FROM customer_details
   `;
 
-  // Fetch booking details, excluding rows with null values
   const bookingQuery = `
     SELECT
-      testDate, testTime, cscsCardType, cardAction, test, testLanguage, status
+      bookingId, testDate, testTime, cscsCardType, cardAction, test, testLanguage, status
     FROM booking_details
     WHERE testDate IS NOT NULL AND testTime IS NOT NULL AND cscsCardType IS NOT NULL
     AND cardAction IS NOT NULL AND test IS NOT NULL AND testLanguage IS NOT NULL AND status IS NOT NULL
   `;
 
-  // Run the first query to get customer details
   pool.query(customerQuery, (error, customerResults) => {
     if (error) {
       console.error("Error fetching customer data:", error);
@@ -115,6 +144,49 @@ app.get("/api/admin", (req, res) => {
         };
       });
       res.json({ data: combinedResults });
+    });
+  });
+});
+
+app.delete("/api/admin/:id", (req, res) => {
+  const customerId = req.params.id; // Get customerId from params, not body
+  const bookingId = req.body.bookingId;
+
+  if (!bookingId) {
+    return res.status(400).json({ error: "No booking ID provided" });
+  }
+
+  console.log(`Deleting user with id: ${customerId}`);
+  const deleteQuery = "DELETE FROM customer_details WHERE customerId = ?";
+
+  db.query(deleteQuery, [customerId], (err, result) => {
+    if (err) {
+      console.error("Error deleting user:", err);
+      return res.status(500).json({ error: "Error deleting user" });
+    }
+
+    const resetBookingQuery = `UPDATE booking_details 
+    SET cscsCardType = NULL, 
+        cardAction = NULL, 
+        test = NULL, 
+        testLanguage = NULL, 
+        testDate = originalTestDate,  
+        testTime = originalTestTime,  
+        status = 'available'
+    WHERE bookingId = ?`;
+
+    db.query(resetBookingQuery, [bookingId], (resetErr, resetResult) => {
+      if (resetErr) {
+        console.error("Error resetting booking details:", resetErr);
+        return res
+          .status(500)
+          .json({ error: "Error resetting booking details" });
+      }
+
+      console.log("Booking details reset for bookingId:", bookingId);
+      res.json({
+        message: "User deleted and booking details reset successfully",
+      });
     });
   });
 });

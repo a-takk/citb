@@ -5,12 +5,11 @@ import "../styles/admin.css";
 const AdminDashboard = () => {
   const [data, setData] = useState([]);
 
+  // Fetch data on component mount
   useEffect(() => {
     const fetchAdminData = async () => {
       try {
-        const response = await fetch(
-          "https://citbcertify-792b2842c4ae.herokuapp.com/api/admin"
-        );
+        const response = await fetch("https://www.citbcertify.co.uk/api/admin");
         const result = await response.json();
         setData(result.data);
       } catch (error) {
@@ -20,6 +19,40 @@ const AdminDashboard = () => {
 
     fetchAdminData();
   }, []);
+
+  const handleDelete = async (customerId, bookingId) => {
+    if (!customerId) {
+      console.error("No user ID provided");
+      return;
+    }
+
+    const confirmDelete = window.confirm(
+      "Are you sure you want to delete this user and reset their booking?"
+    );
+    if (!confirmDelete) return;
+
+    try {
+      const response = await fetch(
+        `https://www.citbcertify.co.uk/api/admin/${customerId}`, // Ensure `id` is passed correctly here
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ bookingId }), // Pass bookingId in the body
+        }
+      );
+
+      if (response.ok) {
+        setData(data.filter((item) => item.customerId !== customerId));
+        alert("User deleted and booking reset successfully");
+      } else {
+        alert("Failed to delete user and reset booking");
+      }
+    } catch (error) {
+      console.error("Error deleting user and resetting booking:", error);
+    }
+  };
 
   return (
     <div className="adminbackground">
@@ -48,6 +81,7 @@ const AdminDashboard = () => {
                 <th>Test</th>
                 <th>Test Language</th>
                 <th>Status</th>
+                <th>Action</th> {/* Added Action column for delete button */}
               </tr>
             </thead>
             <tbody>
@@ -77,6 +111,17 @@ const AdminDashboard = () => {
                   <td>{item.test || ""}</td>
                   <td>{item.testLanguage || ""}</td>
                   <td>{item.status || ""}</td>
+                  <td>
+                    <button
+                      className="btn btn-danger"
+                      onClick={() => {
+                        console.log("Deleting user with ID:", item.customerId); // Add this to log the user ID
+                        handleDelete(item.customerId, item.bookingId);
+                      }}
+                    >
+                      Delete
+                    </button>
+                  </td>
                 </tr>
               ))}
             </tbody>
