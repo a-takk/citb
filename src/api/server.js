@@ -148,15 +148,16 @@ app.get("/api/admin", (req, res) => {
   });
 });
 
-app.delete("/api/admin/:id", (req, res) => {
-  const customerId = req.params.id; // Get customerId from params, not body
-  const bookingId = req.body.bookingId;
+app.delete("/api/admin/:customerId", (req, res) => {
+  const { customerId } = req.params.id;
+  const { bookingId } = req.body;
 
   if (!bookingId) {
     return res.status(400).json({ error: "No booking ID provided" });
   }
 
-  console.log(`Deleting user with id: ${customerId}`);
+  console.log(`Deleting user with customerId: ${customerId}`);
+
   const deleteQuery = "DELETE FROM customer_details WHERE customerId = ?";
 
   db.query(deleteQuery, [customerId], (err, result) => {
@@ -165,15 +166,20 @@ app.delete("/api/admin/:id", (req, res) => {
       return res.status(500).json({ error: "Error deleting user" });
     }
 
-    const resetBookingQuery = `UPDATE booking_details 
-    SET cscsCardType = NULL, 
-        cardAction = NULL, 
-        test = NULL, 
-        testLanguage = NULL, 
-        testDate = originalTestDate,  
-        testTime = originalTestTime,  
-        status = 'available'
-    WHERE bookingId = ?`;
+    if (result.affectedRows === 0) {
+      return res.status(404).json({ error: "User not found" });
+    }
+
+    const resetBookingQuery = `
+      UPDATE booking_details 
+      SET cscsCardType = NULL, 
+          cardAction = NULL, 
+          test = NULL, 
+          testLanguage = NULL, 
+          testDate = originalTestDate,  
+          testTime = originalTestTime,  
+          status = 'available'          
+      WHERE bookingId = ?`;
 
     db.query(resetBookingQuery, [bookingId], (resetErr, resetResult) => {
       if (resetErr) {
@@ -181,6 +187,10 @@ app.delete("/api/admin/:id", (req, res) => {
         return res
           .status(500)
           .json({ error: "Error resetting booking details" });
+      }
+
+      if (resetResult.affectedRows === 0) {
+        return res.status(404).json({ error: "Booking not found" });
       }
 
       console.log("Booking details reset for bookingId:", bookingId);
