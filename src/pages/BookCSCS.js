@@ -3,21 +3,18 @@ import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Helmet } from "react-helmet-async";
 
-// Initialize Stripe with your publishable key
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
 const Book = () => {
-  // Helper function to get tomorrow's date in YYYY-MM-DD format
   const getCurrentDate = () => {
     const date = new Date();
-    date.setDate(date.getDate() + 1); // Set the date to tomorrow
+    date.setDate(date.getDate() + 1);
     const day = String(date.getDate()).padStart(2, "0");
     const month = String(date.getMonth() + 1).padStart(2, "0");
     const year = date.getFullYear();
     return `${year}-${month}-${day}`;
   };
 
-  // State for available slots, prices, form data, and alert message
   const [availableSlots, setAvailableSlots] = useState([]);
   const [prices, setPrices] = useState({});
   const [formData, setFormData] = useState({
@@ -232,7 +229,7 @@ const Book = () => {
   return (
     <div className="formbackground">
       <Helmet>
-        <title>Book | CITB Certify</title>
+        <title>Book your CSCS Test | CITB Certify</title>
         <meta
           name="description"
           content="Book your CITB Health, Safety & Environment test online and become eligible for a CSCS card. Easily select your test date and language preference to kickstart your career in construction. Secure your CSCS card by scheduling your CITB test today."
@@ -242,10 +239,10 @@ const Book = () => {
           content="CITB test, CSCS card booking, CITB Health and Safety test, construction test booking, book CSCS card, CITB exam, construction safety test, online CSCS test booking"
         />
         <meta name="robots" content="index, follow" />
-        <link rel="canonical" href="https://www.citbcertify.co.uk/book" />
+        <link rel="canonical" href="https://www.citbcertify.co.uk/book-cscs" />
       </Helmet>
       <form onSubmit={handleSubmit}>
-        <h1>Start your booking</h1>
+        <h1>Start your CSCS Booking</h1>
         {showAlert && <p className="alert-message">{alertMessage}</p>}
         <h2>Your CSCS Card</h2>
         <label>
@@ -296,7 +293,7 @@ const Book = () => {
           />
           Renewal of CSCS Card (My CSCS Card has expired)
         </label>
-        <h2>Who's Taking The Test</h2>
+        <h2>Personal Details</h2>
         <label>
           Title:
           <select name="title" value={formData.title} onChange={handleChange}>
@@ -515,9 +512,7 @@ const Book = () => {
             checked={formData.agree}
             onChange={handleChange}
           />
-          I agree to the terms and conditions, with acknowledgement of this
-          booking is for the CITB Health, Safety & Environment Test, as a
-          requirement for CSCS card eligibility.
+          I agree to the terms and conditions.
         </label>
         <button type="submit">Checkout</button>
       </form>

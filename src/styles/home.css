@@ -32,18 +32,18 @@ html {
 
 .heroheading {
   color: #2f2f2f;
-  font-size: 50px; /* Default font size */
+  font-size: 50px; /* Match the card heading size */
   margin: 0;
   text-align: center;
-  margin-top: 50px; /* Add consistent margin-top for all views */
 }
 
 .introheading,
 .cardheading,
 .bookingheading,
-.locationheading {
+.locationheading,
+.cscsheading {
   color: #ffcc00;
-  font-size: 50px; /* Default font size */
+  font-size: 50px; /* Uniform heading size across sections */
   margin: 0;
   text-align: center;
 }
@@ -51,16 +51,48 @@ html {
 .herotext {
   color: #2f2f2f;
   text-align: center;
-  font-weight: bold;
   font-size: 18px;
   margin-top: 60px;
   margin-bottom: 60px;
+  width: 90%;
+}
+.introtext {
+  color: #ffffff;
+  text-align: center;
+  font-size: 18px; /* Uniform body text size across sections */
+  margin-top: 60px;
+  margin-bottom: 60px;
+  width: 70%;
+}
+
+.cardtext,
+.bookingtext,
+.cscstext {
+  color: #ffffff;
+  text-align: center;
+  font-size: 18px; /* Uniform body text size across sections */
+  margin-top: 60px;
+  margin-bottom: 60px;
+  width: 90%;
 }
 
 .heroimage {
   max-width: 500px;
   height: auto;
   border-radius: 20px;
+}
+
+.cscsbutton {
+  background-color: #ffcc00;
+  width: 240px;
+  height: 35px;
+  color: black;
+  border-radius: 15px;
+  font-size: 13px;
+  text-decoration: none;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 
 .herobutton {
@@ -78,14 +110,10 @@ html {
   cursor: pointer;
 }
 
-.herobutton:hover {
-  background-color: #262626; /* Slightly darker shade on hover */
-}
-
 .introcontainer {
   display: flex;
   flex-direction: column;
-  background-color: #263238;
+  background-color: #37474f;
   align-items: center;
   justify-content: center;
   width: 100%;
@@ -94,12 +122,10 @@ html {
   text-align: center;
 }
 
-.introtext {
-  color: #ffffff;
-  width: 90%;
-  margin-top: 50px;
-  margin-bottom: 60px;
-  text-align: center;
+.introimage {
+  max-width: 70%;
+  height: auto;
+  border-radius: 20px;
 }
 
 .cardcontainer {
@@ -114,28 +140,12 @@ html {
 .carddiv1,
 .carddiv2 {
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
   width: 50%;
   padding: 20px;
-}
-
-.carddiv2 {
-  flex-direction: column;
-}
-
-.cardtext {
-  color: #ffffff;
-  width: 90%;
-  margin-top: 50px;
-  margin-bottom: 60px;
   text-align: center;
-}
-
-.introimage {
-  max-width: 70%;
-  height: auto;
-  border-radius: 20px;
 }
 
 .bookingcontainer {
@@ -145,6 +155,10 @@ html {
   width: 100%;
   min-height: 100vh;
   overflow: auto;
+}
+
+.herobutton:hover {
+  background-color: #1e1e1e; /* Slightly darker color on hover */
 }
 
 .bookingdiv2,
@@ -158,14 +172,6 @@ html {
 
 .bookingdiv1 {
   flex-direction: column;
-}
-
-.bookingtext {
-  color: #ffffff;
-  width: 90%;
-  margin-top: 50px;
-  margin-bottom: 60px;
-  text-align: center;
 }
 
 .bookingimage {
@@ -194,6 +200,44 @@ html {
   justify-content: center;
 }
 
+/* Green CSCS Card Section */
+.cscscontainer {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  min-height: 100vh;
+  background-color: #263238;
+  overflow: auto;
+  padding: 50px 0;
+}
+
+.cscsdiv1 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  padding: 20px;
+}
+.cscsdiv2 {
+  display: flex;
+  flex-direction: column;
+  margin-left: 60px;
+  align-items: center;
+  justify-content: center;
+  width: 50%;
+  padding: 20px;
+}
+
+.cscsdiv1 {
+  flex-direction: column;
+}
+
+.cscsimage {
+  max-width: 70%;
+  height: auto;
+  border-radius: 20px;
+}
+
 /* Responsive Home Sections */
 * {
   box-sizing: border-box;
@@ -204,9 +248,17 @@ html {
   .introheading,
   .cardheading,
   .bookingheading,
-  .locationheading {
-    font-size: 40px; /* Smaller heading size for medium screens */
-    margin-top: 50px; /* Apply consistent top margin */
+  .locationheading,
+  .cscsheading {
+    font-size: 44px; /* Larger heading size for medium screens */
+  }
+
+  .herotext,
+  .introtext,
+  .cardtext,
+  .bookingtext,
+  .cscstext {
+    font-size: 15px; /* Larger text size for medium screens */
   }
 
   .herocontainer {
@@ -215,35 +267,27 @@ html {
     padding-bottom: 100px;
   }
 
-  .herotext {
-    font-size: 16px;
-    margin-top: 30px;
-  }
-
   .introcontainer,
-  .bookingcontainer {
+  .bookingcontainer,
+  .cscscontainer {
     flex-direction: column;
     padding: 50px;
-  }
-
-  .introtext,
-  .bookingtext {
-    width: 70%;
-    margin-top: 30px;
-    margin-bottom: 30px;
   }
 
   .introdiv1,
   .introdiv2,
   .bookingdiv1,
-  .bookingdiv2 {
+  .bookingdiv2,
+  .cscsdiv1,
+  .cscsdiv2 {
     width: 100%;
     margin: 0;
   }
 
   .introimage,
-  .bookingimage {
-    width: 50%;
+  .bookingimage,
+  .cscsimage {
+    width: 60%;
     height: auto;
   }
 
@@ -251,6 +295,10 @@ html {
     height: auto;
   }
 
+  .cscscontainer {
+    flex-direction: column;
+    align-items: center;
+  }
   .cardcontainer {
     flex-direction: column-reverse;
     align-items: center;
@@ -268,9 +316,21 @@ html {
   .introheading,
   .cardheading,
   .bookingheading,
-  .locationheading {
-    font-size: 30px; /* Smaller heading size for small screens */
-    margin-top: 50px; /* Apply consistent top margin */
+  .locationheading,
+  .cscsheading {
+    font-size: 36px; /* Larger heading size for small screens */
+  }
+
+  .herotext,
+  .introtext,
+  .cardtext,
+  .bookingtext,
+  .cscstext {
+    font-size: 15px; /* Larger text size for small screens */
+  }
+
+  .cscscontainer {
+    flex-direction: column; /* Reverse the order of image and text */
   }
 
   .herodiv {
@@ -278,17 +338,8 @@ html {
     text-align: center;
   }
 
-  .herotext {
-    font-size: 16px;
-  }
-
   .herobutton {
     margin-bottom: 250px;
-  }
-
-  .introtext,
-  .bookingtext {
-    width: 90%;
   }
 
   .location {
@@ -297,21 +348,25 @@ html {
 }
 
 @media (max-width: 576px) {
-  .herobutton {
-    margin-top: 30px;
-  }
-
   .heroheading {
-    font-size: 30px;
-    margin-top: 50px; /* Ensure top margin is consistent for small screens */
+    font-size: 42px;
+    margin-top: 50px;
   }
 
   .introheading,
   .cardheading,
   .bookingheading,
-  .locationheading {
-    font-size: 20px; /* Smaller heading size for extra small screens */
-    margin-top: 50px; /* Apply consistent top margin */
+  .locationheading,
+  .cscsheading {
+    font-size: 28px; /* Larger heading size for extra small screens */
+  }
+
+  .herotext,
+  .introtext,
+  .cardtext,
+  .bookingtext,
+  .cscstext {
+    font-size: 15px; /* Larger text size for extra small screens */
   }
 
   .herocontainer {
@@ -324,13 +379,13 @@ html {
   }
 
   .herotext {
-    font-size: 14px;
     margin-top: 20px;
     margin-bottom: 20px;
   }
 
   .cardtext,
-  .bookingtext {
+  .bookingtext,
+  .cscstext {
     width: 80%;
     margin-top: 40px;
     margin-bottom: 40px;

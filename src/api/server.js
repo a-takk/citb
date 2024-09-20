@@ -37,75 +37,6 @@ pool.getConnection((err, connection) => {
   connection.release();
 });
 
-const generateSlots = () => {
-  const slots = [];
-  const startDate = new Date();
-  const endDate = new Date();
-  endDate.setFullYear(endDate.getFullYear() + 15);
-
-  let currentDate = startDate;
-
-  while (currentDate <= endDate) {
-    for (let hour = 9; hour < 17; hour++) {
-      // 9 AM to 5 PM
-      const slotDate = new Date(currentDate);
-      slotDate.setHours(hour, 0, 0);
-      slots.push({
-        testDate: slotDate.toISOString().split("T")[0],
-        testTime: slotDate.toTimeString().split(" ")[0],
-      });
-    }
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-
-  return slots;
-};
-
-app.get("/insert-slots", (req, res) => {
-  const slots = generateSlots();
-
-  // Modify the SQL to insert originalTestDate and originalTestTime
-  let sql = `INSERT INTO booking_details (testDate, testTime, originalTestDate, originalTestTime) VALUES ?`;
-
-  // Map the values to insert testDate, testTime, originalTestDate, originalTestTime
-  const values = slots.map((slot) => [
-    slot.testDate, // testDate
-    slot.testTime, // testTime
-    slot.testDate, // originalTestDate (same as testDate)
-    slot.testTime, // originalTestTime (same as testTime)
-  ]);
-
-  pool.query(sql, [values], (err, result) => {
-    if (err) {
-      return res.status(500).send(err);
-    }
-    res.send(`Inserted ${result.affectedRows} slots`);
-  });
-});
-
-app.get("/alter-table", (req, res) => {
-  const sql1 = "ALTER TABLE booking_details ADD COLUMN originalTestDate DATE";
-  const sql2 = "ALTER TABLE booking_details ADD COLUMN originalTestTime TIME";
-
-  // Run the first query to add originalTestDate
-  pool.query(sql1, (err, result) => {
-    if (err) {
-      return res.status(500).send("Error adding originalTestDate: " + err);
-    }
-
-    // Run the second query to add originalTestTime
-    pool.query(sql2, (err, result) => {
-      if (err) {
-        return res.status(500).send("Error adding originalTestTime: " + err);
-      }
-
-      res.send(
-        "Columns originalTestDate and originalTestTime added successfully"
-      );
-    });
-  });
-});
-
 app.get("/api/admin", (req, res) => {
   const customerQuery = `
     SELECT
@@ -301,7 +232,6 @@ Test Time:  ${formData.testTime}`,
   await transporter.sendMail(mailOptions);
 };
 
-// Route to handle contact email sending
 app.post("/api/email-sent", async (req, res) => {
   const { email, formData } = req.body;
 
@@ -316,7 +246,42 @@ app.post("/api/email-sent", async (req, res) => {
   }
 });
 
-// Route to create checkout session
+app.post("/api/create-checkout-session-citb", async (req, res) => {
+  const { formData, price } = req.body;
+
+  try {
+    const session = await stripe.checkout.sessions.create({
+      payment_method_types: ["card"],
+      line_items: [
+        {
+          price_data: {
+            currency: "gbp",
+            product_data: {
+              name: "CITB Test",
+            },
+            unit_amount: price * 100,
+          },
+          quantity: 1,
+        },
+      ],
+      mode: "payment",
+      success_url: "https://www.citbcertify.co.uk/success",
+      cancel_url: "https://www.citbcertify.co.uk/failure",
+      customer_email: formData.email,
+      metadata: {
+        firstName: formData.firstName,
+        surname: formData.surname,
+      },
+    });
+
+    // Send back the session ID
+    res.json({ sessionId: session.id });
+  } catch (error) {
+    console.error("Error creating checkout session:", error);
+    res.status(500).json({ error: "Something went wrong." });
+  }
+});
+
 app.post("/api/create-checkout-session", async (req, res) => {
   const { test, price, formData } = req.body;
   const { testDate, testTime } = formData;

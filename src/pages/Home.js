@@ -1,5 +1,6 @@
 import "../styles/home.css";
 import cscs from "../images/green-labourer-cscs-card.webp";
+
 import booking from "../images/booking.gif";
 import { useRef } from "react";
 import { Helmet } from "react-helmet-async";
@@ -24,27 +25,46 @@ export default function Home() {
         <div className="herodiv">
           <h1 className="heroheading">Welcome to CITB Certify</h1>
           <p className="herotext">
-            Making it simple to book and carry out your CITB Test.
+            Making it simple to book and carry out your CITB and CSCS tests.
           </p>
           <button className="herobutton" onClick={handleScroll}>
             Scroll Down
           </button>
         </div>
       </div>
+
       <div className="introcontainer" ref={targetRef}>
-        <h1 className="introheading">Intro</h1>
+        <h1 className="introheading">Book Your CITB Health & Safety Test</h1>
         <p className="introtext">
-          Welcome to CITB Certify, your go-to platform for booking CITB tests
-          and obtaining CSCS cards, here you can book specific tests depending
-          on the qualifications you have and we can carry out your tests at our
-          site, check out the rest of the website for more information regarding
-          CSCS cards and if you want to book for your tests, please click on the
-          booking link either in the navigation bar or in the booking section
-          below. If you have any questions regarding any queries, please use the
-          contact us page to send us an email and we will get back to you as
-          soon as possible.
+          The CITB Health & Safety test is crucial for anyone starting out in
+          the construction industry. This test ensures that you have the
+          knowledge required to work safely and avoid hazards on site. Click the
+          link below to schedule your test today and take the first step towards
+          obtaining your CSCS card.
         </p>
+        <a className="cscsbutton" href="/book-citb">
+          Book for your CITB Test Now!
+        </a>
       </div>
+
+      <div className="cscscontainer">
+        <div className="cscsdiv2">
+          <h1 className="cscsheading">Get Started with the Green CSCS Card</h1>
+          <p className="cscstext">
+            The Green CSCS Card is the most common card to get started in the
+            construction industry. If you're new to the field, this card will
+            help you take your first step into construction. Firstly, book your
+            CITB test now to get the Green CSCS card and start your journey.
+          </p>
+          <a className="cscsbutton" href="/book-cscs">
+            Book for your Green Card Test Now!
+          </a>
+        </div>
+        <div className="cscsdiv1">
+          <img src={cscs} className="introimage" alt="Green CSCS Card" />
+        </div>
+      </div>
+
       <div className="cardcontainer">
         <div className="carddiv1">
           <img src={cscs} className="introimage" alt="introimage" />
@@ -62,6 +82,7 @@ export default function Home() {
           </a>
         </div>
       </div>
+
       <div className="bookingcontainer">
         <div className="bookingdiv1">
           <h1 className="bookingheading">Booking</h1>
@@ -72,7 +93,7 @@ export default function Home() {
             fill out all the details so we know exactly who you are and what you
             want.
           </p>
-          <a className="button" href="/book">
+          <a className="button" href="/book-cscs">
             Book
           </a>
         </div>
@@ -80,6 +101,7 @@ export default function Home() {
           <img src={booking} className="bookingimage" alt="bookingimage" />
         </div>
       </div>
+
       <div className="locationcontainer">
         <h1 className="locationheading">Where are we located?</h1>
         <div className="location">

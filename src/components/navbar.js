@@ -41,10 +41,13 @@ export default function Navbar() {
             <a className="button" href="/cards">
               Cards
             </a>
-            <a className="button" href="/book">
-              Book
+            <a className="button" href="/book-citb">
+              Book CITB
             </a>
-            <a className="button" href="/contactus">
+            <a className="button" href="/book-cscs">
+              Book CSCS
+            </a>
+            <a className="button" href="/contact-us">
               Contact Us
             </a>
           </div>

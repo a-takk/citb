@@ -5,7 +5,8 @@ import { HelmetProvider } from "react-helmet-async"; // Import HelmetProvider
 import Home from "./pages/Home";
 import Navbar from "./components/navbar";
 import Cards from "./pages/Cards";
-import Book from "./pages/Book";
+import BookCSCS from "./pages/BookCSCS";
+import BookCITB from "./pages/BookCITB";
 import ContactUs from "./pages/ContactUs";
 import Success from "./pages/Success";
 import Failed from "./pages/Failed";
@@ -22,21 +23,20 @@ function App() {
     <AuthProvider>
       <HelmetProvider>
         {" "}
-        {/* Wrap everything with HelmetProvider */}
         <Router>
           <Navbar />
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/cards" element={<Cards />} />
-            <Route path="/book" element={<Book />} />
+            <Route path="/book-cscs" element={<BookCSCS />} />
+            <Route path="/book-citb" element={<BookCITB />} />
             <Route path="/success" element={<Success />} />
             <Route path="/failure" element={<Failed />} />
-            <Route path="/contactus" element={<ContactUs />} />
+            <Route path="/contact-us" element={<ContactUs />} />
             <Route path="/privacypolicy" element={<PrivacyPolicy />} />
             <Route path="/termsandconditions" element={<TermsOfService />} />
             <Route path="/login" element={<Login />} />
 
-            {/* Protected Admin Route */}
             <Route
               path="/admin"
               element={

@@ -93,7 +93,7 @@ const Cards = () => {
   return (
     <div className="cardsbackground">
       <Helmet>
-        <title>Cards | CITB Certify</title>
+        <title>CSCS Cards | CITB Certify</title>
         <meta
           name="description"
           content="View all the possible CSCS cards that you can book tests for. Find out which path you want to take within construction."
