@@ -446,41 +446,42 @@ function fetchAvailableSlotsFromDB(date) {
   });
 }
 
-app.post("/api/webhook/citb", async (req, res) => {
-  const payload = req.body;
-  const payloadString = JSON.stringify(payload, null, 2);
-  const header = stripe.webhooks.generateTestHeaderString({
-    payload: payloadString,
-    secret: ENDPOINT_SECRET_CITB,
-  });
+app.post(
+  "/api/webhook/citb",
+  bodyParser.raw({ type: "application/json" }),
+  async (req, res) => {
+    const payloadString = req.body.toString();
+    const header = stripe.webhooks.generateTestHeaderString({
+      payload: payloadString,
+      secret: ENDPOINT_SECRET_CITB,
+    });
 
-  let event;
+    let event;
 
-  try {
-    event = stripe.webhooks.constructEvent(
-      payloadString,
-      header,
-      ENDPOINT_SECRET_CITB
-    );
-    console.log("Webhook verified successfully:", event);
-  } catch (err) {
-    console.log("Webhook verification failed:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
-  }
-
-  try {
-    switch (event.type) {
-      case "checkout.session.completed":
-        await handleCheckoutSessionCompletedCITB(event.data.object);
-        break;
+    try {
+      event = stripe.webhooks.constructEvent(
+        payloadString,
+        header,
+        ENDPOINT_SECRET_CITB
+      );
+      console.log("Webhook verified successfully:", event);
+    } catch (err) {
+      console.log("Webhook verification failed:", err.message);
+      return res.status(400).send(`Webhook Error: ${err.message}`);
     }
 
-    res.status(200).json({ received: true });
-  } catch (error) {
-    console.error("Error processing webhook event:", error);
-    res.status(500).send("Error processing webhook event");
+    try {
+      if (event.type === "checkout.session.completed") {
+        await handleCheckoutSessionCompletedCITB(event.data.object);
+      }
+
+      res.status(200).json({ received: true });
+    } catch (error) {
+      console.error("Error processing webhook event:", error);
+      res.status(500).send("Error processing webhook event");
+    }
   }
-});
+);
 
 async function handleCheckoutSessionCompletedCITB(session) {
   const email = session.customer_details.email;
