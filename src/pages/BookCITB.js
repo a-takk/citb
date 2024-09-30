@@ -1,6 +1,7 @@
 import "../styles/book.css";
 import { useState } from "react";
 import { loadStripe } from "@stripe/stripe-js";
+import { Helmet } from "react-helmet";
 
 const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
 
@@ -110,6 +111,14 @@ const BookCITB = () => {
 
   return (
     <div className="formbackground">
+      <Helmet>
+        <title>Book your CITB Test | CITB Certify</title>
+        <meta
+          name="description"
+          content="Book your basic Health and Safety test required for the CSCS card qualification. Complete the CITB test to ensure safety on construction sites."
+        />
+      </Helmet>
+
       <form onSubmit={handleSubmit}>
         <h1>Start your CITB Booking</h1>
         {showAlert && <p className="alert-message">{alertMessage}</p>}

@@ -14,6 +14,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 4000;
 const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
+const ENDPOINT_SECRET_CITB = process.env.STRIPE_ENDPOINT_SECRET_CITB;
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
@@ -222,11 +223,75 @@ const sendBookingEmail = async (email, formData) => {
     from: process.env.EMAIL_USER,
     to: email,
     subject: "CITB: Thank You For Booking",
-    text: `Thank you for booking your CITB test, your booking details are:\n
+    text: `Dear ${formData.firstName} ${formData.surname},
+
+Thank you for booking your CSCS test, your booking details are:\n
+
 Card Type: ${formData.cscsCardType}
 Test Type: ${formData.test}
 Test Date:  ${formData.testDate}
-Test Time:  ${formData.testTime}`,
+Test Time:  ${formData.testTime}
+
+Thank you for booking your CSCS test. We will soon be in contact with you.
+If you have any questions, feel free to contact us.
+
+Best regards,
+CITB Certify`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+const sendBookingEmailCITB = async (email, formData) => {
+  const transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    from: process.env.EMAIL_USER,
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: email,
+    subject: "CITB Test Booking Confirmation",
+    text: `
+Dear ${formData.firstName} ${formData.surname},
+
+Thank you for booking your CITB test. We will soon be in contact with you.
+If you have any questions, feel free to contact us.
+
+Best regards,
+CITB Certify`,
+  };
+
+  await transporter.sendMail(mailOptions);
+};
+
+const sendAdminEmailCITB = async (formData) => {
+  const transporter = nodemailer.createTransport({
+    service: "Gmail",
+    auth: {
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
+    },
+    from: process.env.EMAIL_USER,
+  });
+
+  const mailOptions = {
+    from: process.env.EMAIL_USER,
+    to: process.env.EMAIL_USER,
+    subject: "New CITB Test Booking",
+    text: `
+A new CITB test booking has been made. Below are the details:
+
+Name: ${formData.title} ${formData.firstName} ${formData.surname}
+Date of Birth: ${formData.dateOfBirthDay}/${formData.dateOfBirthMonth}/${formData.dateOfBirthYear}
+Gender: ${formData.gender}
+Address: ${formData.address}, ${formData.town}, ${formData.county}, ${formData.country}, ${formData.postcode}
+Mobile Number: ${formData.mobileNumber}
+Email: ${formData.email}`,
   };
 
   await transporter.sendMail(mailOptions);
@@ -268,10 +333,7 @@ app.post("/api/create-checkout-session-citb", async (req, res) => {
       success_url: "https://www.citbcertify.co.uk/success",
       cancel_url: "https://www.citbcertify.co.uk/failure",
       customer_email: formData.email,
-      metadata: {
-        firstName: formData.firstName,
-        surname: formData.surname,
-      },
+      metadata: formData,
     });
 
     // Send back the session ID
@@ -328,6 +390,7 @@ app.post("/api/create-checkout-session", async (req, res) => {
           mode: "payment",
           success_url: "https://www.citbcertify.co.uk/success",
           cancel_url: "https://www.citbcertify.co.uk/failure",
+          customer_email: formData.email,
           metadata: formData,
         });
 
@@ -344,7 +407,6 @@ app.post("/api/create-checkout-session", async (req, res) => {
   }
 });
 
-// Route to fetch CSCS test prices
 app.get("/api/cscs-test-prices", (req, res) => {
   const query = "SELECT * FROM cscs_test_prices";
   pool.query(query, (error, results) => {
@@ -370,7 +432,6 @@ app.get("/api/available-slots", async (req, res) => {
   }
 });
 
-// Function to fetch available slots from the database
 function fetchAvailableSlotsFromDB(date) {
   return new Promise((resolve, reject) => {
     const sql =
@@ -385,7 +446,101 @@ function fetchAvailableSlotsFromDB(date) {
   });
 }
 
-// Webhook endpoint to handle Stripe events
+app.post("/api/webhook/citb", async (req, res) => {
+  const payload = req.body;
+  const payloadString = JSON.stringify(payload, null, 2);
+  const header = stripe.webhooks.generateTestHeaderString({
+    payload: payloadString,
+    secret: ENDPOINT_SECRET_CITB,
+  });
+
+  let event;
+
+  try {
+    event = stripe.webhooks.constructEvent(
+      payloadString,
+      header,
+      ENDPOINT_SECRET_CITB
+    );
+    console.log("Webhook verified successfully:", event);
+  } catch (err) {
+    console.log("Webhook verification failed:", err.message);
+    return res.status(400).send(`Webhook Error: ${err.message}`);
+  }
+
+  try {
+    if (event.type === "checkout.session.completed") {
+      await handleCheckoutSessionCompletedCITB(event.data.object);
+    }
+
+    res.status(200).json({ received: true });
+  } catch (error) {
+    console.error("Error processing webhook event:", error);
+    res.status(500).send("Error processing webhook event");
+  }
+});
+
+async function handleCheckoutSessionCompletedCITB(session) {
+  const email = session.customer_details.email;
+  const formData = session.metadata || {};
+
+  try {
+    const insertCustomerQuery = `
+      INSERT INTO citb_customer_details (
+        title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
+        dateOfBirthYear, gender, postcode, address, town, county, country,
+        mobileNumber, email, agree
+      )
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `;
+
+    const agree = formData.agree === "true" ? 1 : 0;
+
+    await new Promise((resolve, reject) => {
+      pool.query(
+        insertCustomerQuery,
+        [
+          formData.title,
+          formData.firstName,
+          formData.surname,
+          formData.dateOfBirthDay,
+          formData.dateOfBirthMonth,
+          formData.dateOfBirthYear,
+          formData.gender,
+          formData.address,
+          formData.town,
+          formData.county,
+          formData.country,
+          formData.postcode,
+          formData.mobileNumber,
+          email,
+          agree,
+        ],
+        (error, result) => {
+          if (error) {
+            reject(error);
+          } else {
+            resolve(result);
+          }
+        }
+      );
+    });
+
+    console.log("Customer details inserted successfully");
+
+    try {
+      await sendBookingEmailCITB(email, formData);
+      await sendAdminEmailCITB(formData);
+      console.log("Emails sent successfully");
+    } catch (emailError) {
+      console.error("Error sending emails:", emailError);
+    }
+  } catch (error) {
+    console.error("Error inserting customer details:", error);
+    throw error;
+  }
+}
+
 app.post("/api/webhook", async (req, res) => {
   const payload = req.body;
   const payloadString = JSON.stringify(payload, null, 2);
@@ -411,22 +566,6 @@ app.post("/api/webhook", async (req, res) => {
     switch (event.type) {
       case "checkout.session.completed":
         await handleCheckoutSessionCompleted(event.data.object);
-        break;
-
-      case "payment_intent.succeeded":
-        await handlePaymentIntentSucceeded(event.data.object);
-        break;
-
-      case "payment_method.attached":
-        console.log("PaymentMethod was attached to a Customer!");
-        break;
-
-      case "charge.updated":
-        console.log("Charge updated:", event.data.object);
-        break;
-
-      default:
-        console.log(`Unhandled event type ${event.type}`);
         break;
     }
 
@@ -557,11 +696,6 @@ async function handleCheckoutSessionCompleted(session) {
     console.error("Error handling checkout session:", error);
     throw error; // Throw the error to be handled at a higher level
   }
-}
-
-// Function to handle actions after successful payment intent
-async function handlePaymentIntentSucceeded(paymentIntent) {
-  console.log("Payment Intent succeeded:", paymentIntent.id);
 }
 
 if (process.env.NODE_ENV === "production") {

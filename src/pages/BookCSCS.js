@@ -246,7 +246,7 @@ const Book = () => {
         {showAlert && <p className="alert-message">{alertMessage}</p>}
         <h2>Your CSCS Card</h2>
         <label>
-          What CSCS Card do you need?:
+          CSCS Card:
           <select
             name="cscsCardType"
             value={formData.cscsCardType}

@@ -8,7 +8,7 @@ const Failed = () => {
         <h1>Payment has failed</h1>
         <h2>Please click the button below to rebook your test</h2>
 
-        <a href="/book" className="button">
+        <a href="/" className="button">
           Book
         </a>
       </div>
