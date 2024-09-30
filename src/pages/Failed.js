@@ -4,6 +4,9 @@ import "../styles/failed.css";
 const Failed = () => {
   return (
     <div className="failedBackground">
+      <Helmet>
+        <title>Checkout Failure | CITB Certify</title>
+      </Helmet>
       <div className="failed">
         <h1>Payment has failed</h1>
         <h2>Please click the button below to rebook your test</h2>

@@ -469,8 +469,10 @@ app.post("/api/webhook/citb", async (req, res) => {
   }
 
   try {
-    if (event.type === "checkout.session.completed") {
-      await handleCheckoutSessionCompletedCITB(event.data.object);
+    switch (event.type) {
+      case "checkout.session.completed":
+        await handleCheckoutSessionCompletedCITB(event.data.object);
+        break;
     }
 
     res.status(200).json({ received: true });
