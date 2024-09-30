@@ -1,5 +1,6 @@
 import React from "react";
 import "../styles/failed.css";
+import { Helmet } from "react-helmet-async";
 
 const Failed = () => {
   return (
