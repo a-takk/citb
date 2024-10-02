@@ -451,7 +451,7 @@ app.post("/api/webhook/citb", async (req, res) => {
   const payloadString = JSON.stringify(payload, null, 2);
   const header = stripe.webhooks.generateTestHeaderString({
     payload: payloadString,
-    secret: ENDPOINT_SECRET_CITB,
+    secret: STRIPE_ENDPOINT_SECRET_CITB,
   });
 
   let event;
@@ -460,7 +460,7 @@ app.post("/api/webhook/citb", async (req, res) => {
     event = stripe.webhooks.constructEvent(
       payloadString,
       header,
-      ENDPOINT_SECRET_CITB
+      STRIPE_ENDPOINT_SECRET_CITB
     );
     console.log("Webhook verified successfully:", event);
   } catch (err) {
@@ -548,7 +548,7 @@ app.post("/api/webhook", async (req, res) => {
   const payloadString = JSON.stringify(payload, null, 2);
   const header = stripe.webhooks.generateTestHeaderString({
     payload: payloadString,
-    secret: ENDPOINT_SECRET,
+    secret: STRIPE_ENDPOINT_SECRET,
   });
 
   let event;
@@ -556,7 +556,7 @@ app.post("/api/webhook", async (req, res) => {
     event = stripe.webhooks.constructEvent(
       payloadString,
       header,
-      ENDPOINT_SECRET
+      STRIPE_ENDPOINT_SECRET
     );
     console.log("Webhook Verified:", event);
   } catch (err) {
