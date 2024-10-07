@@ -13,8 +13,8 @@ dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 4000;
-const ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
-const ENDPOINT_SECRET_CITB = process.env.STRIPE_ENDPOINT_SECRET_CITB;
+const STRIPE_ENDPOINT_SECRET = process.env.STRIPE_ENDPOINT_SECRET;
+const STRIPE_ENDPOINT_SECRET_CITB = process.env.STRIPE_ENDPOINT_SECRET_CITB;
 
 app.use(bodyparser.json());
 app.use(bodyparser.urlencoded({ extended: true }));
