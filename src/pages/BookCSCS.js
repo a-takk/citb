@@ -3,7 +3,9 @@ import React, { useState, useEffect } from "react";
 import { loadStripe } from "@stripe/stripe-js";
 import { Helmet } from "react-helmet-async";
 
-const stripePromise = loadStripe("pk_test_AqC7rHZn75dF9mR6ND8i5OI6");
+const stripePromise = loadStripe(
+  "pk_test_51PmkECHgNlkUn5WHbS3z34qm8yRlRh1G6Gl78Nguktmu7gNe8umkn7st8rtDr25YtUPbX2DaNA5OHSLuSZRRVfiq00g5bfPz0p"
+);
 
 const Book = () => {
   const getCurrentDate = () => {

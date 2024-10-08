@@ -6,7 +6,7 @@ const mysql = require("mysql");
 const path = require("path");
 const dotenv = require("dotenv");
 const stripe = require("stripe")(
-  "sk_test_51E9RKSAwq1wpzpcjPFkYP9l7FmCz9MxpndHEnqs134t5xYB9lj8EztQ9QGhEr0ivHNTmpjvXFxc1dBr424kqgr2M00CqsMoCQh"
+  "sk_test_51PmkECHgNlkUn5WHWydYgOFXpxDsybfiHuMvWR7Q1oCepTHgwiVHHfAMvMLIkoAVwgNbzSBEMkfc7b9xeALZe38M002km6Pxnf"
 );
 
 dotenv.config();
