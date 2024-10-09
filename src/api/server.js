@@ -509,11 +509,11 @@ async function handleCheckoutSessionCompletedCITB(session) {
           formData.dateOfBirthMonth,
           formData.dateOfBirthYear,
           formData.gender,
+          formData.postcode,
           formData.address,
           formData.town,
           formData.county,
           formData.country,
-          formData.postcode,
           formData.mobileNumber,
           email,
           agree,
@@ -595,7 +595,7 @@ async function handleCheckoutSessionCompleted(session) {
         if (error) {
           reject(error);
         } else {
-          resolve(results[0]); // Get the first matching booking if any
+          resolve(results[0]);
         }
       });
     });
