@@ -20,6 +20,7 @@ const BookCITB = () => {
     address: "",
     town: "",
     county: "",
+    country: "United Kingdom",
     mobileNumber: "",
     email: "",
     confirmEmail: "",
@@ -234,7 +235,13 @@ const BookCITB = () => {
         </label>
         <label>
           Country:
-          <input type="text" name="country" value="UK" readOnly />
+          <input
+            type="text"
+            name="country"
+            value={formData.country}
+            onChange={handleChange}
+            readOnly
+          />
         </label>
 
         <h2>Contact Details</h2>
