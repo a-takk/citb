@@ -1,6 +1,6 @@
 import "../styles/home.css";
 import cscs from "../images/green-labourer-cscs-card.webp";
-
+import redProvisionalCSCSCard from "../images/red-provisional-cscs-card.webp";
 import booking from "../images/booking.gif";
 import { useRef } from "react";
 import { Helmet } from "react-helmet-async";
@@ -67,7 +67,11 @@ export default function Home() {
 
       <div className="cardcontainer">
         <div className="carddiv1">
-          <img src={cscs} className="introimage" alt="introimage" />
+          <img
+            src={redProvisionalCSCSCard}
+            className="introimage"
+            alt="introimage"
+          />
         </div>
         <div className="carddiv2">
           <h1 className="cardheading">Cards</h1>
