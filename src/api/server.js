@@ -80,6 +80,18 @@ app.get("/api/admin", (req, res) => {
   });
 });
 
+app.get("/api/admin/citb", (req, res) => {
+  const query = "SELECT * FROM citb_customer_details";
+  connection.query(query, (error, results) => {
+    if (error) {
+      console.error("Error fetching customer details:", error);
+      res.status(500).json({ error: "Failed to retrieve customer details" });
+    } else {
+      res.json({ data: results });
+    }
+  });
+});
+
 app.delete("/api/admin/:customerId", (req, res) => {
   const { customerId } = req.params.id;
   const { bookingId } = req.body;

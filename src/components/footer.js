@@ -8,8 +8,9 @@ export default function Footer() {
         <div className="footer-section">
           <h4>About Us</h4>
           <p>
-            We are committed to providing the best service possible. Contact us
-            for more information.
+            CITB Certify simplifies the booking process for CITB and CSCS tests.
+            Our goal is to support construction professionals in obtaining the
+            certifications they need to advance their careers.
           </p>
         </div>
         <div className="footer-section">
