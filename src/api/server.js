@@ -60,7 +60,7 @@ const generateSlots = () => {
 
 app.get("/insert-slots", (req, res) => {
   const slots = generateSlots();
-  let sql = `INSERT INTO booking_details (testDate, testTime, originalTestDate, originalTestTime) VALUES ?`;
+  let sql = `INSERT INTO citb_booking_details (testDate, testTime, originalTestDate, originalTestTime) VALUES ?`;
   const values = slots.map((slot) => [
     slot.testDate,
     slot.testTime,
