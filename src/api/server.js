@@ -37,46 +37,6 @@ pool.getConnection((err, connection) => {
   connection.release();
 });
 
-const generateSlots = () => {
-  const slots = [];
-  const startDate = new Date();
-  const endDate = new Date();
-  endDate.setFullYear(endDate.getFullYear() + 15);
-  let currentDate = startDate;
-
-  while (currentDate <= endDate) {
-    for (let hour = 9; hour < 17; hour++) {
-      const slotDate = new Date(currentDate);
-      slotDate.setHours(hour, 0, 0);
-      slots.push({
-        testDate: slotDate.toISOString().split("T")[0],
-        testTime: slotDate.toTimeString().split(" ")[0],
-      });
-    }
-    currentDate.setDate(currentDate.getDate() + 1);
-  }
-  return slots;
-};
-
-app.get("/insert-slots", (req, res) => {
-  const slots = generateSlots();
-  let sql = `INSERT INTO citb_booking_details (testDate, testTime, originalTestDate, originalTestTime) VALUES ?`;
-  const values = slots.map((slot) => [
-    slot.testDate,
-    slot.testTime,
-    slot.testDate,
-    slot.testTime,
-  ]);
-
-  pool.query(sql, [values], (err, result) => {
-    if (err) {
-      return res.status(500).send(err);
-    }
-
-    res.send(`Inserted ${result.affectedRows} slots`);
-  });
-});
-
 app.get("/api/admin", (req, res) => {
   const customerQuery = `
     SELECT
