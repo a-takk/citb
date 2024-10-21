@@ -693,21 +693,14 @@ async function handleCheckoutSessionCompleted(session) {
 
     console.log("Booking details updated successfully");
 
-    // Check the booking type and send appropriate emails
-    if (formData.bookingType === "CSCS") {
-      // Send CSCS emails only
-      await Promise.all([
+    try {
+      await new Promise([
         sendBookingEmail(email, formData),
         sendAdminEmail(formData),
       ]);
-      console.log("CSCS confirmation emails sent successfully");
-    } else if (formData.bookingType === "CITB") {
-      // Send CITB emails only
-      await Promise.all([
-        sendBookingEmailCITB(email, formData),
-        sendAdminEmailCITB(formData),
-      ]);
-      console.log("CITB confirmation emails sent successfully");
+      console.log("Confirmation emails sent successfully");
+    } catch (emailError) {
+      console.error("Error sending confirmation emails:", emailError);
     }
   } catch (error) {
     console.error("Error handling checkout session:", error);
