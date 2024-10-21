@@ -128,11 +128,11 @@ function ContactUs() {
           </div>
           <div className="column">
             <h1>Phone:</h1>
-            <p>07594857847</p>
+            <p>07493980923</p>
           </div>
           <div className="column">
             <h1>Email:</h1>
-            <p>info@example.com</p>
+            <p>citbcertify@gmail.com</p>
           </div>
         </div>
 

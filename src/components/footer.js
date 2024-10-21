@@ -16,8 +16,8 @@ export default function Footer() {
         <div className="footer-section">
           <h4>Contact Information</h4>
           <p>77 Bilhay St, West Bromwich, B70 9RD</p>
-          <p>07584857465</p>
-          <p>info@example.com</p>
+          <p>07493980923</p>
+          <p>citbcertify@gmail.com</p>
         </div>
         <div className="footer-section">
           <h4>Privacy and Terms</h4>

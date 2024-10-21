@@ -296,7 +296,7 @@ const sendAdminEmailCITB = async (formData) => {
     subject: "New CITB Test Booking",
     text: `
 A new CITB test booking has been made. Below are the details:
-
+ 
 Name: ${formData.title} ${formData.firstName} ${formData.surname}
 Date of Birth: ${formData.dateOfBirthDay}/${formData.dateOfBirthMonth}/${formData.dateOfBirthYear}
 Gender: ${formData.gender}
