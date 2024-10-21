@@ -594,7 +594,6 @@ async function handleCheckoutSessionCompleted(session) {
   const formData = session.metadata || {};
 
   try {
-    // Check if the slot exists and is available
     const checkExistingQuery = `
       SELECT bookingId FROM booking_details
       WHERE testDate = ? AND testTime = ? AND status = 'available'
@@ -660,7 +659,6 @@ async function handleCheckoutSessionCompleted(session) {
       );
     });
 
-    // Update the booking slot with new details
     const updateBookingQuery = `
       UPDATE booking_details
       SET
@@ -681,7 +679,7 @@ async function handleCheckoutSessionCompleted(session) {
           formData.cardAction,
           formData.test,
           formData.testLanguage,
-          bookingId, // Update the specific slot
+          bookingId,
         ],
         (error, result) => {
           if (error) {
@@ -695,19 +693,25 @@ async function handleCheckoutSessionCompleted(session) {
 
     console.log("Booking details updated successfully");
 
-    // Send confirmation emails
-    try {
+    // Check the booking type and send appropriate emails
+    if (formData.bookingType === "CSCS") {
+      // Send CSCS emails only
       await Promise.all([
         sendBookingEmail(email, formData),
         sendAdminEmail(formData),
       ]);
-      console.log("Confirmation emails sent successfully");
-    } catch (emailError) {
-      console.error("Error sending confirmation emails:", emailError);
+      console.log("CSCS confirmation emails sent successfully");
+    } else if (formData.bookingType === "CITB") {
+      // Send CITB emails only
+      await Promise.all([
+        sendBookingEmailCITB(email, formData),
+        sendAdminEmailCITB(formData),
+      ]);
+      console.log("CITB confirmation emails sent successfully");
     }
   } catch (error) {
     console.error("Error handling checkout session:", error);
-    throw error; // Throw the error to be handled at a higher level
+    throw error;
   }
 }
 
