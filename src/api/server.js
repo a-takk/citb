@@ -694,7 +694,7 @@ async function handleCheckoutSessionCompleted(session) {
     console.log("Booking details updated successfully");
 
     try {
-      await new Promise([
+      await Promise.all([
         sendBookingEmail(email, formData),
         sendAdminEmail(formData),
       ]);
