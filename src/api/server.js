@@ -539,18 +539,18 @@ async function handleCheckoutSessionCompletedCITB(session) {
       );
     });
 
-    console.log("Customer details inserted successfully");
+    console.log("CITB customer details inserted successfully");
 
-    try {
-      await sendBookingEmailCITB(email, formData);
-      await sendAdminEmailCITB(formData);
-      console.log("Emails sent successfully");
-    } catch (emailError) {
-      console.error("Error sending emails:", emailError);
+    // **Conditional logic to prevent sending CSCS emails for CITB bookings**
+    if (formData.bookingType !== "CSCS") {
+      console.log("Skipping CSCS emails as this is a CITB booking.");
+    } else {
+      await sendBookingEmail(email, formData);
+      await sendAdminEmail(formData);
+      console.log("CSCS emails sent successfully");
     }
   } catch (error) {
-    console.error("Error inserting customer details:", error);
-    throw error;
+    console.error("Error processing CITB session:", error);
   }
 }
 
@@ -619,6 +619,7 @@ async function handleCheckoutSessionCompleted(session) {
     }
 
     const bookingId = existingBooking.bookingId;
+
     const insertCustomerQuery = `
       INSERT INTO customer_details (
         title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
@@ -691,20 +692,18 @@ async function handleCheckoutSessionCompleted(session) {
       );
     });
 
-    console.log("Booking details updated successfully");
+    console.log("Booking updated and customer details inserted successfully");
 
-    try {
-      await Promise.all([
-        sendBookingEmail(email, formData),
-        sendAdminEmail(formData),
-      ]);
-      console.log("Confirmation emails sent successfully");
-    } catch (emailError) {
-      console.error("Error sending confirmation emails:", emailError);
+    // **Conditional logic to send CSCS emails only if booking is for CSCS**
+    if (formData.bookingType === "CSCS") {
+      await sendBookingEmail(email, formData);
+      await sendAdminEmail(formData);
+      console.log("CSCS emails sent successfully");
+    } else {
+      console.log("Skipping CSCS emails as this is not a CSCS booking.");
     }
   } catch (error) {
-    console.error("Error handling checkout session:", error);
-    throw error;
+    console.error("Error processing session:", error);
   }
 }
 
