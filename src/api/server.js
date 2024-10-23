@@ -659,7 +659,6 @@ async function handleCheckoutSessionCompleted(session) {
       SET
         cscsCardType = ?,
         cardAction = ?,
-        test = ?,
         testLanguage = ?,
         status = 'booked'
       WHERE
@@ -671,7 +670,6 @@ async function handleCheckoutSessionCompleted(session) {
         [
           formData.cscsCardType,
           formData.cardAction,
-          formData.test,
           formData.testLanguage,
           bookingId,
         ],
@@ -685,11 +683,13 @@ async function handleCheckoutSessionCompleted(session) {
       );
     });
 
-    // Send CSCS-specific emails
-    await sendBookingEmail(email, formData);
-    await sendAdminEmail(formData);
-
-    console.log("CSCS emails sent successfully");
+    if (formData.cscsCardType) {
+      await sendBookingEmail(email, formData);
+      await sendAdminEmail(formData);
+      console.log("CSCS emails sent successfully");
+    } else {
+      console.log("No CSCS emails sent as this is not a CSCS booking.");
+    }
   } catch (error) {
     console.error("Error processing CSCS session:", error);
     throw error;
