@@ -688,7 +688,9 @@ async function handleCheckoutSessionCompleted(session) {
       await sendAdminEmail(formData);
       console.log("CSCS emails sent successfully");
     } else {
-      console.log("No CSCS emails sent as this is not a CSCS booking.");
+      await sendBookingEmailCITB(email, formData);
+      await sendAdminEmailCITB(formData);
+      console.log("CITB emails sent successfully");
     }
   } catch (error) {
     console.error("Error processing CSCS session:", error);
