@@ -594,10 +594,8 @@ async function handleCheckoutSessionCompleted(session) {
   const formData = session.metadata || {};
 
   try {
-    const checkExistingQuery = `
-      SELECT bookingId FROM booking_details
-      WHERE testDate = ? AND testTime = ? AND status = 'available'
-    `;
+    const checkExistingQuery = `SELECT bookingId FROM booking_details
+       WHERE testDate = ? AND testTime = ? AND status = 'available'`;
     const checkExistingParams = [formData.testDate, formData.testTime];
 
     const existingBooking = await new Promise((resolve, reject) => {
@@ -620,14 +618,11 @@ async function handleCheckoutSessionCompleted(session) {
 
     const bookingId = existingBooking.bookingId;
 
-    const insertCustomerQuery = `
-      INSERT INTO customer_details (
+    const insertCustomerQuery = `INSERT INTO customer_details (
         title, firstName, surname, dateOfBirthDay, dateOfBirthMonth,
         dateOfBirthYear, gender, address, town, county, country,
         postcode, email, mobileNumber, agree
-      )
-      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `;
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`;
 
     const agree = formData.agree === "true" ? 1 : 0;
     await new Promise((resolve, reject) => {
@@ -660,8 +655,7 @@ async function handleCheckoutSessionCompleted(session) {
       );
     });
 
-    const updateBookingQuery = `
-      UPDATE booking_details
+    const updateBookingQuery = `UPDATE booking_details
       SET
         cscsCardType = ?,
         cardAction = ?,
@@ -669,8 +663,7 @@ async function handleCheckoutSessionCompleted(session) {
         testLanguage = ?,
         status = 'booked'
       WHERE
-        bookingId = ?
-    `;
+        bookingId = ?`;
 
     await new Promise((resolve, reject) => {
       pool.query(
@@ -692,16 +685,13 @@ async function handleCheckoutSessionCompleted(session) {
       );
     });
 
-    console.log("Booking details updated successfully");
+    // Send CSCS-specific emails
+    await sendBookingEmail(email, formData);
+    await sendAdminEmail(formData);
 
-    await Promise.all([
-      sendBookingEmail(email, formData),
-      sendAdminEmail(formData),
-    ]);
-
-    console.log("Confirmation emails sent successfully");
+    console.log("CSCS emails sent successfully");
   } catch (error) {
-    console.error("Error handling checkout session:", error);
+    console.error("Error processing CSCS session:", error);
     throw error;
   }
 }
