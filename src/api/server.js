@@ -194,7 +194,7 @@ const sendAdminEmail = async (formData) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: process.env.EMAIL_USER,
-    subject: "CITB: Customer has booked for a test",
+    subject: "CSCS: Customer has booked for a test",
     text: `A customer has booked for a test, here are the details:\n
 CSCS Card Type: ${formData.cscsCardType}
 Card Action: ${formData.cardAction}
@@ -233,7 +233,7 @@ const sendBookingEmail = async (email, formData) => {
   const mailOptions = {
     from: process.env.EMAIL_USER,
     to: email,
-    subject: "CITB: Thank You For Booking",
+    subject: "CSCS: Thank You For Booking",
     text: `Dear ${formData.firstName} ${formData.surname},
 
 Thank you for booking your CSCS test, your booking details are:\n
@@ -694,7 +694,6 @@ async function handleCheckoutSessionCompleted(session) {
 
     console.log("Booking details updated successfully");
 
-    // Sending emails without try-catch block
     await Promise.all([
       sendBookingEmail(email, formData),
       sendAdminEmail(formData),
