@@ -685,14 +685,12 @@ async function handleCheckoutSessionCompleted(session) {
       );
     });
 
-    if (formData.cscsCardType && formData.cscsCardType !== "") {
+    try {
       await sendBookingEmail(email, formData);
       await sendAdminEmail(formData);
-      console.log("CSCS emails sent successfully");
-    } else {
-      await sendBookingEmailCITB(email, formData);
-      await sendAdminEmailCITB(formData);
-      console.log("CITB emails sent successfully");
+      console.log("Emails sent successfully");
+    } catch (emailError) {
+      console.error("Error sending emails:", emailError);
     }
   } catch (error) {
     console.error("Error processing CSCS session:", error);
