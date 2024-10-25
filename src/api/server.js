@@ -685,7 +685,7 @@ async function handleCheckoutSessionCompleted(session) {
       );
     });
 
-    if (formData.cscsCardType) {
+    if (formData.cscsCardType && formData.cscsCardType !== "") {
       await sendBookingEmail(email, formData);
       await sendAdminEmail(formData);
       console.log("CSCS emails sent successfully");
