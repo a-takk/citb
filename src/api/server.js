@@ -658,6 +658,7 @@ async function handleCheckoutSessionCompleted(session) {
       SET
         cscsCardType = ?,
         cardAction = ?,
+        test = ?,
         testLanguage = ?,
         status = 'booked'
       WHERE
@@ -669,6 +670,7 @@ async function handleCheckoutSessionCompleted(session) {
         [
           formData.cscsCardType,
           formData.cardAction,
+          formData.test,
           formData.testLanguage,
           bookingId,
         ],
