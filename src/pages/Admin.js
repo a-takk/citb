@@ -6,15 +6,14 @@ const AdminDashboard = () => {
   const [data, setData] = useState([]);
   const [activeTab, setActiveTab] = useState("cscs");
 
-  // Fetch data when the component mounts or when the active tab changes
   useEffect(() => {
-    console.log("Fetching data for tab:", activeTab); // Log to check which tab's data is being fetched
+    console.log("Fetching data for tab:", activeTab);
     const fetchData = async () => {
       let url = activeTab === "cscs" ? "/api/admin" : "/api/admin/citb";
       try {
         const response = await fetch(`https://www.citbcertify.co.uk${url}`);
         const result = await response.json();
-        console.log("Fetched Data:", result.data); // Log the fetched data
+        console.log("Fetched Data:", result.data);
         setData(result.data);
       } catch (error) {
         console.error("Error fetching data:", error);
@@ -77,7 +76,6 @@ const AdminDashboard = () => {
         </div>
       </div>
       <div className="container">
-        {/* Conditional Table Rendering */}
         <div className="table-responsive">
           {activeTab === "cscs" ? (
             <table className="table" key="cscs">
