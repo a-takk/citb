@@ -5,9 +5,7 @@ const bodyparser = require("body-parser");
 const mysql = require("mysql");
 const path = require("path");
 const dotenv = require("dotenv");
-const stripe = require("stripe")(
-  "sk_test_51PmkECHgNlkUn5WHWydYgOFXpxDsybfiHuMvWR7Q1oCepTHgwiVHHfAMvMLIkoAVwgNbzSBEMkfc7b9xeALZe38M002km6Pxnf"
-);
+const stripe = require("stripe");
 
 dotenv.config();
 
